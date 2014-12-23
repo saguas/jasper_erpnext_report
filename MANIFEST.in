@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include jasper_erpnext_report *.css
+recursive-include jasper_erpnext_report *.csv
+recursive-include jasper_erpnext_report *.html
+recursive-include jasper_erpnext_report *.ico
+recursive-include jasper_erpnext_report *.js
+recursive-include jasper_erpnext_report *.json
+recursive-include jasper_erpnext_report *.md
+recursive-include jasper_erpnext_report *.png
+recursive-include jasper_erpnext_report *.py
+recursive-include jasper_erpnext_report *.svg
+recursive-include jasper_erpnext_report *.txt
+recursive-exclude jasper_erpnext_report *.pyc

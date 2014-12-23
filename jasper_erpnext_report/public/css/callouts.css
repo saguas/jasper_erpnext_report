@@ -1,0 +1,181 @@
+@import url(font-awesome.min.css);
+@import url(iconFont.css);
+@import url(fontello.css);
+/*.create:before {
+content: url("SVG/pdf_icon2.svg");
+height: 16px;
+line-height: 16px;
+width: 16px;
+}*/
+
+.dropdown-submenu {
+    position:relative;
+}
+.dropdown-submenu>.dropdown-menu {
+    top:0;
+    left:100%;
+    margin-top:-6px;
+    margin-left:-1px;
+    -webkit-border-radius:0 6px 6px 6px;
+    -moz-border-radius:0 6px 6px 6px;
+    border-radius:0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+    display:block;
+}
+.dropdown-submenu>a:after {
+    display:block;
+    content:" ";
+    float:right;
+    width:0;
+    height:0;
+    border-color:transparent;
+    border-style:solid;
+    border-width:5px 0 5px 5px;
+    border-left-color:#cccccc;
+    margin-top:5px;
+    margin-right:-10px;
+}
+.dropdown-submenu:hover>a:after {
+    border-left-color:#ffffff;
+}
+.dropdown-submenu.pull-left {
+    float:none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left:-100%;
+    margin-left:10px;
+    -webkit-border-radius:6px 0 6px 6px;
+    -moz-border-radius:6px 0 6px 6px;
+    border-radius:6px 0 6px 6px;
+}
+
+
+.icon-jasper-pdf {
+    content: url("SVG/file-pdf.svg");
+    background-position: center center;
+	height: 16px;
+	line-height: 16px;
+	width: 16px;
+	
+}
+
+.icon-jasper-word {
+    content: url("SVG/file-word.svg");
+    background-position: center center;
+	height: 16px;
+	line-height: 16px;
+	width: 16px;
+	
+}
+
+.icon-jasper-excel {
+    content: url("SVG/file-excel.svg");
+    background-position: center center;
+	height: 16px;
+	line-height: 16px;
+	width: 16px;
+	
+}
+
+.icon-jasper-openoffice {
+    content: url("SVG/file-openoffice.svg");
+    background-position: center center;
+	height: 16px;
+	line-height: 16px;
+	width: 16px;
+	
+}
+
+.icon-jasper-libreoffice {
+    content: url("SVG/file-libreoffice.svg");
+    background-position: center center;
+	height: 16px;
+	line-height: 16px;
+	width: 16px;
+	
+}
+
+
+/* Side notes for calling out things
+-------------------------------------------------- */
+ 
+/* Base styles (regardless of theme) */
+.bs-callout-bg {
+  margin: 20px 0;
+  padding: 15px 30px 15px 15px;
+  border-left: 5px solid #eee;
+}
+.bs-callout-bg h4 {
+  margin-top: 0;
+}
+.bs-callout-bg p:last-child {
+  margin-bottom: 0;
+}
+.bs-callout-bg code,
+.bs-callout-bg .highlight {
+  background-color: #fff;
+}
+ 
+/* Themes for different contexts */
+.bs-callout-danger-bg {
+  background-color: #fcf2f2;
+  border-color: #dFb5b4;
+}
+.bs-callout-warning-bg {
+  background-color: #fefbed;
+  border-color: #f1e7bc;
+}
+.bs-callout-info-bg {
+  background-color: #f0f7fd;
+  border-color: #d0e3f0;
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px
+}
+
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px
+}
+
+.bs-callout p:last-child {
+    margin-bottom: 0
+}
+
+.bs-callout code {
+    border-radius: 3px
+}
+
+.bs-callout+.bs-callout {
+    margin-top: -5px
+}
+
+.bs-callout-danger {
+    border-left-color: #d9534f
+}
+
+.bs-callout-danger h4 {
+    color: #d9534f
+}
+
+.bs-callout-warning {
+    border-left-color: #f0ad4e
+}
+
+.bs-callout-warning h4 {
+    color: #f0ad4e
+}
+
+.bs-callout-info {
+    border-left-color: #5bc0de
+}
+
+.bs-callout-info h4 {
+    color: #5bc0de
+}
