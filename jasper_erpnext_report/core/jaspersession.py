@@ -638,8 +638,6 @@ class JasperServerSession(object):
 
 	@_jasperserver
 	def report_server_polling(self, reqId):
-		result = []
-		req = [{}]
 		report = Report(self.session)
 		req = self._report_polling(reqId, report.pollingReport)
 		return req

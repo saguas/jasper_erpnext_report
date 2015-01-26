@@ -16,37 +16,17 @@ _logger = logging.getLogger(frappe.__name__)
 
 class JasperReports(Document):
 	def on_update(self, method=None):
-		#data = get_jasper_data("report_list_all", get_from_db=get_jasper_report_list_from_db)
 		jaspersession_set_value("report_list_dirt_all", True)
 		jaspersession_set_value("report_list_dirt_doc", True)
-		"""if data:
-			#data['dirt'] = True
-			jaspersession_set_value("report_list_dirt_all", True)
-			jaspersession_set_value("report_list_dirt_doc", True)
-			#print "data dirt {}".format(data)
-			#delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
-			print "data jasper reports {0} report name {1}".format(data, self.name)
-			#insert_list_all_memcache_db(data)
-		data_doctype = get_jasper_data("report_list_doctype", get_from_db=get_jasper_report_list_from_db, tab="tabJasperReportListDoctype")
-		if data_doctype:
-			delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
-		"""
-			#insert_list_all_memcache_db(data_doctype, cachename="report_list_doctype", tab="tabJasperReportListDoctype")
 		if self.jasper_upload_jrxml:
 			return
 		#if jrxml file was removed then remove all associated images and params
 		if self.jasper_report_origin.lower() == "localserver":
 			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(self.name), auto_commit=1)
-			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper PermRole", "parent", '%s'),(self.name), auto_commit=1)
+			#frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper PermRole", "parent", '%s'),(self.name), auto_commit=1)
 			delete_jrxml_images(self.doctype, self.name, self.jasper_all_sites_report)
 			self.query = ""
-		#r_filters={"jasper_doctype": None, "report": None}
-		#data = get_jasper_data("jaspersession")
-		#origin = data['use_jasper_server']
-		#print "origin report {}".format(origin)
-		#delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
-		#ret = jasper_report_names_from_db(origin=origin, filters_report=r_filters)
-		#insert_list_all_memcache_db(ret)
+
 
 	def before_save(self, method=None):
 		if not self.jasper_param_message:
@@ -96,7 +76,7 @@ class JasperReports(Document):
 		remove_directory(parent_path)
 
 	def on_jasper_params(self, data=[], params=[]):
-		print "new params hook {}".format(data)
+		print "new params hooks {}".format(data)
 		for param in params:
 			if param.get('name') != "name_ids":
 				pname = param.get("name")
@@ -163,9 +143,3 @@ def check_for_images(doc, images):
 		if not found:
 			image_names_not_found.append(report_image_name)
 	return report_images_count == len(images), image_names_not_found
-"""
-if image in doc.jasper_report_images:
-			report_images_count = report_images_count + 1
-		else:
-			report_image_names.append(get_image_name(image.text))
-"""

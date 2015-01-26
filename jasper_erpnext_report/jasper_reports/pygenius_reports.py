@@ -24,9 +24,3 @@ print "pdf {}".format(dir(jr.PdfExportDemo))
 
 pdf.pdfExport('FirstReport')
 
-Stack = jr.getJavaClass('java.util.Stack')
-stack = Stack()
-stack.push('hello')
-stack.push('world')
-print stack.pop() # --> 'world'
-print stack.pop() # --> 'hello'

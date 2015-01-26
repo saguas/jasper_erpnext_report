@@ -1,8 +1,8 @@
-$(document).on("jasper_ready",function(){
+/*$(document).on("jasper_ready",function(){
 	console.log("sid apos app_ready event ", frappe.get_cookie("sid"));
 	if(!frappe.jasper_reports_list){
 		frappe.call({
-			"method": "jasper_erpnext_report.core.jaspersession.get_reports_list",
+			"method": "jasper_erpnext_report.core.JasperWhitelist.get_reports_list",
 			callback: function (data) {
 				console.log("get_reports_list ", data);
 				if(data.message){
@@ -14,7 +14,7 @@ $(document).on("jasper_ready",function(){
 		});
 	
 		frappe.call({
-			"method": "jasper_erpnext_report.core.jaspersession.get_server_info",
+			"method": "jasper_erpnext_report.core.JasperWhitelist.get_server_info",
 			callback: function (data) {
 				console.log("get_server_info ", data);
 				if(data.message){
@@ -25,8 +25,57 @@ $(document).on("jasper_ready",function(){
 			}
 		});
 	};
-});
+});*/
 
+jasper.get_jasper_server_info = function(){
+	frappe.call({
+		"method": "jasper_erpnext_report.core.JasperWhitelist.get_server_info",
+		callback: function (data) {
+			console.log("get_server_info ", data);
+			if(data.message){
+				console.log("resultado: ", data.message);
+				frappe.boot['jasper_server_info'] = data.message
+			}
+		
+		}
+	});
+}
+
+jasper.jasper_server_connect = function(){
+	var deferred = jQuery.Deferred();
+	frappe.call({
+		"method": "jasper_erpnext_report.core.JasperWhitelist.jasper_server_login",
+		callback: function (data) {
+			console.log("jasper_server_connect ", data);
+			if(data.message){
+				console.log("resultado from connect: ", data.message);
+				//frappe.boot['jasper_server_info'] = data.message
+				//return data.message
+				deferred.resolve(data.message);
+			}
+		
+		}
+	});
+	
+	return deferred;
+}
+
+cur_frm.cscript.jasper_connect_update_btn = function(doc){
+	console.log("jasper_connect_update_btn clicked ", doc);
+	var deferred = jasper.jasper_server_connect();
+	deferred.done(function(data){
+		console.log("deferred done ", data);
+		var info = [];
+		server_info = JSON.parse(data);
+		for(var k in server_info){
+			info.push(k+": "+server_info[k]);
+		};
+		var infostr = info.join("\n");
+		console.log("info ", infostr);
+		doc.jasper_server_name = infostr;
+		cur_frm.cscript.serverInfo(doc);
+	});
+}
 
 cur_frm.cscript.refresh = function(doc){
     
@@ -86,7 +135,7 @@ cur_frm.cscript.serverInfo = function(doc){
 
 cur_frm.cscript.custom_validate = function(doc) {
 
-	this.register_event_save();
+	//this.register_event_save();
 	
 	//var args = {name:"luis", idade:45};
     var args = {report_name:"Cherry", doctype:"Jasper Reports", name_ids:["Administrator"], pformat:"pdf"};
@@ -101,7 +150,7 @@ cur_frm.cscript.custom_validate = function(doc) {
     //validated = false;
 	/*var args = {name:"luis", idade:45};
 	
-	var w = window.open("/api/method/jasper_erpnext_report.core.jaspersession.run_report?"
+	var w = window.open("/api/method/jasper_erpnext_report.core.JasperWhitelist.run_report?"
 	+ "path=" + encodeURIComponent("/reports/erpnext/Leaf_Red_Table_Based")
 	+ "&data=" + JSON.stringify(args)
 	+ "&format=" + "pdf"

@@ -100,38 +100,14 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 							ret[r.name]["perms"].append(perm)
 	return ret
 
-#tem de ficar ate verificar se os parametros estao a de acordo com o ralatorio
-"""def jasper_report_names_from_db2(origin="both", filters_report={}, filters_param={}):
-	ret = None
-	report_from = {"both":["jasperserver", "localserver"], "local jrxml only":["localserver"], "jasperserver only":["jasperserver"]}
-	#get all report names
-	rnames = frappe.get_all("Jasper Reports", filters=filters_report,fields=["name","jasper_doctype", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",\
-													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf"])
-	with_param = frappe.get_all("Jasper Reports", filters=filters_param,fields=["`tabJasper Reports`.name as r_name", "`tabJasper Parameter`.name as p_name" ,"`tabJasper Parameter`.jasper_param_action"])
-	if rnames:
-		ret = {}
-		for r in rnames:
-			jasper_report_origin = r.jasper_report_origin.lower() #if r.jasper_report_origin else "jasperserver"
-			if jasper_report_origin in report_from.get(origin):
-				ret[r.name] = {"Doctype name": r.jasper_doctype, "formats": jasper_print_formats(rnames[0]),"params":[]}
-				for report in with_param:
-						name = report.r_name
-						if name == r.name:
-							report.pop("r_name")
-							if report.jasper_param_action == "Automatic":
-								report.pop("jasper_param_action")
-							ret[r.name]["params"].append(report)
-	return ret"""
-
 def jasper_print_formats(doc):
 	ret = []
 	if int(doc.jasper_print_all) == 0:
-		#jasper_formats = ["pdf", "docx", "xlsx", "ods","odt", "rtf"]
 		for fmt in jasper_formats:
 			if int(doc.get("jasper_print_" + fmt,0) or 0) == 1:
 				ret.append(fmt)
 	else:
-		ret = jasper_formats#["pdf", "rtf", "docx", "ods", "odt", "xls"]
+		ret = jasper_formats
 
 	return ret
 
@@ -145,10 +121,11 @@ def insert_jasper_list_all(data, cachename="report_list_all", tab="tabJasperRepo
 		frappe.db.commit()
 
 def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll"):
-	data['size'] = len(data)
+	#data['size'] = len(data)
+	print "************* insert_list_all_memcache_db {} len {}".format(data, len(data))
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
-	print "inserting data list {}".format(data)
+	#print "inserting data list {}".format(data)
 	insert_jasper_list_all({"data":data}, cachename, tab)
 
 def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
@@ -165,7 +142,7 @@ def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJaspe
 	old_data = frappe._dict(jaspersession_get_value(cachename) or {})
 	new_data = old_data.get("data", {})
 	new_data.update(data)
-	new_data['size'] = len(new_data)
+	#new_data['size'] = len(new_data)
 	print "updating data list {}".format(data)
 	update_jasper_list_all({"data":new_data}, cachename, tab)
 
@@ -440,7 +417,9 @@ def do_doctype_from_jasper(data, reports, force=False):
 		if "doctypes" in uri.lower():
 			doctypes = uri.strip().split("/")
 			doctype_name = doctypes[doctypes.index("doctypes") + 1]
+			doc["jasper_report_type"] = "Form"
 		else:
+			doc["jasper_report_type"] = "Genaral"
 			doctype_name = None
 
 		doc["jasper_doctype"] = doctype_name
@@ -574,7 +553,7 @@ def get_expiry_period(sessionId="jaspersession"):
 	elif "intern_reqid_" in sessionId or "local_report_" in sessionId:
 		exp_sec = "8:00:00"
 	else:
-		exp_sec = frappe.defaults.get_global_default("jasper_session_expiry") or "00:15:00"
+		exp_sec = frappe.defaults.get_global_default("jasper_session_expiry") or "12:00:00"
 
 		#incase seconds is missing
 		if len(exp_sec.split(':')) == 2:

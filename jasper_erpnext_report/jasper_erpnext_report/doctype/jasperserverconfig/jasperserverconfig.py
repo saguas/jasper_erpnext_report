@@ -5,19 +5,22 @@ from __future__ import unicode_literals
 import frappe
 import logging
 from frappe.model.document import Document
-from jasper_erpnext_report.core.jaspersession import JasperServerSession
-from jasper_erpnext_report.utils.utils import get_jasper_session_data_from_db, get_jasper_session_data_from_cache
-import json
+#from jasper_erpnext_report.core.jaspersession import JasperServerSession
+#from jasper_erpnext_report.utils.utils import get_jasper_session_data_from_db, get_jasper_session_data_from_cache
+#import json
+import jasper_erpnext_report.core.JasperRoot as Jr
 
 _logger = logging.getLogger(frappe.__name__)
 
 
 class JasperServerConfig(Document):
 	def validate(self):
-		jso = frappe.local.jasper_session_obj = JasperServerSession(self)
-		frappe.local.jasper_session_obj.validate()
+		frappe.local.jasper_session_obj = Jr.JasperRoot(self)#JasperServerSession(self)
+		#frappe.local.jasper_session_obj.validate()
+		frappe.local.jasper_session_obj.config()
 		return True
 
+"""
 	def before_save(self, method=None):
 		#data = get_session_data("jaspersession")
 		jso = frappe.local.jasper_session_obj
@@ -35,13 +38,9 @@ class JasperServerConfig(Document):
 				self.jasper_server_name = jso.doc.jasper_server_name
 		else:
 			self.jasper_server_name = ""
+"""
 
-
-
-
-
-
-def get_session_data(sessionId):
+"""def get_session_data(sessionId):
 	data = get_jasper_session_data_from_cache(sessionId)
 	if not data:
 		rec = get_jasper_session_data_from_db()
@@ -53,3 +52,4 @@ def get_session_data(sessionId):
 	#server_info = data['data'].get('jasper_server_name')
 	print "server_info: {}".format(data)
 	return data
+"""

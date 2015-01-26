@@ -93,6 +93,14 @@
    "reqd": 0
   }, 
   {
+   "description": "Connect to Jasper Server and/or update data.", 
+   "fieldname": "jasper_connect_update_btn", 
+   "fieldtype": "Button", 
+   "label": "Connect/Update", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
    "fieldname": "report_options", 
    "fieldtype": "Column Break", 
    "label": "Report Options", 
@@ -254,7 +262,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2014-12-23 14:32:01.010663", 
+ "modified": "2014-12-29 10:53:23.507272", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 

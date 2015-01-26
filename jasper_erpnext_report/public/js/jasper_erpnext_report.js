@@ -47,7 +47,7 @@ jasper.get_jasper_report = function(method, data, doc, type){
         args = args + '&type=' + type;
     };
     
-	jasper.download("/api/method/jasper_erpnext_report.core.jaspersession." + method, args);
+	jasper.download("/api/method/jasper_erpnext_report.core.JasperWhitelist." + method, args);
 };
 
 jasper.run_jasper_report = function(method, data, doc, type){
@@ -55,7 +55,7 @@ jasper.run_jasper_report = function(method, data, doc, type){
     //var args = 'path='+ encodeURIComponent(path) +'&format='+ format;
     var df = new $.Deferred();
     frappe.call({
-	       "method": "jasper_erpnext_report.core.jaspersession." + method,
+	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
 	       args:{
                data: data,
 	           docdata: doc,
@@ -99,7 +99,7 @@ jasper.polling_report = function(data, $banner, timeout){
     var poll_data = {reqIds: reqids, reqtime: data[0].reqtime, pformat: data[0].pformat, origin: data[0].origin}
     //check only one
     frappe.call({
-	       "method": "jasper_erpnext_report.core.jaspersession.report_polling",
+	       "method": "jasper_erpnext_report.core.JasperWhitelist.report_polling",
 	       args:{
                data: poll_data,
 	       },
@@ -168,7 +168,7 @@ jasper.getReport = function(msg){
 	var reqdata = msg[0];
     console.log("this reqdata ", reqdata)
     
-    var request = "/api/method/jasper_erpnext_report.core.jaspersession.get_report?data="+encodeURIComponent(JSON.stringify(reqdata));
+    var request = "/api/method/jasper_erpnext_report.core.JasperWhitelist.get_report?data="+encodeURIComponent(JSON.stringify(reqdata));
     console.log("request ", request)
     w = window.open(request);
 	if(!w) {
@@ -184,7 +184,7 @@ jasper.getList = function(page, doctype, docnames){
 		//console.log("exist lista ", list);
 		setJasperDropDown(list, jasper.getOrphanReport);
 	}else{
-		method = "jasper_erpnext_report.core.jaspersession.get_reports_list";
+		method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 		data = {doctype: doctype, docnames: docnames};
 		console.log("pedido for doctype %s docname %s ", doctype, docnames);
 		jasper_make_request(method, data,function(response_data){
@@ -438,10 +438,11 @@ $(document).on( 'app_ready', function(){
 		jasper.getOrphanReport(data, ev);
 	});
 	
-    var socket = jasper.socket = io.connect("http://localhost:8888/chat");
+    
+    //var socket = jasper.socket = io.connect("http://localhost:8888/chat");
     //io.set('transports', ['websocket', 'xhr-polling', 'jsonp-polling', 'htmlfile', 'flashsocket']);
     //io.set('origins', '*:*');
-    
+    /*
     socket.on('connect', function () {
         //$('#chat').addClass('connected');
         console.log("connected!!!!")
@@ -471,7 +472,7 @@ $(document).on( 'app_ready', function(){
         //$('#lines').append($('<p>').append($('<b>').text(from), msg));
         console.log("recebido message %s from %s", msg, from)
     }
-    
+    */
     /*jasper.ws = new WebSocket('ws://localhost:8888/ws');
     
     jasper.ws.onmessage = function(ev){
