@@ -1,4 +1,3 @@
 frappe
-tornado
 pyjnius
 PyPDF2
