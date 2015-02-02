@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 import frappe
-from wsserver import wsserver
+#from wsserver import wsserver
 from threading import Thread
 import sys, socket
 #print('Press Ctrl+C')
 #signal.pause()
 #import signal
 
+"""
 def MyThread (args):
 	wsserver.wsstart()
 
@@ -25,6 +26,7 @@ def start_tornado():
 
 def start_socketio():
 	start_server()
+"""
 
 #def start_socketio():
 #	wsserver.wsstart()

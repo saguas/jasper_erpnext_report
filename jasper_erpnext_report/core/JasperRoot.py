@@ -55,7 +55,11 @@ class JasperRoot(Jb.JasperBase):
 		self.jps.login()
 		if self.doc.import_all_reports:
 			self.jps.import_all_jasper_reports(self.doc)
-		self.doc.jasper_server_name = self._get_server_info(force=True)
+		if self.jps.is_login:
+			self.doc.jasper_server_name = self._get_server_info(force=True)
+		else:
+			self.doc.jasper_server_name = "Not connected!"
+
 		self.update(force_cache=True, force_db=True)
 		return self.doc.jasper_server_name
 

@@ -291,7 +291,7 @@ def validate_print_permission(doc):
 		import_all_jasper_remote_reports(docs, force=True)"""
 			#set_jasper_parameters(param_name, dn, c_idx, mydict)
 
-def import_all_jasper_remote_reports(data, docs, force=True):
+def import_all_jasper_remote_reports(docs, force=True):
 	frappe.only_for("Administrator")
 	frappe.flags.in_import = True
 	for doc in docs:

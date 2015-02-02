@@ -23,6 +23,8 @@ import jasper_erpnext_report.utils.utils as utils
 
 import JasperBase as Jb
 
+from frappe.core.doctype.communication.communication import make
+
 _logger = logging.getLogger(frappe.__name__)
 
 
@@ -50,12 +52,16 @@ def _jasperserver(fn):
 			me.update()
 			utils.jaspersession_set_value("last_jasper_session_timeout", frappe.utils.now())
 			return fn_result
+		except Exception as e:
+			print "problems!!!! {}".format(e)
+
 	return innerfn
 
 
 
 class JasperServer(Jb.JasperBase):
 	def __init__(self, doc={}):
+		self.is_login = False
 		self.session = frappe.local.jasper_session = frappe._dict({'session': frappe._dict({})})
 		super(JasperServer, self).__init__(doc)
 		self.check_session()
@@ -68,8 +74,8 @@ class JasperServer(Jb.JasperBase):
 
 	def login(self):
 		self.connect()
-		if not self.in_jasper_session():
-			frappe.throw(_("Jasper Server is down. Please ask the administrator to check jasperserver or change to local report only (you will need pyjnius)."))
+		if not self.in_jasper_session() and self.user == "Administrator":
+			frappe.throw(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."))
 
 	def in_jasper_session(self):
 		try:
@@ -81,7 +87,10 @@ class JasperServer(Jb.JasperBase):
 
 	def resume_connection(self):
 		self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url"), resume=True)
-		self.session.resume(self.data['data']['cookie'])
+		if self.session:
+			self.session.resume(self.data['data']['cookie'])
+			self.is_login = True
+
 
 	def connect(self):
 		if self.user=="Guest":
@@ -95,10 +104,15 @@ class JasperServer(Jb.JasperBase):
 
 			self.session = frappe.local.jasper_session = jasper.session(self.doc.jasper_server_url, self.doc.jasper_username, self.doc.jasper_server_password)
 			self.update_cookie()
+			self.is_login = True
 
 		except Exception as e:
-			_logger.info("jasperserver login error {0}")
-			frappe.msgprint(_("JasperServer login error, reason: {}".format(e)))
+			self.is_login = False
+			if self.user == "Administrator":
+				_logger.info("jasperserver login error {0}")
+				frappe.msgprint(_("JasperServer login error, reason: {}".format(e)))
+			else:
+				self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"))
 
 	def _timeout(self):
 		try:
@@ -124,9 +138,10 @@ class JasperServer(Jb.JasperBase):
 		return f.getFileContent()
 
 	def import_all_jasper_reports(self, data, force=True):
-		reports = self.get_reports_list_from_server(force=force)
-		docs = utils.do_doctype_from_jasper(data, reports, force=True)
-		utils.import_all_jasper_remote_reports(data, docs, force)
+		if self.is_login:
+			reports = self.get_reports_list_from_server(force=force)
+			docs = utils.do_doctype_from_jasper(data, reports, force=True)
+			utils.import_all_jasper_remote_reports(docs, force)
 
 	@_jasperserver
 	def get_reports_list_from_server(self, force=False):
@@ -283,3 +298,7 @@ class JasperServer(Jb.JasperBase):
 			return report
 		except NotFound:
 			frappe.throw(_("Not Found!!!"))
+
+	def send_email(self, body, subject):
+		admin_mail = frappe.db.get_value("User", "Administrator", "email")
+		make(doctype="JasperServerConfig", content=body, subject=subject, sender=self.user, recipients=[admin_mail], send_email=True)
