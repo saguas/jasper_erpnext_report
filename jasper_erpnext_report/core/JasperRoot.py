@@ -111,8 +111,29 @@ class JasperRoot(Jb.JasperBase):
 			data.pop('last_updated', None)
 			#if frappe.local.session['user'] != "Administrator":
 			self.filter_perm_roles(data)
+			if not self.check_server_status():
+				print "a remover {}".format(data)
+				self.remove_server_docs(data)
 
 		return data
+
+	def remove_server_docs(self, data):
+		toremove = []
+		removed = 0
+		for k,v in data.iteritems():
+			if isinstance(v, dict):
+				origin = v.pop("jasper_report_origin", None)
+				if origin == "JasperServer":
+					toremove.append(k)
+					removed = removed + 1
+		for k in toremove:
+			data.pop(k, None)
+		data['size'] = data['size'] - removed
+
+	def check_server_status(self):
+		self.get_server("server")
+		#print "is_login {}".format(self.jps.is_login)
+		return self.jps.is_login
 
 	def get_reports_list(self, doctype, docnames):
 		if not doctype:
@@ -162,6 +183,10 @@ class JasperRoot(Jb.JasperBase):
 						new_data[k] = v
 						added = added + 1
 		new_data['size'] = added
+
+		if not self.check_server_status():
+			print "a remover {}".format(new_data)
+			self.remove_server_docs(new_data)
 
 		return new_data
 

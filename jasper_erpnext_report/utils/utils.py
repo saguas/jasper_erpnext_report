@@ -81,7 +81,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 			print "*************** name ************ {} for doctype {} filters {}".format(r.name, r.jasper_doctype, filters_report)
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
-							   "jasper_report_type":r.jasper_report_type}
+							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin}
 				for report in with_param:
 						name = report.parent
 						if name == r.name:

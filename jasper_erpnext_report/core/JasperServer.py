@@ -75,7 +75,8 @@ class JasperServer(Jb.JasperBase):
 	def login(self):
 		self.connect()
 		if not self.in_jasper_session() and self.user == "Administrator":
-			frappe.throw(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."))
+			#frappe.throw(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."))
+			self.send_email(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."), _("jasperserver login error"))
 
 	def in_jasper_session(self):
 		try:
@@ -108,11 +109,12 @@ class JasperServer(Jb.JasperBase):
 
 		except Exception as e:
 			self.is_login = False
-			if self.user == "Administrator":
-				_logger.info("jasperserver login error {0}")
-				frappe.msgprint(_("JasperServer login error, reason: {}".format(e)))
-			else:
-				self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"))
+			#if self.user == "Administrator":
+			_logger.info("jasperserver login error")
+				#frappe.msgprint(_("JasperServer login error, reason: {}".format(e)))
+			#else:
+			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
+			self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"), user=cur_user)
 
 	def _timeout(self):
 		try:
@@ -299,6 +301,12 @@ class JasperServer(Jb.JasperBase):
 		except NotFound:
 			frappe.throw(_("Not Found!!!"))
 
-	def send_email(self, body, subject):
-		admin_mail = frappe.db.get_value("User", "Administrator", "email")
-		make(doctype="JasperServerConfig", content=body, subject=subject, sender=self.user, recipients=[admin_mail], send_email=True)
+	def send_email(self, body, subject, user="no_reply@gmail.com"):
+		import frappe.utils.email_lib
+		#admin_mail = frappe.db.get_value("User", "Administrator", "email")
+		#print "admin_mails {}".format(frappe.utils.email_lib.get_system_managers())
+		#make(doctype="JasperServerConfig", content=body, subject=subject, sender=user, recipients=[admin_mail], send_email=True)
+		try:
+			frappe.utils.email_lib.sendmail_to_system_managers(subject, body)
+		except Exception as e:
+			_logger.info(_("jasperserver email error: {}".format(e)))
