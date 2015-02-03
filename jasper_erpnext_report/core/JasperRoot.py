@@ -131,7 +131,10 @@ class JasperRoot(Jb.JasperBase):
 		data['size'] = data['size'] - removed
 
 	def check_server_status(self):
-		self.get_server("server")
+		if self.use_server():
+			self.get_server("server")
+		else:
+			return False
 		#print "is_login {}".format(self.jps.is_login)
 		return self.jps.is_login
 
