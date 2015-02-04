@@ -212,13 +212,15 @@ $(window).on('hashchange', function() {
 		docname = route[2];
 		doc_new = docname.search("New");
 		if (doc_new === -1 || doc_new > 0){
-			var page = [route[0], doctype].join("/");
+			//var page = [route[0], doctype].join("/");
+            var page = jasper.get_page();
 			jasper.getList(page, doctype, [docname]);
 			return;
 		}
 	}else if(len > 1 && route[0] === "List"){
 		doctype = route[1];
-		var page = [route[0], doctype].join("/");
+		//var page = [route[0], doctype].join("/");
+        var page = jasper.get_page();
 		//jasper.setEventClick(page);
 		console.log("page ", page);
 		//docnames = jasper.getCheckedNames(page);
@@ -238,6 +240,13 @@ $(window).on('hashchange', function() {
 	setJasperDropDown(list, callback);
 	
 });
+
+jasper.get_page = function(){
+    var route = frappe.get_route();
+	var doctype = route[1];
+	var page = [route[0], doctype].join("/");
+    return page;
+};
 
 jasper.get_doc = function(doctype, docname){
     var df = new $.Deferred();
@@ -354,9 +363,15 @@ setJasperDropDown = function(list, callback){
 
 jasper.check_for_ask_param = function(rname, callback){
     var robj = frappe.boot.jasper_reports_list[rname];
-    var params = robj.params;
+    if (robj === undefined){
+        var page = jasper.get_page();
+        robj = jasper.pages[page];
+    }
+    if (robj === undefined)
+        return;
+
     var ret;
-    if (robj.params.length > 0){
+    if (robj.params && robj.params.length > 0){
         ret = jasper.make_dialog(robj, rname + " parameters", callback);
     }else{
         callback();
@@ -415,9 +430,8 @@ jasper.getOrphanReport = function(data, ev){
 	}
     var params;
     jasper.check_for_ask_param(data.jr_name, function(d){
-        params = d;
     	console.log("docnames ", docnames);
-    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: params};
+    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: d};
     	var df = jasper.run_jasper_report("run_report", args, route[0], route[0]);
     });
 };

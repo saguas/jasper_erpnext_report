@@ -135,7 +135,7 @@ class JasperBase(object):
 
 	def get_ask_params(self, data):
 		pram = []
-		params = data.get("params", None)
+		params = data.get("params", None) or {}
 		for k,v in params.iteritems():
 			pram.append({"name":k, 'value':[v]})
 		return pram
