@@ -51,7 +51,9 @@ class JasperBase(object):
 		return self.doc.use_jasper_server.lower()
 
 	def get_jasperconfig_from_db(self):
+		from frappe.utils import pprint_dict
 		self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True)
+		print "getting from db jasperconfig!!! doc {}".format(pprint_dict(self.doc))
 		self.createJasperSession()
 
 	def resume(self):
@@ -228,9 +230,9 @@ class JasperBase(object):
 			TIMEDIFF(NOW(), lastupdate) < TIME(%s) and reqid=%s""", (utils.get_expiry_period(reqId),reqId))
 		return rec
 
-	def run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
-		resps = []
-
+	#def run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
+	def run_report_async(self, doc, data={}, params=[]):
+		#resps = []
 		print "Parameters is list {} name_ids {}".format(params, data.get('name_ids', []))
 		if not doc.jasper_report_type == "General":
 			#get the ids for this report from hooks. Return a list of ids
@@ -247,18 +249,20 @@ class JasperBase(object):
 						return
 				#print "name_ids from hooks {}".format(data.get('name_ids'))
 				if doc.jasper_report_type == "Form":
-					for elem in data.get('name_ids', []):
-						data['ids'] = [elem]
-						resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+					#for elem in data.get('name_ids', []):
+						#data['ids'] = [elem]
+					data['ids'] = [data.get('name_ids', [])[0]]
+						#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 				elif doc.jasper_report_type == "List":
 					data['ids'] = data.get('name_ids', [])
-					resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-			else:
-				resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-		else:
-			resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+					#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+			#else:
+				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+		#else:
+		#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 
-		return resps
+		#return resps
+		return data
 
 	def report_polling_base(self, reqId, reqtime=""):
 		result = []

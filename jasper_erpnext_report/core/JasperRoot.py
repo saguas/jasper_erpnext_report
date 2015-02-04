@@ -246,6 +246,10 @@ class JasperRoot(Jb.JasperBase):
 			else:
 				path = rdoc.jasper_report_path
 				self.get_server("server")
+				if not self.jps.is_login:
+					frappe.msgprint(_("JasperServer login error"))
+					return
+
 				result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, async=True, pformat=pformat, ncopies=ncopies)
 			result[0]["pformat"] = pformat
 		except ValueError:
@@ -279,6 +283,9 @@ class JasperRoot(Jb.JasperBase):
 					if not any("local_report" in r for r in reqId):
 						eid_len = len(expId)
 						self.get_server("server")
+						if not self.jps.is_login:
+							frappe.msgprint(_("JasperServer login error"))
+							return
 						#if lens not equal then process only the first
 						if rid_len == eid_len:
 							for i in range(rid_len):

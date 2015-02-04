@@ -8,6 +8,8 @@ from jasperserver.repo_search import Search
 from jasperserver.resource_download import DownloadBinary
 from jasperserver.core.exceptions import Unauthorized, NotFound
 
+from frappe.utils import pprint_dict
+
 
 from jasper_erpnext_report.utils.report import prepareCollectResponse
 
@@ -53,7 +55,7 @@ def _jasperserver(fn):
 			utils.jaspersession_set_value("last_jasper_session_timeout", frappe.utils.now())
 			return fn_result
 		except Exception as e:
-			print "problems!!!! {}".format(e)
+			print "problems!!!! {}\n".format(e)
 
 	return innerfn
 
@@ -67,7 +69,7 @@ class JasperServer(Jb.JasperBase):
 		self.check_session()
 
 	def check_session(self):
-		if self.data['data'] and self.data['data'].get('cookie'):
+		if self.data['data'] and self.data['data'].get('cookie', None):
 			self.resume_connection()
 		else:
 			self.login()
@@ -103,7 +105,9 @@ class JasperServer(Jb.JasperBase):
 				#self.createJasperSession()
 				self.get_jasperconfig_from_db()
 
-			self.session = frappe.local.jasper_session = jasper.session(self.doc.jasper_server_url, self.doc.jasper_username, self.doc.jasper_server_password)
+			print "BEFORE jasper session connect doc 1 {}".format(self.doc)
+			self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url"), self.doc.get("jasper_username"), self.doc.get("jasper_server_password"))
+			print "AFTER jasper session connect {}".format(self.session)
 			self.update_cookie()
 			self.is_login = True
 
@@ -116,8 +120,13 @@ class JasperServer(Jb.JasperBase):
 			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
 			self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"), user=cur_user)
 
+	def logout(self):
+		if self.session:
+			self.session.logout()
+
 	def _timeout(self):
 		try:
+			self.logout()
 			self.login()
 		except:
 			_logger.info("_login: JasperServerSession Error while timeout and login")
@@ -125,6 +134,7 @@ class JasperServer(Jb.JasperBase):
 		_logger.info("_timeout JasperServerSession login successfuly {0}".format(self.doc))
 
 	def update_cookie(self):
+		print "frappe.local.jasper_session.session.getSessionId() {}".format(frappe.local.jasper_session.session.getSessionId())
 		self.data['data']['cookie'] = frappe.local.jasper_session.session.getSessionId() if frappe.local.jasper_session.session else {}
 		self.update(force_cache=False, force_db=True)
 
@@ -175,7 +185,10 @@ class JasperServer(Jb.JasperBase):
 		return ret
 
 	def run_remote_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1):
-		resps = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies)
+		resps = []
+		#data = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies)
+		data = self.run_report_async(doc, data=data, params=params)
+		resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies))
 		cresp = prepareCollectResponse(resps)
 		cresp["origin"] = "server"
 		return [cresp]
@@ -183,7 +196,7 @@ class JasperServer(Jb.JasperBase):
 	#run reports with http POST and run async and sync
 	def _run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
 		pram = []
-		self.doc = doc
+		#self.doc = doc
 		pram_server = []
 		pram_copy_index = -1
 		pram_copy_page_index = -1
@@ -257,7 +270,11 @@ class JasperServer(Jb.JasperBase):
 			resp["status"] = res.get("status")
 			return resp
 		except Exception as e:
-			frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, e)))
+			if isinstance(e, Unauthorized):
+				print "e inside is : {}".format(e)
+				raise Unauthorized
+			else:
+				frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, e)))
 
 	@_jasperserver
 	def polling(self, reqId, reqtime=""):
