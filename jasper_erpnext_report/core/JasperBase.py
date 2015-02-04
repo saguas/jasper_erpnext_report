@@ -133,6 +133,13 @@ class JasperBase(object):
 
 		return updated_in_db
 
+	def get_ask_params(self, data):
+		pram = []
+		params = data.get("params", None)
+		for k,v in params.iteritems():
+			pram.append({"name":k, 'value':[v]})
+		return pram
+
 	def get_reports_list_from_db(self, filters_report={}, filters_param={}):
 		return utils.jasper_report_names_from_db(origin=self.get_report_origin(), filters_report=filters_report, filters_param=filters_param)
 

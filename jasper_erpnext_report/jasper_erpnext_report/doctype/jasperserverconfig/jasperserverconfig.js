@@ -162,7 +162,7 @@ cur_frm.cscript.custom_validate = function(doc) {
 	
 };
 
-cur_frm.cscript.register_event_save = function(){
+/*cur_frm.cscript.register_event_save = function(){
 	var self = this;
 	
 	$(document).one("save", function(event, arrdoc){
@@ -172,4 +172,4 @@ cur_frm.cscript.register_event_save = function(){
 		else
 			self.register_event_save()
 	});
-};
+};*/

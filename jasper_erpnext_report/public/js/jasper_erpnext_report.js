@@ -178,7 +178,6 @@ jasper.getReport = function(msg){
 
 jasper.getList = function(page, doctype, docnames){
 	var jpage = frappe.pages[page];
-	//if(jpage && jpage.jasper){
 	if(jpage && jasper.pages[page]){
 		list = jasper.pages[page];
 		//console.log("exist lista ", list);
@@ -187,7 +186,7 @@ jasper.getList = function(page, doctype, docnames){
 		method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 		data = {doctype: doctype, docnames: docnames};
 		console.log("pedido for doctype %s docname %s ", doctype, docnames);
-		jasper_make_request(method, data,function(response_data){
+		jasper.jasper_make_request(method, data,function(response_data){
 			console.log("resposta for doctype docname ", response_data, jpage, page);
 			//frappe.pages[page]["jasper"] = response_data.message;
 			jasper.pages[page] = response_data.message;
@@ -235,10 +234,23 @@ $(window).on('hashchange', function() {
 		callback = jasper.getOrphanReport;
 		//setJasperDropDown(list);
 	}
-	
+    
 	setJasperDropDown(list, callback);
 	
 });
+
+jasper.get_doc = function(doctype, docname){
+    var df = new $.Deferred();
+    var doctype = doctype || "Jasper Reports"
+	var method = "jasper_erpnext_report.core.JasperWhitelist.get_doc";
+    var data = {doctype: doctype, docname: docname};
+    jasper.jasper_make_request(method, data, function(response_data){
+        console.log("resposta for doctype docname ", response_data);
+        df.resolve(response_data['data']);
+    });
+    
+    return df;
+};
 
 /*setJasperDropDownWithSubMenus = function(list, callback){
 	
@@ -340,6 +352,18 @@ setJasperDropDown = function(list, callback){
 		
 };
 
+jasper.check_for_ask_param = function(rname, callback){
+    var robj = frappe.boot.jasper_reports_list[rname];
+    var params = robj.params;
+    var ret;
+    if (robj.params.length > 0){
+        ret = jasper.make_dialog(robj, rname + " parameters", callback);
+    }else{
+        callback();
+    }
+    
+    console.log("ret: ", ret);
+};
 
 jasper.make_menu = function(list, key, skey){
 	//jasper_report_formats[list[key].formats[0]]
@@ -385,13 +409,17 @@ jasper.getOrphanReport = function(data, ev){
 		if (cur_frm){
 			docnames = [cur_frm.doc.name];
 		}else{
-			msgprint(__("To print this doc you must be in a form to print this document."), __("Jasper Report"));
+			msgprint(__("To print this doc you must be in a form."), __("Jasper Report"));
 			return;
 		}
 	}
-	console.log("docnames ", docnames);
-	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format};
-	var df = jasper.run_jasper_report("run_report", args, route[0], route[0]);
+    var params;
+    jasper.check_for_ask_param(data.jr_name, function(d){
+        params = d;
+    	console.log("docnames ", docnames);
+    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: params};
+    	var df = jasper.run_jasper_report("run_report", args, route[0], route[0]);
+    });
 };
 
 function shorten(text, maxLength) {
@@ -420,7 +448,7 @@ function sortObject(o) {
     return sorted;
 };
 
-jasper_make_request = function(method, data, callback){
+jasper.jasper_make_request = function(method, data, callback){
 
     frappe.call({
 	       method: method,
@@ -437,122 +465,24 @@ $(document).on( 'app_ready', function(){
 		console.log("was clicked !! ", $(ev.target).data())
 		jasper.getOrphanReport(data, ev);
 	});
-	
-    
-    //var socket = jasper.socket = io.connect("http://localhost:8888/chat");
-    //io.set('transports', ['websocket', 'xhr-polling', 'jsonp-polling', 'htmlfile', 'flashsocket']);
-    //io.set('origins', '*:*');
-    /*
-    socket.on('connect', function () {
-        //$('#chat').addClass('connected');
-        console.log("connected!!!!")
-    });
-    socket.on('announcement', function (msg) {
-        //$('#lines').append($('<p>').append($('<em>').text(msg)));
-        console.log("announcement ", msg)
-    });
-    socket.on('nicknames', function (nicknames) {
-        console.log("nicknames ", nicknames)
-    });
-    
-    socket.on('msg_to_room', function(from, msg){
-        console.log("message %s %s", msg, from);
-    });
-    socket.on('reconnect', function () {
-        message('System', 'Reconnected to the server');
-    });
-    socket.on('reconnecting', function () {
-        message('System', 'Attempting to re-connect to the server');
-    });
-    socket.on('error', function (e) {
-        message('System', e ? e : 'A unknown error occurred');
-    });
-    
-    function message (from, msg) {
-        //$('#lines').append($('<p>').append($('<b>').text(from), msg));
-        console.log("recebido message %s from %s", msg, from)
-    }
-    */
-    /*jasper.ws = new WebSocket('ws://localhost:8888/ws');
-    
-    jasper.ws.onmessage = function(ev){
-        console.log("message: ", ev);
-    };
-
-    jasper.ws.onopen = function(){
-        console.log("ws open");
-        jasper.ws.send("Hi there");
-    };
-
-     jasper.ws.onclose = function(ev){
-         console.log("close ", ev);
-     };
- 
-     jasper.ws.onerror = function(ev){
-         console.log("error: ", ev);
-     };*/
 });
 
-/*var __meteor_runtime_config__ = {
-    "meteorRelease": "METEOR@1.0",
-    "ROOT_URL": "http://localhost:3000/",
-    "ROOT_URL_PATH_PREFIX": "",
-    "appId": "y3ccxc1r4k1bl1l9hits",
-    "autoupdateVersion": "68800583e2842b74a4acd4d334c695908ddfa7a3",
-    "autoupdateVersionRefreshable": "928662ec017adbcfd82ff68b3f0a9fa19ac6c7a0"
-};*/
-
-/*
-		"public/js/packages/underscore.js",
-		"public/js/packages/meteor.js",
-		"public/js/packages/json.js",
-		"public/js/packages/base64.js",
-		"public/js/packages/ejson.js",
-		"public/js/packages/logging.js",
-		"public/js/packages/reload.js",
-		"public/js/packages/tracker.js",
-		"public/js/packages/random.js",
-		"public/js/packages/retry.js",
-		"public/js/packages/check.js",
-		"public/js/packages/id-map.js",
-		"public/js/packages/ordered-dict.js",
-		"public/js/packages/geojson-utils.js",
-		"public/js/packages/minimongo.js",
-		"public/js/packages/ddp.js",
-		"public/js/packages/follower-livedata.js",
-		"public/js/packages/application-configuration.js",
-		"public/js/packages/mongo.js",
-		"public/js/packages/autoupdate.js",
-		"public/js/packages/meteor-platform.js",
-		"public/js/packages/deps.js",
-		"public/js/packages/htmljs.js",
-		"public/js/packages/html-tools.js",
-		"public/js/packages/blaze-tools.js",
-		"public/js/packages/spacebars-compiler.js",
-		"public/js/packages/webapp.js",
-		"public/js/packages/reactive-dict.js",
-		"public/js/packages/session.js",
-		"public/js/packages/livedata.js",
-		"public/js/packages/observe-sequence.js",
-		"public/js/packages/reactive-var.js",
-		"public/js/packages/blaze.js",
-		"public/js/packages/ui.js",
-		"public/js/packages/templating.js",
-		"public/js/packages/spacebars.js",
-		"public/js/packages/launch-screen.js",
-		"public/js/packages/global-imports.js"
-
-*/
-
-jasper.make_dialog = function(doc, title){
+jasper.make_dialog = function(doc, title, callback){
 	function ifyes(d){
 		console.log("ifyes return ", d.get_values());
+        if (callback){
+            callback(d.get_values());
+        }
 	};
 	function ifno(){
 		console.log("ifno return ");
+        if (callback){
+            callback();
+        }
 	};
 	
-	var fields = [{label:"teste 1", fieldname:"teste 1", fieldtype:"Data"}, {label:"teste2", fieldname:"teste 2", fieldtype:"Check", description:"choose one"}];
+    var fields = [];
+	//var fields = [{label:"teste 1", fieldname:"teste 1", fieldtype:"Data"}, {label:"teste2", fieldname:"teste 2", fieldtype:"Check", description:"choose one"}];
 	var params = doc.params;
 	for (var i=0; i < params.length; i++){
 		var param = doc.params[i];

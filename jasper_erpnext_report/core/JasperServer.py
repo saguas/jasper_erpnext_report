@@ -197,6 +197,7 @@ class JasperServer(Jb.JasperBase):
 	def _run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
 		pram = []
 		#self.doc = doc
+		pram.extend(self.get_ask_params(data))
 		pram_server = []
 		pram_copy_index = -1
 		pram_copy_page_index = -1

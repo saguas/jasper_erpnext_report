@@ -136,6 +136,8 @@ class JasperLocal(Jb.JasperBase):
 			res["status"] = None
 			resp.append(res)#{"requestId":sessionId, "status": None}
 			try:
+				for pram in self.get_ask_params(data):
+					hashmap.put(pram.get("name"), pram.get("value"))
 				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
 				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 				thread.start_new_thread(self._export_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, conn, outtype, ) )
