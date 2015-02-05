@@ -53,7 +53,7 @@ class JasperLocal(Jb.JasperBase):
 		"""
 		resps = []
 		#data = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
-		data = self.run_report_async(path, doc, data=data, params=params)
+		data = self.run_report_async(doc, data=data, params=params)
 		resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 		cresp = self.prepareCollectResponse(resps)
 		#return resp[len(resp) - 1]
