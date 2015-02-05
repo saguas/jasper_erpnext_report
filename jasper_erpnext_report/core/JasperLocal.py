@@ -148,7 +148,7 @@ class JasperLocal(Jb.JasperBase):
 
 	def _export_report(self, compiled_path, reportName, outputPath, hashmap, conn, outtype):
 		export_report = jr.ExportReport()
-		print "making 2 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
+		print "making 3 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
 		export_report.export(compiled_path, reportName, outputPath, hashmap, conn, outtype)
 
 	def polling(self, reqId, reqtime):
