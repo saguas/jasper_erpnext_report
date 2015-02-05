@@ -104,6 +104,7 @@
   {
    "fieldname": "jasper_upload_jrxml", 
    "fieldtype": "Attach", 
+   "hidden": 0, 
    "label": "Upload JRXML File", 
    "permlevel": 0, 
    "precision": ""
@@ -290,7 +291,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2014-12-29 10:51:48.350082", 
+ "modified": "2015-02-05 19:07:05.777757", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 
