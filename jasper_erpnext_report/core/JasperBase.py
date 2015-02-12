@@ -273,7 +273,7 @@ class JasperBase(object):
 		#return resps
 		return data
 
-	def report_polling_base(self, reqId, reqtime=""):
+	def report_polling_base(self, reqId):
 		result = []
 		req = [{}]
 		data = self.get_jasper_reqid_data(reqId)
@@ -282,7 +282,7 @@ class JasperBase(object):
 			print "polling {}".format(d)
 			for ids in d.get('reqids'):
 				for id in ids:
-					res = self.polling(id, reqtime)
+					res = self.polling(id)
 					if res.get('status') != "ready":
 						result = []
 						break

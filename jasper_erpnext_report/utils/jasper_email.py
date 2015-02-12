@@ -53,13 +53,14 @@ def sendmail(data, file_name, output, reqId, doctype=None, name=None, sender=Non
 	if isinstance(sender, (tuple, list)) and len(sender)==2:
 		sender = formataddr(sender)
 
-	jasper_make_attach(data, file_name, output, reqId, sender)
+	jasper_save_email(data, file_name, output, reqId, sender)
 	sent_via = frappe.get_doc(doctype, name)
 	d = frappe._dict({"subject": subject, "content": content, "sent_or_received": sent_or_received, "sender": sender or frappe.db.get_value("User", frappe.session.user, "email"),
 	"recipients": recipients})
 	send_comm_email(d, file_name, output.getvalue(), sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
-def jasper_make_attach(data, file_name, output, reqId, sender):
+
+def jasper_save_email(data, file_name, output, reqId, sender):
 
 	from jasper_erpnext_report.utils.file import get_jasper_path
 	path_join = os.path.join

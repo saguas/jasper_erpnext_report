@@ -200,12 +200,12 @@ class JasperRoot(Jb.JasperBase):
 			data = json.loads(data)
 		self.validate_ticket(data)
 		reqIds = data.get("reqIds")
-		reqtime = data.get("reqtime")
+		#reqtime = data.get("reqtime")
 		pformat = data.get("pformat")
 		if data.get("origin") == "local":
 			print "is local report {}".format(reqIds)
 			self.get_server("local")
-			result = self.jpl.report_polling_base(reqIds[0], reqtime)
+			result = self.jpl.report_polling_base(reqIds[0])
 		else:
 			#check only one requestId
 			self.get_server("server")

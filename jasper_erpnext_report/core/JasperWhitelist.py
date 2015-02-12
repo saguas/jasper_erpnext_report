@@ -132,6 +132,7 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 			pages = get_pages(ncopies, len(jasper_content))
 
 		file_name, output = make_pdf(fileName, jasper_content, pformat, merge_all=merge_all, pages=pages, email=True)
+
 	else:
 		print "not sent by email... {}".format(result)
 		frappe.throw(_("Error generating PDF, try again later"))

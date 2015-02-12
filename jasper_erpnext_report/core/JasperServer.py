@@ -284,7 +284,7 @@ class JasperServer(Jb.JasperBase):
 				frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, e)))
 
 	@_jasperserver
-	def polling(self, reqId, reqtime=""):
+	def polling(self, reqId):
 		res = []
 		try:
 			rs = ReportingService(self.session)
@@ -294,9 +294,9 @@ class JasperServer(Jb.JasperBase):
 			status = json.loads(status)
 			if status.get("value") == "ready":
 				detail = self.reportExecDetail(rexecreq)
-				print "report detail: {}".format(detail)
+				print "report detail 2: {}".format(detail)
 				res = self.prepareResponse(detail, reqId)
-				if res.get('status') == "not ready":
+				if res.get('status', "") == "not ready":
 					res = self.prepareResponse({}, reqId)
 				else:
 					res["status"] = "ready"

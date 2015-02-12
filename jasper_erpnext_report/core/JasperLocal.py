@@ -157,7 +157,7 @@ class JasperLocal(Jb.JasperBase):
 		print "making 3 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
 		export_report.export(compiled_path, reportName, outputPath, hashmap, conn, outtype)
 
-	def polling(self, reqId, reqtime):
+	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
 			frappe.throw(_("No report for this reqid %s !!" % reqId[13:]))
