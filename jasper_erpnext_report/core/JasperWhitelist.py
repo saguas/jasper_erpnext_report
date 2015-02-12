@@ -182,9 +182,9 @@ def prepare_polling(data):
 def get_pages(ncopies, total_pages):
 	pages = []
 	clientes = total_pages/ncopies
-	for n in range(clientes - 1):
+	for n in range(clientes):
 		pages.append(n*ncopies)
-		
+
 	return pages
 
 
