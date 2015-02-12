@@ -498,6 +498,28 @@ def set_jasper_permissions(perm_name, parent, c_idx, mydict):
 
 	return doc
 
+def set_jasper_email_doctype(parent_name, sent_to, sender, when, filepath, filename):
+	jer = frappe.new_doc('Jasper Email Report')
+
+	jer.jasper_email_sent_to = sent_to
+	jer.jasper_email_sender = sender
+	jer.jasper_email_date = when
+	jer.jasper_file_name = filename
+	jer.jasper_report_path = filepath
+	jer.idx = cint(frappe.db.sql("""select max(idx) from `tabJasper Email Report`
+	where parenttype=%s and parent=%s""", ("Jasper Reports", parent_name))[0][0]) + 1
+
+	jer.parent = parent_name
+	jer.parenttype = "Jasper Reports"
+	jer.parentfield = "jasper_email_report"
+
+	jer.ignore_permissions = True
+	jer.insert()
+
+	return jer
+
+
+
 def check_queryString_with_param(query, param):
 	ret = False
 	#s = re.search(r'\$P{%s}|\$P!{%s}' % (param,param), query, re.I)

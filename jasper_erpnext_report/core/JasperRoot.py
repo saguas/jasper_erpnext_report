@@ -336,7 +336,7 @@ class JasperRoot(Jb.JasperBase):
 
 	def prepare_file_to_client(self, file_name, output):
 		frappe.local.response.filename = "{name}".format(name=file_name)
-		frappe.local.response.filecontent = output.getvalue()
+		frappe.local.response.filecontent = output
 		frappe.local.response.type = "download"
 
 def get_copies(rdoc, pformat):

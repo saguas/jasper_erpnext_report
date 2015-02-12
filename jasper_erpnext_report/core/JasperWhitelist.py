@@ -14,6 +14,10 @@ from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.utils.jasper_email import sendmail
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
+from jasper_erpnext_report.utils.utils import set_jasper_email_doctype
+from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender
+from jasper_erpnext_report.utils.file import get_file
+
 _logger = logging.getLogger(frappe.__name__)
 
 
@@ -64,7 +68,7 @@ def make_pdf(fileName, content, pformat, merge_all=True, pages=None, email=False
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	if not email:
-		jsr.prepare_file_to_client(file_name, output)
+		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
 
 	return file_name, output
@@ -146,9 +150,15 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy, set_lead=set_lead,
 		date=date)
 
-	sendmail(data, file_name, output, result[0].get("requestId"), doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+	sendmail(file_name, output, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
+
+	filepath = jasper_save_email(data, file_name, output, result[0].get("requestId"), sender)
+	print "jasper email filepath {}".format(filepath)
+
+	sender = get_sender(sender)
+	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
 
 """
 def jasper_make_attach(data, file_name, output, attachments, result):
@@ -187,5 +197,18 @@ def get_pages(ncopies, total_pages):
 		pages.append(n*ncopies)
 
 	return pages
+
+@frappe.whitelist()
+def get_jasper_email_report(data):
+	if not data:
+		frappe.throw(_("No data for this Report!!!"))
+	data = json.loads(unquote(data))
+	file_name = data.get("filename")
+	file_path = data.get("filepath")
+	print "get_jasper_email_report 2 {} {}".format(file_path, file_name)
+	jsr = jasper_session_obj or Jr.JasperRoot()
+	output = get_file(file_path, modes="rb")
+	jsr.prepare_file_to_client(file_name, output)
+
 
 

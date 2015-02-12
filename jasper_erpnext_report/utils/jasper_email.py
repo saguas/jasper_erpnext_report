@@ -5,7 +5,7 @@ from frappe import _
 import json, os
 from email.utils import formataddr
 
-from jasper_erpnext_report.utils.file import write_StringIO_to_file
+from jasper_erpnext_report.utils.file import write_StringIO_to_file, get_jasper_path
 
 def send_comm_email(d, file_name, output, sent_via=None, print_html=None, print_format=None, attachments='[]', send_me_a_copy=False):
 	footer = None
@@ -43,17 +43,10 @@ def send_comm_email(d, file_name, output, sent_via=None, print_html=None, print_
 	send(mail)
 
 
-def sendmail(data, file_name, output, reqId, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received = "Sent", print_html=None, print_format=None, attachments='[]',
+def sendmail(file_name, output, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received = "Sent", print_html=None, print_format=None, attachments='[]',
 		 send_me_a_copy=False, recipients=None):
-	try:
-		sender = json.loads(sender)
-	except ValueError:
-		pass
 
-	if isinstance(sender, (tuple, list)) and len(sender)==2:
-		sender = formataddr(sender)
-
-	jasper_save_email(data, file_name, output, reqId, sender)
+	sender = get_sender(sender)
 	sent_via = frappe.get_doc(doctype, name)
 	d = frappe._dict({"subject": subject, "content": content, "sent_or_received": sent_or_received, "sender": sender or frappe.db.get_value("User", frappe.session.user, "email"),
 	"recipients": recipients})
@@ -62,7 +55,8 @@ def sendmail(data, file_name, output, reqId, doctype=None, name=None, sender=Non
 
 def jasper_save_email(data, file_name, output, reqId, sender):
 
-	from jasper_erpnext_report.utils.file import get_jasper_path
+	sender = get_sender(sender)
+
 	path_join = os.path.join
 	rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
 	for_all_sites = rdoc.jasper_all_sites_report
@@ -75,3 +69,15 @@ def jasper_save_email(data, file_name, output, reqId, sender):
 	write_StringIO_to_file(file_path, output)
 
 	return file_path
+
+
+def get_sender(sender):
+	try:
+		sender = json.loads(sender)
+	except ValueError:
+		pass
+
+	if isinstance(sender, (tuple, list)) and len(sender)==2:
+		sender = formataddr(sender)
+
+	return sender

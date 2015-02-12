@@ -325,6 +325,11 @@ def remove_compiled_report(root_path):
 				ncount = ncount + 1
 	return ncount
 
+def get_file(path, modes="r"):
+	with open(path, modes) as f:
+		content = f.read()
+	return content
+
 # def insert_doc(dt, dn, fname, field, value, parentfield, doc_report):
 # 	mydict = {"updateDate":frappe.utils.now()}
 # 	doc = _doctype_from_jasper_doc(fname, doc_report, mydict)

@@ -570,7 +570,7 @@ jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
     }else{
     	new jasper.CommunicationComposer({
     		doc: {doctype: jasper_doc.doctype, name: jasper_doc.report_name},
-    		subject: "",
+    		subject: jasper_doc.doctype + ': ' + jasper_doc.report_name,
     		recipients: undefined,
     		attach_document_print: false,
     		message: message,
