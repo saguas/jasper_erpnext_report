@@ -234,9 +234,10 @@ class JasperRoot(Jb.JasperBase):
 		origin = rdoc.jasper_report_origin.lower()
 		result = []
 		pformat = data.get('pformat')
-		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+		#copies = [_("Single"), _("Duplicated"), _("Triplicate")]
 		try:
-			ncopies = copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1
+			#ncopies = copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1
+			ncopies = get_copies(rdoc, pformat)
 			if origin == "localserver":
 				path = rdoc.jasper_upload_jrxml
 				self.get_server("local")
@@ -301,7 +302,7 @@ class JasperRoot(Jb.JasperBase):
 		except Exception as e:
 			return frappe.msgprint(_("There is no report, try again later. Error: {}".format(e)))
 
-		return fileName, content, pformat
+		return fileName, content
 	#pages is an array of pages ex. [2,4,5]
 	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
 		if fileName:
@@ -337,3 +338,7 @@ class JasperRoot(Jb.JasperBase):
 		frappe.local.response.filename = "{name}".format(name=file_name)
 		frappe.local.response.filecontent = output.getvalue()
 		frappe.local.response.type = "download"
+
+def get_copies(rdoc, pformat):
+	copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+	return copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1

@@ -4,14 +4,15 @@ from frappe import _
 import frappe
 import json
 from urllib2 import unquote
-import logging
+import logging, time
+from frappe.utils import cint
 
 from frappe.core.doctype.communication.communication import make
 
-#import jasper_erpnext_report.utils.utils as utils
 import JasperRoot as Jr
 from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.utils.jasper_email import sendmail
+from jasper_erpnext_report.core.JasperRoot import get_copies
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -43,11 +44,24 @@ def get_report(data):
 		frappe.throw(_("No data for this Report!!!"))
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
-	_get_report(data)
+	pformat = data.get("pformat")
+	fileName, content = _get_report(data)
+	make_pdf(fileName, content, pformat)
 
-def _get_report(data, merge_all=True, pages=None, email=False):
+#def _get_report(data, merge_all=True, pages=None, email=False):
+def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	fileName, content, pformat = jsr.get_report_server(data)
+	fileName, content = jsr.get_report_server(data)
+	#file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
+	#if not email:
+	#	jsr.prepare_file_to_client(file_name, output)
+	#	return
+
+	#return file_name, output
+	return fileName, content
+
+def make_pdf(fileName, content, pformat, merge_all=True, pages=None, email=False):
+	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	if not email:
 		jsr.prepare_file_to_client(file_name, output)
@@ -85,37 +99,43 @@ def get_doc(doctype, docname):
 		data = {"data": doc}
 	frappe.local.response.update(data)
 
-
 @frappe.whitelist()
 def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_received = "Sent",
 	sender=None, recipients=None, communication_medium="Email", send_email=False,
 	print_html=None, print_format=None, attachments='[]', send_me_a_copy=False, set_lead=True, date=None,
 	jasper_doc=None, docdata=None, rtype="Form"):
-	#jasper_polling_time
+
 	jasper_polling_time = frappe.db.get_value('JasperServerConfig', fieldname="jasper_polling_time")
-	#thread.start_new_thread(run_report, (jasper_doc, docdata, rtype, ) )
 	data = json.loads(jasper_doc)
 	result = run_report(data, docdata, rtype)
-	print "doctype {} name {} jasper_polling_time {} jasper_doc {} ret {}".format(doctype, name, jasper_polling_time, jasper_doc, result)
-	if result[0].get("status") != "ready":
-		import time
-		from frappe.utils import cint
+	if result[0].get("status", "not ready") != "ready":
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
-		while result[0].get("status") != "ready" and limit <= 10:
-			print "not ready {}".format(result)
-			#s.enter(jasper_polling_time/1000, 1, report_polling, (s,))
+		#while result[0].get("status", "not ready") != "ready" and limit <= 10:
+		while not "status" in result[0] and limit <= 10:
 			time.sleep(cint(jasper_polling_time)/1000)
 			result = report_polling(poll_data)
 			limit += 1
-		#s.run()
-		print "ready {}".format(result)
+
 	#we have to remove the original and send only duplicate
-	if result[0].get("status") == "ready":
-		file_name, output = _get_report(result[0], merge_all=True, pages=None, email=True)
+	if result[0].get("status", "not ready") == "ready":
+		pformat = data.get("pformat")
+		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
+		ncopies = get_copies(rdoc, pformat)
+		#file_name, output = _get_report(result[0], merge_all=True, pages=None, email=True)
+		fileName, jasper_content = _get_report(result[0])
+		merge_all = True
+		pages = None
+		if pformat == "pdf" and ncopies > 1:
+			merge_all = False
+			pages = get_pages(ncopies, len(jasper_content))
+
+		file_name, output = make_pdf(fileName, jasper_content, pformat, merge_all=merge_all, pages=pages, email=True)
 	else:
 		print "not sent by email... {}".format(result)
+		frappe.throw(_("Error generating PDF, try again later"))
+		frappe.errprint(frappe.get_traceback())
 		return
 
 	#attach = jasper_make_attach(data, file_name, output, attachments, result)
@@ -159,7 +179,12 @@ def prepare_polling(data):
 	poll_data = {"reqIds": reqids, "reqtime": d.get("reqtime"), "pformat": d.get("pformat"), "origin": d.get("origin")}
 	return poll_data
 
-
-
+def get_pages(ncopies, total_pages):
+	pages = []
+	clientes = total_pages/ncopies
+	for n in range(clientes - 1):
+		pages.append(n*ncopies)
+		
+	return pages
 
 
