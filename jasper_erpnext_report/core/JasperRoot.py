@@ -10,7 +10,7 @@ import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
 
 from io import BytesIO
 from PyPDF2 import PdfFileMerger
-import StringIO
+import cStringIO
 import zipfile
 
 _logger = logging.getLogger(frappe.__name__)
@@ -196,7 +196,8 @@ class JasperRoot(Jb.JasperBase):
 	def report_polling(self, data):
 		if not data:
 			frappe.throw(_("No data for to be polling!!!"))
-		data = json.loads(data)
+		if isinstance(data, basestring):
+			data = json.loads(data)
 		self.validate_ticket(data)
 		reqIds = data.get("reqIds")
 		reqtime = data.get("reqtime")
@@ -300,27 +301,39 @@ class JasperRoot(Jb.JasperBase):
 		except Exception as e:
 			return frappe.msgprint(_("There is no report, try again later. Error: {}".format(e)))
 
+		return fileName, content, pformat
+	#pages is an array of pages ex. [2,4,5]
+	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
 		if fileName:
 			fileName = fileName[fileName.rfind(os.sep) + 1:]
-			output = StringIO.StringIO()
+			output = cStringIO.StringIO()
 			file_name = fileName.replace(" ", "-").replace("/", "-")
-			if pformat=="pdf":
+			if pformat=="pdf" and merge_all == True:
 				merger = PdfFileMerger()
 				for n in range(len(content)):
 					merger.append(BytesIO(content[n]))
+				merger.write(output)
+			elif pformat=="pdf":
+				merger = PdfFileMerger()
+				for page in pages:
+					merger.append(BytesIO(content[page]))
 				merger.write(output)
 			else:
 				fname = file_name.split(".")
 				myzip = zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED)
 				try:
-					for n in range(len(content)):
+					pgs = range(len(content)) if pages is None else pages
+					for n in pgs:
 						myzip.writestr(fname[0] + "_" + str(n) + "." + fname[1], content[n])
 				finally:
 					myzip.close()
 				file_name = fname[0] + ".zip"
-			frappe.local.response.filename = "{name}".format(name=file_name)
-			frappe.local.response.filecontent = output.getvalue()
-			frappe.local.response.type = "download"
+			return file_name, output
 		else:
 			#frappe.throw(_("Report must have a path!!!"))
 			frappe.msgprint(_("There is no report."))
+
+	def prepare_file_to_client(self, file_name, output):
+		frappe.local.response.filename = "{name}".format(name=file_name)
+		frappe.local.response.filecontent = output.getvalue()
+		frappe.local.response.type = "download"

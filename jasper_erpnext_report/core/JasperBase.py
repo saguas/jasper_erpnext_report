@@ -256,9 +256,11 @@ class JasperBase(object):
 						return
 				#print "name_ids from hooks {}".format(data.get('name_ids'))
 				if doc.jasper_report_type == "Form":
-					#for elem in data.get('name_ids', []):
-						#data['ids'] = [elem]
-					data['ids'] = [data.get('name_ids', [])[0]]
+					if not data.get('ids', None):
+						data['ids'] = []
+					for elem in data.get('name_ids', []):
+						data['ids'].append(elem)
+					#data['ids'] = [data.get('name_ids', [])[0]]
 						#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 				elif doc.jasper_report_type == "List":
 					data['ids'] = data.get('name_ids', [])

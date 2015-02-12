@@ -8,7 +8,7 @@ jasper.pages = {};
 
 jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "icon-file-word", xls:"icon-file-excel", xlsx:"icon-file-excel", 
 						/*ppt:"icon-file-powerpoint", pptx:"icon-file-powerpoint",*/ odt: "icon-file-openoffice", ods: "icon-libreoffice",
-	 					rtf:"fontello-icon-doc-text", submenu:"icon-grid"};
+	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
 
 jasper.download = function(url, data, method){
     //url and data options required
@@ -151,7 +151,7 @@ jasper.jasper_report_ready = function(msg, $old_banner, timeout){
 
 jasper.getReport = function(msg){
     
-    var reqIds = [];
+    /*var reqIds = [];
     var expIds = [];
     for (var i =0; i<msg.length;i++){
         reqIds.push(msg[i].requestId);
@@ -161,7 +161,7 @@ jasper.getReport = function(msg){
         else
             expIds.push("");
         
-    };
+    };*/
     
     //var t = {reqId: reqIds, expId: expIds, fileName: msg[0].ids[0].fileName, reqtime: msg[0].reqtime, pformat: msg[0].pformat}
     //var reqdata = t;
@@ -346,12 +346,12 @@ setJasperDropDown = function(list, callback){
 				var data = $(ev.target).data();
 				var jr_format = data.jr_format;
 				var jr_name = data.jr_name;
-				console.log("jr_format ", jr_format, jr_name);
+				console.log("jr_format ", jr_format, jr_name, list);
 				//$(".nav.navbar-nav.navbar-right").popover({content:"teste content ", title:"popover jasper", placement:"left"});
 				
 				//$(ev.currentTarget).popover({content:"teste content ", title:"popover jasper", placement:"right"});
 				//$(ev.currentTarget).popover('show');
-				callback({jr_format: data.jr_format, jr_name: data.jr_name}, ev);
+				callback({jr_format: data.jr_format, jr_name: data.jr_name, list: list}, ev);
 			};
 			
 			$(".nav.navbar-nav.navbar-right").append(html)
@@ -383,6 +383,7 @@ jasper.check_for_ask_param = function(rname, callback){
 jasper.make_menu = function(list, key, skey){
 	//jasper_report_formats[list[key].formats[0]]
 	var f = list[key].formats;
+    var email = list[key].email;
 	//var t = list[key].formats.join(":");
 	var icon_file = [];
 	var html = "";
@@ -390,6 +391,10 @@ jasper.make_menu = function(list, key, skey){
 		var type = f[i];
 		icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="jasper-%(type)s"></i>', {title:key + " - " + type, mykey:key, f:f[i], type: jasper_report_formats[type]}));
 	};
+    if (email === 1){
+        console.log("email ", email);
+        icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="%(type)s"></i>', {title: "send by email", mykey:key, f:"email", type: jasper_report_formats["email"]}));
+    }
 	//data-jr_format='+ t + ' data-jr_name="'+ key + '" class="jrreports"
 	html = html + '<li>'
  	   + repl('<a class="jrreports" href="#" data-jr_format="%(f)s" data-jr_name="%(mykey)s"',{mykey:key, f:f[0]}) +' title="'+ key +' - pdf" >'+ icon_file.join(" ") + " " + skey  + '</a>' 
@@ -431,8 +436,13 @@ jasper.getOrphanReport = function(data, ev){
     var params;
     jasper.check_for_ask_param(data.jr_name, function(d){
     	console.log("docnames ", docnames);
-    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: d};
-    	var df = jasper.run_jasper_report("run_report", args, route[0], route[0]);
+        var jr_format = data.jr_format; 
+    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: jr_format, params: d};
+        if(jr_format === "email"){
+            jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, route[0], route[0]);
+        }else{
+            jasper.run_jasper_report("run_report", args, route[0], route[0]);
+        }
     });
 };
 
@@ -537,6 +547,40 @@ jasper.getCheckedNames = function(page){
 	});
 	
 	return names;
+}
+
+
+// jasper_doc
+jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
+    //var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: d};
+    
+    if (curfrm){
+    	new jasper.CommunicationComposer({
+    		doc: curfrm.doc,
+    		subject: __(curfrm.meta.name) + ': ' + curfrm.docname,
+    		recipients: curfrm.doc.email || curfrm.doc.email_id || curfrm.doc.contact_email,
+    		attach_document_print: true,
+    		message: message,
+    		real_name: curfrm.doc.real_name || curfrm.doc.contact_display || curfrm.doc.contact_name,
+            jasper_doc: jasper_doc,
+	        docdata: route0,
+            rtype: route1,
+            list: list
+    	});
+    }else{
+    	new jasper.CommunicationComposer({
+    		doc: {doctype: jasper_doc.doctype, name: jasper_doc.report_name},
+    		subject: "",
+    		recipients: undefined,
+    		attach_document_print: false,
+    		message: message,
+    		real_name: "",
+            jasper_doc: jasper_doc,
+	        docdata: route0,
+            rtype: route1,
+            list: list
+    	});
+    }
 }
 
 

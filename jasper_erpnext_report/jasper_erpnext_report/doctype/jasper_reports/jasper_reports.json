@@ -185,6 +185,15 @@
    "precision": ""
   }, 
   {
+   "default": "1", 
+   "description": "Send by email.", 
+   "fieldname": "jasper_email", 
+   "fieldtype": "Check", 
+   "label": "Email?", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
    "default": "0", 
    "description": "Remove the report from the list of reports to print.", 
    "fieldname": "jasper_dont_show_report", 
@@ -291,7 +300,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-02-05 19:07:05.777757", 
+ "modified": "2015-02-11 22:50:41.546377", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

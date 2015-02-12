@@ -161,10 +161,12 @@ def jasper_compile_jrxml(fname, dt, dn, file_path, compiled_path):
 	jasper_compile(file_path, os.path.join(compiled_path, fname[:c] + ".jasper"))
 	#update_doctype_doc(dt, dn, file_path)
 
-def write_file(content, file_path, fname, dn, ext="jrxml"):
+def write_StringIO_to_file(file_path, output):
+	write_file(output.getvalue(), file_path, modes="wb")
+
+def write_file(content, file_path, modes="w+"):
 	# write the file
-	#file_path, compiled_path = get_files_path(fname, dn, dir_path, ext)
-	with open(file_path, 'w+') as f:
+	with open(file_path, modes) as f:
 		f.write(content)
 	return file_path
 
