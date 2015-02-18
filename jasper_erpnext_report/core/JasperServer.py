@@ -188,7 +188,7 @@ class JasperServer(Jb.JasperBase):
 		resps = []
 		#data = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies)
 		data = self.run_report_async(doc, data=data, params=params)
-		if doc.jasper_report_type == "Form":
+		if doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form":
 			ids = data.get('ids')
 			for id in ids:
 				data['ids'] = [id]

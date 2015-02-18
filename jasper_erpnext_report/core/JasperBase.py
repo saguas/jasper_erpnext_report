@@ -156,6 +156,7 @@ class JasperBase(object):
 		print "res on hooks 2 {}".format(res)
 		if res:
 			data['name_ids'] = res[0].get('value')
+			data['jasper_report_type'] = res[0].get('report_type', None)
 		return res[0]
 
 	def update_jasper_reqid_record(self, reqId, data):
@@ -241,29 +242,32 @@ class JasperBase(object):
 	def run_report_async(self, doc, data={}, params=[]):
 		#resps = []
 		print "Parameters is list {} name_ids {}".format(params, data.get('name_ids', []))
+		if doc.jasper_report_type == "Server Hooks":
+			self.check_ids_in_hooks(doc, data, params)
 		if not doc.jasper_report_type == "General":
 			#get the ids for this report from hooks. Return a list of ids
-			if doc.jasper_report_type == "Server Hooks":
-				self.check_ids_in_hooks(doc, data, params)
+			#if doc.jasper_report_type == "Server Hooks":
+			#	self.check_ids_in_hooks(doc, data, params)
 
 			name_ids = data.get('name_ids', [])
-			if params or name_ids:
-				if not name_ids:
-					res = self.check_ids_in_hooks(doc, data, params)
-					print "hooks res {}".format(res)
-					if not res:
-						frappe.throw(_("Report {} input params error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
-						return
-				#print "name_ids from hooks {}".format(data.get('name_ids'))
-				if doc.jasper_report_type == "Form":
-					if not data.get('ids', None):
-						data['ids'] = []
-					for elem in data.get('name_ids', []):
-						data['ids'].append(elem)
-					#data['ids'] = [data.get('name_ids', [])[0]]
-						#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-				elif doc.jasper_report_type == "List":
-					data['ids'] = data.get('name_ids', [])
+			#if params or name_ids:
+			if not name_ids:
+				res = self.check_ids_in_hooks(doc, data, params)
+				print "hooks res {}".format(res)
+				if not res:
+					frappe.throw(_("Report {} input params error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
+					return
+		#print "name_ids from hooks {}".format(data.get('name_ids'))
+		#In General type you may change to Form or List and give ids and change some initial data
+		if doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form":
+			if not data.get('ids', None):
+				data['ids'] = []
+			for elem in data.get('name_ids', []):
+				data['ids'].append(elem)
+			#data['ids'] = [data.get('name_ids', [])[0]]
+				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+		elif doc.jasper_report_type == "List" or data.get('jasper_report_type', None) == "List":
+			data['ids'] = data.get('name_ids', [])
 					#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 			#else:
 				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
