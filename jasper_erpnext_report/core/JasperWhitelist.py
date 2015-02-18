@@ -14,7 +14,7 @@ from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.utils.jasper_email import sendmail
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
-from jasper_erpnext_report.utils.utils import set_jasper_email_doctype
+from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_jasper_perm
 from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender
 from jasper_erpnext_report.utils.file import get_file
 
@@ -145,10 +145,15 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 
 	#attach = jasper_make_attach(data, file_name, output, attachments, result)
 
-	make(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
-		sender=sender, recipients=recipients, communication_medium=communication_medium, send_email=False,
-		print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy, set_lead=set_lead,
-		date=date)
+	#make(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+	#	sender=sender, recipients=recipients, communication_medium=communication_medium, send_email=False,
+	#	print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy, set_lead=set_lead,
+	#	date=date)
+	#check permissions
+	perms = rdoc.get("jasper_roles")
+	if not check_jasper_perm(perms, ptypes=["email"]):
+		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
+			doctype=data.get("doctype"), name=data.get('report_name')))
 
 	sendmail(file_name, output, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
@@ -205,7 +210,7 @@ def get_jasper_email_report(data):
 	data = json.loads(unquote(data))
 	file_name = data.get("filename")
 	file_path = data.get("filepath")
-	print "get_jasper_email_report 2 {} {}".format(file_path, file_name)
+	print "get_jasper_email_report 3 {} {}".format(file_path, file_name)
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	output = get_file(file_path, modes="rb")
 	jsr.prepare_file_to_client(file_name, output)

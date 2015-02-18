@@ -290,23 +290,6 @@
    "permlevel": 0, 
    "precision": "", 
    "reqd": 1
-  }, 
-  {
-   "fieldname": "jasper_sent_emails", 
-   "fieldtype": "Section Break", 
-   "label": "Jasper Email Reports", 
-   "permlevel": 0, 
-   "precision": ""
-  }, 
-  {
-   "description": "The reports that was sent.", 
-   "fieldname": "jasper_email_report", 
-   "fieldtype": "Table", 
-   "label": "Jasper Email Reports", 
-   "options": "Jasper Email Report", 
-   "permlevel": 0, 
-   "precision": "", 
-   "read_only": 1
   }
  ], 
  "hide_heading": 0, 
@@ -317,7 +300,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-02-12 21:35:30.727171", 
+ "modified": "2015-02-18 17:15:22.162468", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

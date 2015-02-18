@@ -39,6 +39,7 @@
   }, 
   {
    "allow_on_submit": 0, 
+   "default": "1", 
    "fieldname": "jasper_can_read", 
    "fieldtype": "Check", 
    "hidden": 0, 
@@ -55,6 +56,15 @@
    "reqd": 0, 
    "search_index": 0, 
    "set_only_once": 0
+  }, 
+  {
+   "default": "1", 
+   "fieldname": "jasper_can_email", 
+   "fieldtype": "Check", 
+   "in_list_view": 1, 
+   "label": "Email", 
+   "permlevel": 0, 
+   "precision": ""
   }
  ], 
  "hide_heading": 0, 
@@ -64,7 +74,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2014-12-10 01:03:44.729676", 
+ "modified": "2015-02-18 18:39:12.004254", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper PermRole", 

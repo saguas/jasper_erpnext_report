@@ -324,7 +324,7 @@ setJasperDropDown = function(list, callback){
 		    list = sortObject(list);
 			for(var key in list){
 				//if(key !== "size" || key !="jasper_polling_time"){
-				if(typeof list[key] === "object"){
+				if(list[key] !== null && typeof list[key] === "object"){
 					flen = list[key].formats.length;
 					var skey = shorten(key, 35);
 					html = html + jasper.make_menu(list, key, skey);
@@ -374,7 +374,7 @@ jasper.check_for_ask_param = function(rname, callback){
     if (robj.params && robj.params.length > 0){
         ret = jasper.make_dialog(robj, rname + " parameters", callback);
     }else{
-        callback();
+        callback({abort: false});
     }
     
     console.log("ret: ", ret);
@@ -434,10 +434,12 @@ jasper.getOrphanReport = function(data, ev){
 		}
 	}
     var params;
-    jasper.check_for_ask_param(data.jr_name, function(d){
+    jasper.check_for_ask_param(data.jr_name, function(obj){
     	console.log("docnames ", docnames);
+        if (obj && obj.abort === true)
+            return;
         var jr_format = data.jr_format; 
-    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: jr_format, params: d};
+    	var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: jr_format, params: obj.values};
         if(jr_format === "email"){
             jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, route[0], route[0]);
         }else{
@@ -495,13 +497,13 @@ jasper.make_dialog = function(doc, title, callback){
 	function ifyes(d){
 		console.log("ifyes return ", d.get_values());
         if (callback){
-            callback(d.get_values());
+            callback({values: d.get_values(), abort: false});
         }
 	};
 	function ifno(){
 		console.log("ifno return ");
         if (callback){
-            callback();
+            callback({abort: true});
         }
 	};
 	

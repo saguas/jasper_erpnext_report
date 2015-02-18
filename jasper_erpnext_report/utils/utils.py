@@ -294,8 +294,12 @@ def validate_print_permission(doc):
 def import_all_jasper_remote_reports(docs, force=True):
 	frappe.only_for("Administrator")
 	frappe.flags.in_import = True
-	for doc in docs:
-		import_doc(doc, force=force)
+	for d in docs:
+		import_doc(d.parent_doc.as_dict(), force=force)
+		for param_doc in d.param_docs:
+			import_doc(param_doc.as_dict(), force=force)
+		for perm_doc in d.perm_docs:
+			import_doc(perm_doc.as_dict(), force=force)
 		"""
 		db_modified = frappe.db.get_value(doc['doctype'], doc['name'], 'modified')
 			print "**********doctype {0} docname {1} db_modified {2} import_only_new {3}".format(doc['doctype'], doc['name'], db_modified, data.get('import_only_new'))
@@ -389,17 +393,20 @@ def do_doctype_from_jasper(data, reports, force=False):
 				#if data.get('import_only_new'):
 				#	continue
 
-
 		#if ntot_same_name > 0:
 			#key = key + "#" + str(ntot_same_name)
-		doc = _doctype_from_jasper_doc(report_name, "Jasper Reports", mydict)
-		doc["jasper_report_name"] = key
-		doc['jasper_report_path'] = uri
-		doc['idx'] = p_idx
-		doc['jasper_report_origin'] = "JasperServer"
-		doc['jasper_all_sites_report'] = 0
+		#doc = _doctype_from_jasper_doc(report_name, "Jasper Reports", mydict)
+		doc = frappe.new_doc("Jasper Reports")
+
+		doc.jasper_report_name = key
+		doc.jasper_report_path = uri
+		doc.idx = p_idx
+		doc.jasper_report_origin = "JasperServer"
+		doc.jasper_all_sites_report = 0
+		doc.jasper_email = 1
+		doc.jasper_dont_show_report = 0
 		for t in jasper_report_types:
-			doc[t]=data.get(t)
+			doc.set(t,data.get(t))
 		"""doc['jasper_print_pdf'] = data.jasper_print_pdf
 		doc['jasper_print_rtf'] = data.jasper_print_rtf
 		doc['jasper_print_docs'] = data.jasper_print_docx
@@ -408,36 +415,40 @@ def do_doctype_from_jasper(data, reports, force=False):
 		doc['jasper_print_xlsx'] = data.jasper_print_xlsx
 		doc['jasper_print_all'] = data.jasper_print_all"""
 		if "double" in uri.lower():
-			doc['jasper_report_number_copies'] = "Duplicated"
+			doc.jasper_report_number_copies = "Duplicated"
 		elif "triple" in uri.lower():
-			doc['jasper_report_number_copies'] = "Triplicate"
+			doc.jasper_report_number_copies = "Triplicate"
 		else:
-			doc['jasper_report_number_copies'] = data.get("report_default_number_copies")
+			doc.jasper_report_number_copies = data.get("report_default_number_copies")
 
 		if "doctypes" in uri.lower():
 			doctypes = uri.strip().split("/")
 			doctype_name = doctypes[doctypes.index("doctypes") + 1]
-			doc["jasper_report_type"] = "Form"
+			doc.jasper_report_type = "Form"
 		else:
-			doc["jasper_report_type"] = "Genaral"
+			doc.jasper_report_type = "General"
 			doctype_name = None
 
-		doc["jasper_doctype"] = doctype_name
-		doc["query"] = mydict.get("queryString")
-		doc["jasper_param_message"] = data.get('jasper_param_message').format(report=key, user=frappe.local.session['user'])#_("Please fill in the following parameters in order to complete the report.")
+		doc.jasper_doctype = doctype_name
+		doc.query = mydict.get("queryString")
+		doc.jasper_param_message = data.get('jasper_param_message').format(report=key, user=frappe.local.session['user'])#_("Please fill in the following parameters in order to complete the report.")
 		#doc['jasper_role'] = "Administrator"
 		#doc['jasper_can_read'] = True
-		docs.append(doc)
+		jasper_doc = frappe._dict({"parent_doc": doc, "perm_docs":[], "param_docs":[]})
+
+		#docs.append(doc)
 
 		for v in mydict.get('inputControls'):
 			c_idx = c_idx + 1
 			name = v.get('label')
-			doc = set_jasper_parameters(name, key, c_idx, mydict)
-			docs.append(doc)
-			#tot_idx = tot_idx + 1
+			doc_params = set_jasper_parameters(name, key, c_idx, mydict)
+			jasper_doc.param_docs.append(doc_params)
+			#docs.append(doc)
 
-		doc = set_jasper_permissions("JRPERM", key, 1, {'updateDate':frappe.utils.now()})
-		docs.append(doc)
+
+		doc_perms = set_jasper_permissions("JRPERM", key, 1)
+		jasper_doc.perm_docs.append(doc_perms)
+		docs.append(jasper_doc)
 		#perm_tot_idx = perm_tot_idx + 1
 
 	#new docs must invalidate cache and db
@@ -451,6 +462,46 @@ def do_doctype_from_jasper(data, reports, force=False):
 
 	return docs
 
+def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"):
+	action_type = "Ask"
+	is_copy = "Other"
+	#doc = _doctype_from_jasper_doc(param_name, "Jasper Parameter", mydict)
+	doc = frappe.new_doc("Jasper Parameter")
+	#set the name here for support the same name from diferents reports
+	#can't exist two params with the same name for the same report
+	doc.name = parent + "_" + param_name#+ str(tot_idx)
+	doc.jasper_param_name = param_name
+	doc.idx = c_idx
+	doc.jasper_param_type = param_type
+	doc.param_expression = "In"
+	if check_queryString_with_param(mydict.get("queryString"), param_name):
+		is_copy = "Is for where clause"
+		action_type = "Automatic"
+	elif param_name in "where_not_clause":
+		is_copy = "Is for where clause"
+		doc.param_expression = "Not In"
+		action_type = "Automatic"
+	elif param_name in "page_number":
+		is_copy = "Is for page number"
+		action_type = "Automatic"
+	elif param_name in "for_copies":
+		is_copy = "Is for copies"
+		action_type = "Automatic"
+	#doc name
+	doc.is_copy = is_copy
+	doc.jasper_param_action = action_type
+	doc.jasper_param_description = ""
+
+	doc.parent = parent#key
+	doc.parentfield = "jasper_parameters"
+	doc.parenttype = "Jasper Reports"
+
+	#doc.ignore_permissions = True
+	#doc.insert()
+
+	return doc
+
+"""
 def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"):
 	action_type = "Ask"
 	is_copy = "Other"
@@ -485,6 +536,28 @@ def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"
 
 	return doc
 
+"""
+
+def set_jasper_permissions(perm_name, parent, c_idx):
+	#doc = _doctype_from_jasper_doc(perm_name, "Jasper PermRole", mydict)
+	doc = frappe.new_doc("Jasper PermRole")
+	#set the name here for support the same name from diferents reports
+	doc.name = parent + "_" + perm_name#str(tot_idx)
+	doc.idx = c_idx
+	doc.jasper_role = "Administrator"
+	doc.jasper_can_read = True
+	doc.jasper_can_email = True
+
+	doc.parent = parent
+	doc.parentfield = "jasper_roles"
+	doc.parenttype = "Jasper Reports"
+
+	#doc.ignore_permissions = True
+	#doc.insert()
+
+	return doc
+
+"""
 def set_jasper_permissions(perm_name, parent, c_idx, mydict):
 	doc = _doctype_from_jasper_doc(perm_name, "Jasper PermRole", mydict)
 	#set the name here for support the same name from diferents reports
@@ -497,26 +570,33 @@ def set_jasper_permissions(perm_name, parent, c_idx, mydict):
 	doc["parenttype"] = "Jasper Reports"
 
 	return doc
+"""
 
 def set_jasper_email_doctype(parent_name, sent_to, sender, when, filepath, filename):
-	jer = frappe.new_doc('Jasper Email Report')
+	from frappe.model.naming import make_autoname
 
-	jer.jasper_email_sent_to = sent_to
-	jer.jasper_email_sender = sender
-	jer.jasper_email_date = when
-	jer.jasper_file_name = filename
-	jer.jasper_report_path = filepath
-	jer.idx = cint(frappe.db.sql("""select max(idx) from `tabJasper Email Report`
-	where parenttype=%s and parent=%s""", ("Jasper Reports", parent_name))[0][0]) + 1
+	jer_doc = frappe.new_doc('Jasper Email Report')
 
-	jer.parent = parent_name
-	jer.parenttype = "Jasper Reports"
-	jer.parentfield = "jasper_email_report"
+	jer_doc.jasper_email_report_name = parent_name
+	jer_doc.name = make_autoname(parent_name + '/.DD./.MM./.YY./.#######')
+	print "doc name {}".format(jer_doc.name)
+	jer_doc.jasper_email_sent_to = sent_to
+	jer_doc.jasper_email_sender = sender
+	jer_doc.jasper_email_date = when
+	jer_doc.jasper_file_name = filename
+	jer_doc.jasper_report_path = filepath
+	#jer.idx = cint(frappe.db.sql("""select max(idx) from `tabJasper Email Report`
+	#where parenttype=%s and parent=%s""", ("Jasper Reports", parent_name))[0][0]) + 1
+	jer_doc.idx = cint(frappe.db.sql("""select max(idx) from `tabJasper Email Report`""")[0][0]) + 1
 
-	jer.ignore_permissions = True
-	jer.insert()
+	#jer.parent = parent_name
+	#jer.parenttype = "Jasper Reports"
+	#jer.parentfield = "jasper_email_report"
 
-	return jer
+	jer_doc.ignore_permissions = True
+	jer_doc.insert()
+
+	return jer_doc
 
 
 
@@ -553,18 +633,30 @@ def check_jasper_doc_perm(perms):
 			break
 	return found
 
-def check_jasper_perm(perms):
+def check_jasper_perm(perms, ptypes=["read"]):
 	found = False
+
+	def check_perm(perms, user_roles, ptype):
+		found = False
+		for perm in perms:
+			jasper_perm_type = perm.get('jasper_can_' + ptype, None)
+			jasper_role = perm.get('jasper_role', None)
+			print "check_jasper_perm read {0} role {1}".format(jasper_perm_type, jasper_role)
+			if jasper_role in user_roles and jasper_perm_type:
+				found = True
+				break
+		return found
+
 	if frappe.local.session['user'] == "Administrator":
 		return True
+
 	user_roles = frappe.get_roles(frappe.local.session['user'])
-	for perm in perms:
-		jasper_can_read = perm.get('jasper_can_read', None)
-		jasper_role = perm.get('jasper_role', None)
-		print "check_jasper_perm read {0} role {1}".format(jasper_can_read, jasper_role)
-		if jasper_role in user_roles and jasper_can_read:
-			found = True
+
+	for ptype in ptypes:
+		found = check_perm(perms, user_roles, ptype)
+		if found == False:
 			break
+
 	return found
 
 def get_expiry_period(sessionId="jaspersession"):
