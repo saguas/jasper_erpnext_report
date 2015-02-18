@@ -327,6 +327,7 @@ def import_all_jasper_remote_reports(docs, force=True):
 		jaspersession_set_value("jaspersession_report_list", data)
 		#frappe.cache().set_value("jasper:jaspersession_report_list", data)'''
 
+"""
 def _doctype_from_jasper_doc(value, reportname, mydict):
 		doc = {"doctype": reportname, "owner": "Administrator", "modified_by": "administrator"}
 		#if value:
@@ -335,6 +336,7 @@ def _doctype_from_jasper_doc(value, reportname, mydict):
 		doc['creation'] = frappe.utils.get_datetime_str(mydict.get('updateDate', None) or frappe.utils.now())
 
 		return doc
+"""
 
 def do_doctype_from_jasper(data, reports, force=False):
 

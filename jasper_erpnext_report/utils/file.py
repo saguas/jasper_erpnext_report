@@ -10,7 +10,7 @@ from frappe.utils.file_manager import save_file_on_filesystem, delete_file_from_
 from xml.etree import ElementTree as ET
 from lxml import etree
 import jasper_erpnext_report
-from jasper_erpnext_report.utils.utils import _doctype_from_jasper_doc, set_jasper_parameters
+from jasper_erpnext_report.utils.utils import set_jasper_parameters
 from frappe.modules.import_file import import_doc
 
 
