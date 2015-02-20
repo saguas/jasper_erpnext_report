@@ -146,7 +146,10 @@ class JasperLocal(Jb.JasperBase):
 					hashmap.put(pram.get("name"), pram.get("value"))
 				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
 				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
-				thread.start_new_thread(self._export_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, conn, outtype, ) )
+				if data.get("grid_data", {}).get("data"):
+					thread.start_new_thread(self._export_query_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, data.get("grid_data"), outtype, ) )
+				else:
+					thread.start_new_thread(self._export_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, conn, outtype, ) )
 			except Exception as e:
 				frappe.throw(_("Error in report %s, error is: %s!!!" % (doc.jasper_report_name, e)))
 				#print "Error: unable to start thread"
@@ -154,8 +157,38 @@ class JasperLocal(Jb.JasperBase):
 
 	def _export_report(self, compiled_path, reportName, outputPath, hashmap, conn, outtype):
 		export_report = jr.ExportReport()
-		print "making 3 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
+		print "making 4 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
 		export_report.export(compiled_path, reportName, outputPath, hashmap, conn, outtype)
+
+	def _export_query_report(self, compiled_path, reportName, outputPath, hashmap, grid_data, outtype):
+		export_query_report = jr.ExportQueryReport()
+		tables = []
+		cols = []
+		columnNames = grid_data.get("columns")
+		data = grid_data.get("data")
+		for obj in data:
+			row = []
+			for k in columnNames:
+				row.append(str(obj.get(k.get("field"))))
+			tables.append(row)
+			#for k,v in obj.iteritems():
+		for k in columnNames:
+			cols.append(k.get("name"))
+
+		print "columns tables 8 {} columns {}".format(tables, cols)
+		#tableModel = jr.DefaultTableModel(tables, cols)
+		"""
+		row = []
+		row.append("Administrator")
+		row.append("luisfmfernandes@gmail.com")
+		tables = []
+		tables.append(row)
+		cols = []
+		cols.append("name")
+		cols.append("email")
+		"""
+		print "making 7 report compiled path {} reportName {} outputPath {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, outtype, hashmap)
+		export_query_report.export(compiled_path, reportName, outputPath, hashmap, tables, cols, outtype)
 
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)

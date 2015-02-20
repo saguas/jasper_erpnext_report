@@ -42,7 +42,10 @@ try:
 
 	def getJavaClass(jclass):
 		return autoclass(jclass)
-	
+
+	DefaultTableModel = getJavaClass('javax.swing.table.DefaultTableModel')
+	String = getJavaClass('java.lang.String')
+	ArrayList = getJavaClass('java.util.ArrayList')
 #JRException = getJavaClass('net.sf.jasperreports.engine.JRException')
 #JREmptyDataSource = getJavaClass('net.sf.jasperreports.engine.JREmptyDataSource')
 #JasperFillManager = getJavaClass('net.sf.jasperreports.engine.JasperFillManager')
@@ -55,7 +58,8 @@ try:
 #			"/Users/saguas/erpnext4/erpnext/erpnext_mac/frappe-bench/apps/jasper_erpnext_report/jasper_erpnext_report/java/Cherry.jasper")
 #teste.compile(str("Cherry.jrxml"),str("Cherry.jasper"))
 	ExportReport = getJavaClass('ExportReport')
+	ExportQueryReport = getJavaClass('ExportQueryReport')
 	jr.pyjnius = True
-	print "pyjnius is ok: {}".format(jr.pyjnius)
+	print "pyjnius is ok 3: {}".format(jr.pyjnius)
 except:
 	jr.pyjnius = False

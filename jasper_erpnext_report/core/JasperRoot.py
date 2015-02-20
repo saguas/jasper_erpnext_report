@@ -138,9 +138,9 @@ class JasperRoot(Jb.JasperBase):
 		#print "is_login {}".format(self.jps.is_login)
 		return self.jps.is_login
 
-	def get_reports_list(self, doctype, docnames):
-		if not doctype:
-			frappe.throw(_("You need to provide the doctype name!!!"))
+	def get_reports_list(self, doctype, docnames, report):
+		if not doctype and not report:
+			frappe.throw(_("You need to provide the doctype name or report name!!!"))
 		if docnames:
 			docnames = json.loads(docnames)
 		else:
@@ -157,13 +157,16 @@ class JasperRoot(Jb.JasperBase):
 		if not dirt:
 			data = utils.get_jasper_data("report_list_doctype", get_from_db=self.get_jasper_report_list_from_db, tab="tabJasperReportListDoctype")
 
-		if not data or not self.check_docname(data, doctype):
+		if not data or not self.check_docname(data, doctype, report):
 			utils.delete_jasper_session("report_list_doctype", "tabJasperReportListDoctype")
-			r_filters={"jasper_doctype": doctype}
+			if doctype:
+				r_filters={"jasper_doctype": doctype}
+			else:
+				r_filters={"report": report}
 			update = False if not data else True
 			data = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", tab="tabJasperReportListDoctype", update=update)
 
-		if data and self.check_docname(data, doctype):
+		if data and self.check_docname(data, doctype, report):
 			utils.jaspersession_set_value("report_list_dirt_doc", False)
 			data.pop('session_expiry',None)
 			data.pop('last_updated', None)

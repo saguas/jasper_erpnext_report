@@ -215,7 +215,7 @@ def write_file_jrxml(fname, content, content_type):
 			jrxml_path = get_jrxml_path(jasper_path, dn)
 			file_path = path_join(jrxml_path, fname)
 		#print "content report file {}".format(content)
-		fpath = write_file(content, file_path, fname, dn, ext)
+		fpath = write_file(content, file_path)
 		#file_path, compiled_path = get_files_path(fname, dn, jasper_path, ext)
 		path =  os.path.relpath(fpath, jasper_path)
 		if ext == "jrxml":

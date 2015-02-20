@@ -323,13 +323,13 @@ class JasperBase(object):
 		data['size'] = count - removed
 
 	#check if exist at least one docname in data
-	def check_docname(self, data, doctype):
+	def check_docname(self, data, doctype, report):
 		ret = False
 		if not data:
 			return ret
 		for k,v in data.iteritems():
 			if isinstance(v, dict):
-				if v.get("Doctype name") == doctype:
+				if v.get("Doctype name") == doctype or v.get("report") == report:
 					ret = True
 					break
 		return ret

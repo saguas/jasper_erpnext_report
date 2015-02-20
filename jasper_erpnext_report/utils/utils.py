@@ -66,7 +66,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 	filters_param = filters_param.update({"parenttype":"Jasper Reports"})
 	report_from = {"both":["jasperserver", "localserver"], "local jrxml only":["localserver"], "jasperserver only":["jasperserver"]}
 	#get all report names
-	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",\
+	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",\
 													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",\
 													"jasper_param_message", "jasper_report_type", "jasper_email"])
 	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",\
@@ -80,7 +80,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 			jasper_report_origin = r.jasper_report_origin.lower() #if r.jasper_report_origin else "jasperserver"
 			print "*************** name ************ {} for doctype {} filters {}".format(r.name, r.jasper_doctype, filters_report)
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
-				ret[r.name] = {"Doctype name": r.jasper_doctype, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
+				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email}
 				for report in with_param:
 						name = report.parent

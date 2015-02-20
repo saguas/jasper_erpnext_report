@@ -32,9 +32,9 @@ def get_reports_list_for_all():
 	return jsr.get_reports_list_for_all()
 
 @frappe.whitelist()
-def get_reports_list(doctype, docnames):
+def get_reports_list(doctype, docnames, report):
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	return jsr.get_reports_list(doctype, docnames)
+	return jsr.get_reports_list(doctype, docnames, report)
 
 @frappe.whitelist()
 def report_polling(data):
@@ -81,7 +81,7 @@ def run_report(data, docdata=None, rtype="Form"):
 	if isinstance(data, basestring):
 		data = json.loads(data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	print "params in run_report 2 {}".format(pprint_dict(data))
+	print "params in run_report 3 {}".format(pprint_dict(data))
 	return jsr.run_report(data, docdata=docdata, rtype=rtype)
 
 @frappe.whitelist()
@@ -214,6 +214,3 @@ def get_jasper_email_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	output = get_file(file_path, modes="rb")
 	jsr.prepare_file_to_client(file_name, output)
-
-
-
