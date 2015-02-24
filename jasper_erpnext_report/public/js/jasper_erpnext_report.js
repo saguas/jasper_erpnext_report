@@ -152,21 +152,7 @@ jasper.jasper_report_ready = function(msg, $old_banner, timeout){
 };
 
 jasper.getReport = function(msg){
-    
-    /*var reqIds = [];
-    var expIds = [];
-    for (var i =0; i<msg.length;i++){
-        reqIds.push(msg[i].requestId);
-        //assume reqids = expids
-        if (msg[i].ids)
-            expIds.push(msg[i].ids[0].id);
-        else
-            expIds.push("");
-        
-    };*/
-    
-    //var t = {reqId: reqIds, expId: expIds, fileName: msg[0].ids[0].fileName, reqtime: msg[0].reqtime, pformat: msg[0].pformat}
-    //var reqdata = t;
+ 
 	var reqdata = msg[0];
     console.log("this reqdata ", reqdata)
     var w;
@@ -180,7 +166,7 @@ jasper.getReport = function(msg){
 	       callback: function(response_data){
 			   console.log("polling response ", response_data);
                console.log("local report ready!!! ", response_data.message);
-               w = window.open("http://localhost:8000/assets/" + response_data.message);
+               w = window.open(frappe.urllib.get_base_url() + "/assets/" + response_data.message);
            	   if(!w) {
            		   msgprint(__("Please enable pop-ups"));
            	   }
