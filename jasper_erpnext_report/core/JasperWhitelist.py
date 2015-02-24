@@ -74,7 +74,7 @@ def make_pdf(fileName, content, pformat, merge_all=True, pages=None, email=False
 	return file_name, output
 
 @frappe.whitelist()
-def run_report(data, docdata=None, rtype="Form"):
+def run_report(data, docdata=None):
 	from frappe.utils import pprint_dict
 	if not data:
 		frappe.throw("No data for this Report!!!")
@@ -82,7 +82,7 @@ def run_report(data, docdata=None, rtype="Form"):
 		data = json.loads(data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	print "params in run_report 3 {}".format(pprint_dict(data))
-	return jsr.run_report(data, docdata=docdata, rtype=rtype)
+	return jsr.run_report(data, docdata=docdata)
 
 @frappe.whitelist()
 def get_server_info():
@@ -107,11 +107,11 @@ def get_doc(doctype, docname):
 def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_received = "Sent",
 	sender=None, recipients=None, communication_medium="Email", send_email=False,
 	print_html=None, print_format=None, attachments='[]', send_me_a_copy=False, set_lead=True, date=None,
-	jasper_doc=None, docdata=None, rtype="Form"):
+	jasper_doc=None, docdata=None):
 
 	jasper_polling_time = frappe.db.get_value('JasperServerConfig', fieldname="jasper_polling_time")
 	data = json.loads(jasper_doc)
-	result = run_report(data, docdata, rtype)
+	result = run_report(data, docdata)
 	if result[0].get("status", "not ready") != "ready":
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
@@ -164,6 +164,9 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 
 	sender = get_sender(sender)
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
+	#to get a report in another format to use in email
+	#from jasperserver.core.exportDescriptor import ExportDescriptor
+	#rr = ExportDescriptor()
 
 """
 def jasper_make_attach(data, file_name, output, attachments, result):

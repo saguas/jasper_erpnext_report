@@ -51,7 +51,8 @@ jasper.get_jasper_report = function(method, data, doc, type){
 	jasper.download("/api/method/jasper_erpnext_report.core.JasperWhitelist." + method, args);
 };
 
-jasper.run_jasper_report = function(method, data, doc, type){
+//jasper.run_jasper_report = function(method, data, doc, type){
+jasper.run_jasper_report = function(method, data, doc){
     //var format = format || 'pdf';
     //var args = 'path='+ encodeURIComponent(path) +'&format='+ format;
     var df = new $.Deferred();
@@ -59,8 +60,8 @@ jasper.run_jasper_report = function(method, data, doc, type){
 	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
 	       args:{
                data: data,
-	           docdata: doc,
-               rtype: type
+	           docdata: doc
+               //rtype: type
 	       },
 	       callback: function(response_data){
 			   console.log("resolved ", response_data);
@@ -467,7 +468,7 @@ jasper.getOrphanReport = function(data, ev){
 		var page = [route[0], doctype].join("/");
 		docids = jasper.getCheckedNames(page);
         docname = route[0];
-        rtype = route[0];
+        //rtype = route[0];
 		if (docids.length === 0)
 		{
 			msgprint(__("Please, select at list one name"), __("Jasper Report"));
@@ -477,7 +478,7 @@ jasper.getOrphanReport = function(data, ev){
 		if (cur_frm){
 			docids = [cur_frm.doc.name];
             docname = route[0];
-            rtype = route[0];
+            //rtype = route[0];
 		}else{
 			msgprint(__("To print this doc you must be in a form."), __("Jasper Report"));
 			return;
@@ -487,10 +488,10 @@ jasper.getOrphanReport = function(data, ev){
         columns = jasper.query_report_columns();
         grid_data = jasper.query_report_data();
         if (len === 1){
-            rtype = jasper.report[route[0]][data.jr_name].jasper_report_type;
+            //rtype = jasper.report[route[0]][data.jr_name].jasper_report_type;
             docname = route[0];
         }else{
-            rtype = jasper.report[route[1]][data.jr_name].jasper_report_type;
+            //rtype = jasper.report[route[1]][data.jr_name].jasper_report_type;
             docname = route[1];
         }
         //docnames = ["Administrator"];
@@ -501,11 +502,13 @@ jasper.getOrphanReport = function(data, ev){
         if (obj && obj.abort === true)
             return;
         var jr_format = data.jr_format; 
-    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: jr_format, params: obj.values, grid_data: {columns: columns, data: grid_data}};
+    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: "html"/*jr_format*/, params: obj.values, grid_data: {columns: columns, data: grid_data}};
         if(jr_format === "email"){
-            jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname, rtype);
+            //jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname, rtype);
+            jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname);
         }else{
-            jasper.run_jasper_report("run_report", args, docname, rtype);
+            //jasper.run_jasper_report("run_report", args, docname, rtype);
+            jasper.run_jasper_report("run_report", args, docname);
         }
     });
 };
@@ -548,11 +551,11 @@ jasper.jasper_make_request = function(method, data, callback){
 $(document).on( 'app_ready', function(){
     console.log("frappe is ready ", jasper);
 	$(window).trigger('hashchange');
-    var list = frappe.boot.jasper_reports_list;
-	setJasperDropDown(list, function(data, ev){
+    //var list = frappe.boot.jasper_reports_list;
+	/*setJasperDropDown(list, function(data, ev){
 		console.log("was clicked !! ", $(ev.target).data())
 		jasper.getOrphanReport(data, ev);
-	});
+	});*/
 });
 
 jasper.make_dialog = function(doc, title, callback){
@@ -614,7 +617,8 @@ jasper.getCheckedNames = function(page){
 }
 
 // jasper_doc
-jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
+//jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
+jasper.email_doc = function(message, curfrm, jasper_doc, list, route0) {
     //var args = {fortype: "doctype", report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docnames, pformat: data.jr_format, params: d};
     
     if (curfrm){
@@ -627,7 +631,7 @@ jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
     		real_name: curfrm.doc.real_name || curfrm.doc.contact_display || curfrm.doc.contact_name,
             jasper_doc: jasper_doc,
 	        docdata: route0,
-            rtype: route1,
+            //rtype: route1,
             list: list
     	});
     }else{
@@ -640,7 +644,7 @@ jasper.email_doc = function(message, curfrm, jasper_doc, list, route0, route1) {
     		real_name: "",
             jasper_doc: jasper_doc,
 	        docdata: route0,
-            rtype: route1,
+            //rtype: route1,
             list: list
     	});
     }

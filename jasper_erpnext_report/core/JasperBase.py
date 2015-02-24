@@ -185,14 +185,25 @@ class JasperBase(object):
 		return rec
 
 	def prepareResponse(self, detail, reqId):
-		res = {"requestId": reqId, "uri":detail.get("reportURI"), "reqtime": frappe.utils.now()}
+		uri = detail.get("reportURI")
+		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
 		if detail.get("status") == "ready":
 			ids = []
 			for i in detail.get("exports"):
 				if i.get("status") == "ready":
 					id = i.get("id")
-					outr = i.get("outputResource")
-					ids.append({"id":id, "fileName": outr.get("fileName")})
+					outr = i.get("outputResource", {})
+					print "in prepareResponse 3: {}".format(i)
+					contentType = outr.get("contentType", "")
+					if "html" in contentType:
+						print "prepareResponse is html request "
+						#afilename = uri.split("/")
+						options = i.get("options", {})
+						attachs = i.get("attachments", {})
+						ids.append({"id":id, "fileName": outr.get("fileName"), "attachmentsPrefix": options.get("attachmentsPrefix"),
+									"baseUrl": options.get("baseUrl"), "attachments": attachs, "contentType": contentType})
+					else:
+						ids.append({"id":id, "fileName": outr.get("fileName"), "contentType": contentType})
 				else:
 					res['status'] = "not ready"
 					break
@@ -276,6 +287,10 @@ class JasperBase(object):
 
 		#return resps
 		return data
+
+	def polling(self, reqId):
+		print "polling problems"
+		pass
 
 	def report_polling_base(self, reqId):
 		result = []

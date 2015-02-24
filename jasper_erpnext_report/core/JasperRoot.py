@@ -5,6 +5,8 @@ import frappe
 
 import logging, json, os
 
+from frappe.utils import get_site_path
+from jasper_erpnext_report.utils.file import write_file
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
 
@@ -219,9 +221,10 @@ class JasperRoot(Jb.JasperBase):
 
 		return result
 
-	def run_report(self, data, docdata=None, rtype="Form"):
+	def run_report(self, data, docdata=None):
 		doctype = data.get('doctype')
 		rdoc = frappe.get_doc(doctype, data.get('report_name'))
+		rtype = rdoc.get("jasper_report_type")
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
 			for docname in data.get('name_ids'):
 				for ptype in ("read", "print"):
@@ -295,8 +298,11 @@ class JasperRoot(Jb.JasperBase):
 						if rid_len == eid_len:
 							for i in range(rid_len):
 								content.append(self.jps.getReport(reqId[i], expId[i].get('id')))
+								self.getAttachments(reqId[i], expId[i].get('id'), expId[i], fileName)
+
 						else:
 							content.append(self.jps.getReport(reqId[0], expId[0].get('id')))
+							self.getAttachments(reqId[0], expId[0].get('id'), expId[0])
 					else:
 						self.get_server("local")
 						for i in range(rid_len):
@@ -306,6 +312,21 @@ class JasperRoot(Jb.JasperBase):
 			return frappe.msgprint(_("There is no report, try again later. Error: {}".format(e)))
 
 		return fileName, content
+
+	def getAttachments(self, reqId, expId, expIdObj, fileName):
+		print "expIdObj {}".format(expIdObj.get('attachments'))
+		for attach in expIdObj.get('attachments',[]):
+			#atype = attach.get("contentType").split("/")
+			attachFileName = attach.get("fileName")
+			content = self.jps.getAttachment(reqId, expId, attachFileName)
+			#frappe.create_folder(os.path.join(get_site_path("public"), "images", fileName.split(".")[0]))
+			import jasper_erpnext_report
+			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
+			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
+			write_file(content.content, os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0], attachFileName), "wb")
+
+
 	#pages is an array of pages ex. [2,4,5]
 	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
 		if fileName:

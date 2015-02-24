@@ -268,6 +268,11 @@ class JasperServer(Jb.JasperBase):
 		rr.setOutputFormat(pformat)
 		rr.setParameters(pram)
 		rr.setAsync(True)
+		if pformat == "html":
+			host_url = frappe.local.request.host_url
+			rr.setBaseUrl(host_url)
+			#rr.setAttachmentsPrefix("http://localhost:8000/assets/css/images/Employees/")
+			rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/images/Employees/")
 		try:
 			req = rs.newReportExecutionRequest(rr)
 			res = req.run().getResult("content")
@@ -285,16 +290,17 @@ class JasperServer(Jb.JasperBase):
 
 	@_jasperserver
 	def polling(self, reqId):
+		print "making the write polling!"
 		res = []
 		try:
 			rs = ReportingService(self.session)
 			rexecreq = rs.reportExecutionRequest(reqId)
 			status = rexecreq.status().content
-			print "status: {}".format(status)
+			print "status: status {} rexecreq {}".format(status, rexecreq)
 			status = json.loads(status)
 			if status.get("value") == "ready":
 				detail = self.reportExecDetail(rexecreq)
-				print "report detail 2: {}".format(detail)
+				print "report detail 2: {} reqId {}".format(detail, reqId)
 				res = self.prepareResponse(detail, reqId)
 				if res.get('status', "") == "not ready":
 					res = self.prepareResponse({}, reqId)
@@ -322,6 +328,17 @@ class JasperServer(Jb.JasperBase):
 			rexecreq = rs.reportExecutionRequest(reqId, expId)
 			report = rexecreq.export().outputResource().getResult("content")
 			return report
+		except NotFound:
+			frappe.throw(_("Not Found!!!"))
+
+	def getAttachment(self, reqId, expId, attachmentId):
+		print "getting attach {}".format(attachmentId)
+		try:
+			rs = ReportingService(self.session)
+			rexecreq = rs.reportExecutionRequest(reqId, expId)
+			content = rexecreq.export().attachment(attachmentId)
+			#print "attachment content 5 {}".format(content)
+			return content
 		except NotFound:
 			frappe.throw(_("Not Found!!!"))
 
