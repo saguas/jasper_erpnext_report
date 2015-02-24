@@ -5,7 +5,6 @@ import frappe
 
 import logging, json, os
 
-from frappe.utils import get_site_path
 from jasper_erpnext_report.utils.file import write_file
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
@@ -283,7 +282,7 @@ class JasperRoot(Jb.JasperBase):
 					rdata = report['data'].get('result')
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")
-					pformat = data.get("pformat")
+					#pformat = data.get("pformat")
 					print "expID array {}".format(expId)
 					fileName = expId[0].get("fileName", None)
 					rid_len = 1
@@ -325,6 +324,7 @@ class JasperRoot(Jb.JasperBase):
 			frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
 			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
 			write_file(content.content, os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0], attachFileName), "wb")
+
 
 
 	#pages is an array of pages ex. [2,4,5]

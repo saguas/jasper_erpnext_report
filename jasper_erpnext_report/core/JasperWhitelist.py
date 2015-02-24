@@ -7,7 +7,8 @@ from urllib2 import unquote
 import logging, time
 from frappe.utils import cint
 
-from frappe.core.doctype.communication.communication import make
+import jasper_erpnext_report, os
+#from frappe.core.doctype.communication.communication import make
 
 import JasperRoot as Jr
 from jasper_erpnext_report import jasper_session_obj
@@ -50,12 +51,20 @@ def get_report(data):
 		data = json.loads(unquote(data))
 	pformat = data.get("pformat")
 	fileName, content = _get_report(data)
-	make_pdf(fileName, content, pformat)
+	return make_pdf(fileName, content, pformat)
 
 #def _get_report(data, merge_all=True, pages=None, email=False):
 def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	fileName, content = jsr.get_report_server(data)
+	pformat = data.get("pformat")
+	if pformat == "html":
+		for c in content:
+			from jasper_erpnext_report.utils.file import write_file
+			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0]))
+			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
+			write_file(c, os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0], fileName))
 	#file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	#if not email:
 	#	jsr.prepare_file_to_client(file_name, output)
@@ -68,6 +77,11 @@ def make_pdf(fileName, content, pformat, merge_all=True, pages=None, email=False
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	if not email:
+		if pformat == "html":
+			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			full_path = os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0], fileName)
+			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+			return os.path.join("jasper_erpnext_report",relat_path)
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
 

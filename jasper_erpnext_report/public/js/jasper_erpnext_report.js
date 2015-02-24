@@ -169,13 +169,33 @@ jasper.getReport = function(msg){
     //var reqdata = t;
 	var reqdata = msg[0];
     console.log("this reqdata ", reqdata)
+    var w;
+    if (reqdata.pformat === "html"){
+        console.log("is html");
+        frappe.call({
+	       "method": "jasper_erpnext_report.core.JasperWhitelist.get_report",
+	       args:{
+               data: JSON.stringify(reqdata),
+	       },
+	       callback: function(response_data){
+			   console.log("polling response ", response_data);
+               console.log("local report ready!!! ", response_data.message);
+               w = window.open("http://localhost:8000/assets/" + response_data.message);
+           	   if(!w) {
+           		   msgprint(__("Please enable pop-ups"));
+           	   }
+               return;
+           }
+       });
+    }else{
+        var request = "/api/method/jasper_erpnext_report.core.JasperWhitelist.get_report?data="+encodeURIComponent(JSON.stringify(reqdata));
+        console.log("request ", request)
+        w = window.open(request);
+    	if(!w) {
+    		msgprint(__("Please enable pop-ups"));
+    	}
+    }
     
-    var request = "/api/method/jasper_erpnext_report.core.JasperWhitelist.get_report?data="+encodeURIComponent(JSON.stringify(reqdata));
-    console.log("request ", request)
-    w = window.open(request);
-	if(!w) {
-		msgprint(__("Please enable pop-ups"));
-	}
 };
 
 jasper.getList = function(page, doctype, docnames){
