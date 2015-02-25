@@ -123,8 +123,19 @@ jasper.polling_report = function(data, $banner, timeout){
 						   setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
 						   return;
 					   };
-					   jasper.poll_count = 0;
-					   msgprint(msg[0].value, __("Report error! The report is taking too long... "));
+                       jasper.poll_count = 0;
+                       jasper.close_banner($banner);
+                       var banner_msg = __("Timeout before report is ready to download! Click to ") + '<a class="try_again_report">Try Again</a>' 
+                       + "  " +'<a class="cancel_report">Cancel</a>';
+                       show_banner_message(banner_msg, ".try_again_report", ".cancel_report", "#FFFF99", function($banner, what){
+                           jasper.close_banner($banner);
+                           if (what === "ok"){
+                               var ptime = parseInt(frappe.boot.jasper_reports_list.jasper_polling_time);
+                               setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
+                           }
+                       });
+					   
+                       //msgprint(msg[0].value, __("Report error! The report is taking too long... "));
                        //jasper.polling_report(data, $banner, timeout);
                    }else{
 					   jasper.poll_count = 0;
@@ -143,13 +154,35 @@ jasper.jasper_report_ready = function(msg, $old_banner, timeout){
     //$old_banner = $('header .navbar').find(".toolbar-banner");
     $old_banner.find(".close").click();
     clearTimeout(timeout);
-    $banner = frappe.ui.toolbar.show_banner(__("Your report is ready to download! Click to ") + '<a class="download_report">download</a>')
+    var banner_msg = __("Your report is ready to download! Click to ") + '<a class="download_report">download</a>';
+    show_banner_message(banner_msg, ".download_report", null, "lightGreen", function($banner){
+        jasper.getReport(msg);
+		jasper.close_banner($banner);
+    });
+    /*$banner = frappe.ui.toolbar.show_banner(__("Your report is ready to download! Click to ") + '<a class="download_report">download</a>')
     $banner.css({background: "lightGreen", opacity: 0.9});
 	$banner.find(".download_report").click(function() {
         jasper.getReport(msg);
 		jasper.close_banner($banner);
-	});
+	});*/
 };
+
+show_banner_message = function(msg, where_ok, where_cancel, bckcolor, callback){
+    $banner = frappe.ui.toolbar.show_banner(msg);
+    if (bckcolor != null)
+        $banner.css({background: bckcolor, opacity: 0.9});
+    if (where_ok != null){
+	    $banner.find(where_ok).click(function(){
+            callback($banner, "ok");
+        });
+    };
+    
+    if(where_cancel != null){
+    	$banner.find(where_cancel).click(function(){
+            callback($banner, "cancel");
+        }); 
+    };
+}
 
 jasper.getReport = function(msg){
  
@@ -166,10 +199,22 @@ jasper.getReport = function(msg){
 	       callback: function(response_data){
 			   console.log("polling response ", response_data);
                console.log("local report ready!!! ", response_data.message);
-               w = window.open(frappe.urllib.get_base_url() + "/assets/" + response_data.message);
+               w = window.open(frappe.urllib.get_base_url() + "/assets/" + encodeURI(response_data.message));
+               //var c = "/assets/" + response_data.message;
+               //console.log("colorbox ", c)
+               //$.colorbox({href: encodeURIComponent(c), opacity: 0.8, width: "90%", height: "90%"});
            	   if(!w) {
            		   msgprint(__("Please enable pop-ups"));
+                   //return;
            	   }
+               /*w.document.open();
+               var basehtml = document.createElement('base');
+               var base = frappe.urllib.get_base_url() + "/assets/jasper_erpnext_report/reports/site1.local/Accounts Report/images/>";
+               basehtml.href = base;
+               w.document.getElementsByTagName('head')[0].appendChild(basehtml);
+               w.document.write(response_data.message);
+               w.document.close();*/
+               //w.document.write("<base href='" + base + "'");
                return;
            }
        });
@@ -443,7 +488,8 @@ jasper.make_menu = function(list, key, skey){
     }
 	//data-jr_format='+ t + ' data-jr_name="'+ key + '" class="jrreports"
 	html = html + '<li>'
- 	   + repl('<a class="jrreports" href="#" data-jr_format="%(f)s" data-jr_name="%(mykey)s"',{mykey:key, f:f[0]}) +' title="'+ key +' - pdf" >'+ icon_file.join(" ") + " " + skey  + '</a>' 
+ 	   //+ repl('<a class="jrreports" href="#" data-jr_format="%(f)s" data-jr_name="%(mykey)s"',{mykey:key, f:f[0]}) +' title="'+ key +' - pdf" >'+ icon_file.join(" ") + " " + skey  + '</a>' 
+       + repl('<a class="jrreports" href="#" data-jr_format="%(f)s" data-jr_name="%(mykey)s"',{mykey:key, f:"html"}) +' title="'+ key +' - html" >'+ icon_file.join(" ") + " " + skey  + '</a>' 
  	   +'</li>';
 	 
 	return html;
@@ -508,7 +554,7 @@ jasper.getOrphanReport = function(data, ev){
         if (obj && obj.abort === true)
             return;
         var jr_format = data.jr_format; 
-    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: "html"/*jr_format*/, params: obj.values, grid_data: {columns: columns, data: grid_data}};
+    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: jr_format, params: obj.values, grid_data: {columns: columns, data: grid_data}};
         if(jr_format === "email"){
             //jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname, rtype);
             jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname);

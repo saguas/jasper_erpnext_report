@@ -4,7 +4,7 @@ __author__ = 'luissaguas'
 from frappe import _
 import frappe
 
-from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path
+from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path, get_file
 import jasper_erpnext_report.utils.utils as utils
 
 import logging
@@ -148,22 +148,22 @@ class JasperLocal(Jb.JasperBase):
 				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
 				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 				if data.get("grid_data", {}).get("data"):
-					thread.start_new_thread(self._export_query_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, data.get("grid_data"), outtype, ) )
+					thread.start_new_thread(self._export_query_report, (compiled_path + os.sep, reportName, data.get("report_name"), outputPath + os.sep, hashmap, data.get("grid_data"), outtype, frappe.local.site, ) )
 				else:
-					thread.start_new_thread(self._export_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, conn, outtype, ) )
+					thread.start_new_thread(self._export_report, (compiled_path + os.sep, reportName, data.get("report_name"), outputPath + os.sep, hashmap, conn, outtype, frappe.local.site, ) )
 			except Exception as e:
 				frappe.throw(_("Error in report %s, error is: %s!!!" % (doc.jasper_report_name, e)))
 				#print "Error: unable to start thread"
 		return resp
 
-	def _export_report(self, compiled_path, reportName, outputPath, hashmap, conn, outtype):
+	def _export_report(self, compiled_path, fileName, report_name, outputPath, hashmap, conn, outtype, localsite):
 		export_report = jr.ExportReport()
-		print "making 4 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
-		export_report.export(compiled_path, reportName, outputPath, hashmap, conn, outtype)
+		print "making 4 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, fileName, outputPath, conn, outtype, hashmap)
+		export_report.export(compiled_path, fileName, outputPath, hashmap, conn, outtype)
 		if outtype == 7:#html file
-			self.copy_images(reportName)
+			self.copy_images(outputPath, fileName, report_name, localsite)
 
-	def _export_query_report(self, compiled_path, reportName, outputPath, hashmap, grid_data, outtype):
+	def _export_query_report(self, compiled_path, fileName, report_name, outputPath, hashmap, grid_data, outtype, localsite):
 		export_query_report = jr.ExportQueryReport()
 		tables = []
 		cols = []
@@ -190,13 +190,23 @@ class JasperLocal(Jb.JasperBase):
 		cols.append("name")
 		cols.append("email")
 		"""
-		print "making 7 report compiled path {} reportName {} outputPath {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, outtype, hashmap)
-		export_query_report.export(compiled_path, reportName, outputPath, hashmap, tables, cols, outtype)
+		print "making 7 report compiled path {} reportName {} outputPath {} outtype {} hashmap {}".format(compiled_path, fileName, outputPath, outtype, hashmap)
+		export_query_report.export(compiled_path, fileName, outputPath, hashmap, tables, cols, outtype)
 		if outtype == 7:#html file
-			self.copy_images(reportName)
+			self.copy_images(outputPath, fileName, report_name, localsite)
 
-	def copy_images(self, reportName):
-		pass
+	def copy_images(self, outputPath, fileName, report_name, localsite):
+		from distutils.dir_util import copy_tree
+		from jasper_erpnext_report.utils.file import get_html_reports_images_path, get_html_reports_path
+		import hashlib
+		content = get_file(outputPath + fileName + ".html")
+		hash_obj = hashlib.md5(content)
+		hash = hash_obj.hexdigest()
+		src = fileName + "." + "html_files"
+		html_files = os.path.join(outputPath, src)
+		report_path = get_html_reports_path(report_name, localsite=localsite, hash=hash)
+		dst = get_html_reports_images_path(report_path, where=src)
+		copy_tree(html_files, dst)
 
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)

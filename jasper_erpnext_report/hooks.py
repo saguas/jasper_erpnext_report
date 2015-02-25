@@ -25,7 +25,7 @@ delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
 
 # include js, css files in header of desk.html
 #app_include_js = "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"
-app_include_css = "/assets/jasper_erpnext_report/css/callouts.css"
+app_include_css = ["/assets/jasper_erpnext_report/css/callouts.css"]
 #app_include_css = "/assets/css/jasper_erpnext_report.css"
 app_include_js = ["/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]
 #app_include_js = ["/assets/jasper_erpnext_report/js/meteor.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]

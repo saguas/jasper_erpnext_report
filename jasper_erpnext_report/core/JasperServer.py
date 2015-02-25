@@ -269,16 +269,17 @@ class JasperServer(Jb.JasperBase):
 		rr.setParameters(pram)
 		rr.setAsync(True)
 		if pformat == "html":
-			from jasper_erpnext_report.utils.file import get_html_reports_images_path
-			import os, jasper_erpnext_report
-			host_url = frappe.local.request.host_url
+			#from jasper_erpnext_report.utils.file import get_html_reports_images_path
+			#import os, jasper_erpnext_report
+			#host_url = frappe.local.request.host_url
 			#rr.setBaseUrl(host_url)
-			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			full_path = get_html_reports_images_path(report_name)
-			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			#full_path = get_html_reports_images_path(report_name, "reports")
+			#relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
 			#print "report_name in run async 3 {}".format(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
 			#rr.setAttachmentsPrefix("http://localhost:8000/assets/css/images/Employees/")
-			rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
+			#rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
+			rr.setAttachmentsPrefix("./images/")
 		try:
 			req = rs.newReportExecutionRequest(rr)
 			res = req.run().getResult("content")

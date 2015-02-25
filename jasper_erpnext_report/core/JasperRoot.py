@@ -5,14 +5,14 @@ import frappe
 
 import logging, json, os
 
-from jasper_erpnext_report.utils.file import write_file
+from jasper_erpnext_report.utils.file import write_file, get_extension
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
 
 from io import BytesIO
 from PyPDF2 import PdfFileMerger
 import cStringIO
-import zipfile
+import zipfile, hashlib
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -289,6 +289,7 @@ class JasperRoot(Jb.JasperBase):
 					#pformat = data.get("pformat")
 					print "expID array {}".format(expId)
 					fileName = expId[0].get("fileName", None)
+					file_ext = get_extension(fileName)
 					rid_len = 1
 					print "before get report local {}".format(reqId)
 					if not any("local_report" in r for r in reqId):
@@ -300,12 +301,20 @@ class JasperRoot(Jb.JasperBase):
 						#if lens not equal then process only the first
 						if rid_len == eid_len:
 							for i in range(rid_len):
-								content.append(self.jps.getReport(reqId[i], expId[i].get('id')))
-								self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name)
+								c = self.jps.getReport(reqId[i], expId[i].get('id'))
+								content.append(c)
+								if file_ext == "html":
+									hash_obj = hashlib.md5(c)
+									hash = hash_obj.hexdigest()
+									self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name, hash)
 
 						else:
-							content.append(self.jps.getReport(reqId[0], expId[0].get('id')))
-							self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
+							c = self.jps.getReport(reqId[0], expId[0].get('id'))
+							content.append(c)
+							if file_ext == "html":
+								hash_obj = hashlib.md5(c)
+								hash = hash_obj.hexdigest()
+								self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name, hash)
 					else:
 						self.get_server("local")
 						for i in range(rid_len):
@@ -317,18 +326,19 @@ class JasperRoot(Jb.JasperBase):
 
 		return fileName, content, report_name
 
-	def getAttachments(self, reqId, expId, expIdObj, report_name):
+	def getAttachments(self, reqId, expId, expIdObj, report_name, hash):
 		print "expIdObj {}".format(expIdObj.get('attachments'))
 		for attach in expIdObj.get('attachments',[]):
 			#atype = attach.get("contentType").split("/")
 			attachFileName = attach.get("fileName")
 			content = self.jps.getAttachment(reqId, expId, attachFileName)
 			#frappe.create_folder(os.path.join(get_site_path("public"), "images", fileName.split(".")[0]))
-			from jasper_erpnext_report.utils.file import get_html_reports_images_path
+			from jasper_erpnext_report.utils.file import get_html_reports_images_path, get_html_reports_path
 			#import jasper_erpnext_report
 			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
-			image_path = get_html_reports_images_path(report_name)
+			report_path = get_html_reports_path(report_name, hash=hash)
+			image_path = get_html_reports_images_path(report_path)
 			write_file(content.content, os.path.join(image_path, attachFileName), "wb")
 
 

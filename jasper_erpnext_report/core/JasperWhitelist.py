@@ -4,7 +4,7 @@ from frappe import _
 import frappe
 import json
 from urllib2 import unquote
-import logging, time
+import logging, time, hashlib
 from frappe.utils import cint
 from jasper_erpnext_report.utils.file import get_html_reports_path, write_file
 
@@ -63,15 +63,17 @@ def _get_report(data):
 	if pformat == "html":
 		#report_name = self.get_jasper_reqid_data(reqIds[0])
 		#print "data in _get_report 2 {}".format(data, report_name)
-		for c in content:
+		#for c in content:
 			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0]))
 			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-			html_reports_path = get_html_reports_path(report_name)
+		hash_obj = hashlib.md5(content[0])
+		hash = hash_obj.hexdigest()
+		html_reports_path = get_html_reports_path(report_name, hash=hash)
 			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
 			#write_file(c, os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0], fileName))
 		#write_file(c, os.path.join(html_reports_path, fileName))
-		write_file(c, os.path.join(html_reports_path, fileName))
+		write_file(content[0], os.path.join(html_reports_path, fileName))
 	#file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	#if not email:
 	#	jsr.prepare_file_to_client(file_name, output)
@@ -87,11 +89,18 @@ def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None
 		if pformat == "html":
 			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-			html_reports_path = get_html_reports_path(report_name)
+			hash_obj = hashlib.md5(content[0])
+			hash = hash_obj.hexdigest()
+			html_reports_path = get_html_reports_path(report_name, hash=hash)
 			full_path = os.path.join(html_reports_path, fileName)
 			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
 			print "relat_path in make_pdf {}".format(relat_path)
+			#import tinyurl
+			#url = frappe.request.host
+			#print "request ip 2 {}".format(url)
+			#t = tinyurl.create_one('http://' + url + "/assets/jasper_erpnext_report/" + relat_path)
 			return os.path.join("jasper_erpnext_report",relat_path)
+			#return content[0]
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
 
@@ -152,14 +161,14 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
 		ncopies = get_copies(rdoc, pformat)
 		#file_name, output = _get_report(result[0], merge_all=True, pages=None, email=True)
-		fileName, jasper_content = _get_report(result[0])
+		fileName, jasper_content, report_name = _get_report(result[0])
 		merge_all = True
 		pages = None
 		if pformat == "pdf" and ncopies > 1:
 			merge_all = False
 			pages = get_pages(ncopies, len(jasper_content))
 
-		file_name, output = make_pdf(fileName, jasper_content, pformat, merge_all=merge_all, pages=pages, email=True)
+		file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
 
 	else:
 		print "not sent by email... {}".format(result)

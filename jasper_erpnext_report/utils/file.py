@@ -330,14 +330,17 @@ def get_file(path, modes="r"):
 		content = f.read()
 	return content
 
-def get_html_reports_path(fileName, where="reports"):
+def get_html_reports_path(report_name, where="reports", hash=None, localsite=None):
+	site = localsite or frappe.local.site
 	path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-	path = os.path.join(path_jasper_module, "public", where, frappe.local.site, fileName)
+	path = os.path.join(path_jasper_module, "public", where, site, report_name, hash)
 	frappe.create_folder(path)
 	return path
 
-def get_html_reports_images_path(fileName):
-	path = get_html_reports_path(fileName, where="images")
+def get_html_reports_images_path(report_path, where="images"):
+	#path = get_html_reports_path(fileName, where=where)
+	path = os.path.join(report_path, where)
+	frappe.create_folder(path)
 	return path
 
 # def insert_doc(dt, dn, fname, field, value, parentfield, doc_report):
