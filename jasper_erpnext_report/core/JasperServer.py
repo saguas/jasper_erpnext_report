@@ -247,6 +247,8 @@ class JasperServer(Jb.JasperBase):
 			print "pvalue {}".format(res)
 			pram.append(param)
 		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+		if pformat != "pdf":
+			ncopies = 1#make copies only for pdf format
 		for m in range(ncopies):
 			if pram_copy_index >= 0:
 				pram[pram_copy_index]['value'] = [copies[m]]

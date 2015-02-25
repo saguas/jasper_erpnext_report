@@ -126,6 +126,8 @@ class JasperLocal(Jb.JasperBase):
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
 		outtype = print_format.index(pformat)
+		if pformat != "pdf":
+			ncopies = 1#make copies only for pdf format
 		for m in range(ncopies):
 			if pram_copy_name:
 				hashmap.put(pram_copy_name, copies[m])
