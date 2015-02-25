@@ -192,15 +192,15 @@ class JasperServer(Jb.JasperBase):
 			ids = data.get('ids')
 			for id in ids:
 				data['ids'] = [id]
-				resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies))
+				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies))
 		else:
-			resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies))
-		cresp = prepareCollectResponse(resps)
+			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies))
+		cresp = self.prepareCollectResponse(resps)
 		cresp["origin"] = "server"
 		return [cresp]
 
 	#run reports with http POST and run async and sync
-	def _run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
+	def _run_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
 		pram = []
 		#self.doc = doc
 		pram.extend(self.get_ask_params(data))
@@ -252,16 +252,16 @@ class JasperServer(Jb.JasperBase):
 				pram[pram_copy_index]['value'] = [copies[m]]
 			if pram_copy_page_index >= 0:
 				pram[pram_copy_page_index]['value'] = [str(m) + _(" of ") + str(ncopies)]
-			result = self.run_async(path, pram, pformat=pformat)
+			result = self.run_async(path, pram, data.get("report_name"), pformat=pformat)
 			requestId = result.get('requestId')
-			reqDbObj = {"data":{"result": result, "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}}
+			reqDbObj = {"data":{"result": result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}}
 			self.insert_jasper_reqid_record(requestId, reqDbObj)
-			resp.append({"requestId":requestId, "status": result.get('status')})
+			resp.append({"requestId":requestId, "report_name": data.get("report_name"), "status": result.get('status')})
 		#TODO get reqId for check report state
 		return resp
 
 	@_jasperserver
-	def run_async(self, path, pram, pformat="pdf"):
+	def run_async(self, path, pram, report_name, pformat="pdf"):
 		rs = ReportingService(self.session)
 		rr = ReportExecutionRequest()
 		rr.setReportUnitUri(path)
@@ -269,10 +269,16 @@ class JasperServer(Jb.JasperBase):
 		rr.setParameters(pram)
 		rr.setAsync(True)
 		if pformat == "html":
+			from jasper_erpnext_report.utils.file import get_html_reports_images_path
+			import os, jasper_erpnext_report
 			host_url = frappe.local.request.host_url
-			rr.setBaseUrl(host_url)
+			#rr.setBaseUrl(host_url)
+			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			full_path = get_html_reports_images_path(report_name)
+			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+			#print "report_name in run async 3 {}".format(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
 			#rr.setAttachmentsPrefix("http://localhost:8000/assets/css/images/Employees/")
-			rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/images/Employees/")
+			rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
 		try:
 			req = rs.newReportExecutionRequest(rr)
 			res = req.run().getResult("content")

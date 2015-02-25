@@ -6,6 +6,7 @@ import json
 from urllib2 import unquote
 import logging, time
 from frappe.utils import cint
+from jasper_erpnext_report.utils.file import get_html_reports_path, write_file
 
 import jasper_erpnext_report, os
 #from frappe.core.doctype.communication.communication import make
@@ -50,37 +51,46 @@ def get_report(data):
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
 	pformat = data.get("pformat")
-	fileName, content = _get_report(data)
-	return make_pdf(fileName, content, pformat)
+	fileName, content, report_name = _get_report(data)
+	return make_pdf(fileName, content, pformat, report_name)
 
 #def _get_report(data, merge_all=True, pages=None, email=False):
 def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	fileName, content = jsr.get_report_server(data)
+	fileName, content, report_name = jsr.get_report_server(data)
+	print "in _get_report report_name {}".format(report_name)
 	pformat = data.get("pformat")
 	if pformat == "html":
+		#report_name = self.get_jasper_reqid_data(reqIds[0])
+		#print "data in _get_report 2 {}".format(data, report_name)
 		for c in content:
-			from jasper_erpnext_report.utils.file import write_file
-			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0]))
+			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			#frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0]))
+			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
+			html_reports_path = get_html_reports_path(report_name)
 			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
-			write_file(c, os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0], fileName))
+			#write_file(c, os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0], fileName))
+		#write_file(c, os.path.join(html_reports_path, fileName))
+		write_file(c, os.path.join(html_reports_path, fileName))
 	#file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	#if not email:
 	#	jsr.prepare_file_to_client(file_name, output)
 	#	return
 
 	#return file_name, output
-	return fileName, content
+	return fileName, content, report_name
 
-def make_pdf(fileName, content, pformat, merge_all=True, pages=None, email=False):
+def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None, email=False):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	if not email:
 		if pformat == "html":
 			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			full_path = os.path.join(path_jasper_module, "public", "reports", fileName.split(".")[0], fileName)
+			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
+			html_reports_path = get_html_reports_path(report_name)
+			full_path = os.path.join(html_reports_path, fileName)
 			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+			print "relat_path in make_pdf {}".format(relat_path)
 			return os.path.join("jasper_erpnext_report",relat_path)
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return

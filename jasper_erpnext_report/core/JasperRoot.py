@@ -209,12 +209,15 @@ class JasperRoot(Jb.JasperBase):
 		if data.get("origin") == "local":
 			print "is local report {}".format(reqIds)
 			self.get_server("local")
-			result = self.jpl.report_polling_base(reqIds[0])
+			report_name = self.get_jasper_reqid_data(reqIds[0])
+			print "report_polling 4 {}".format(report_name)
+			result = self.jpl.report_polling_base(reqIds[0], report_name)
 		else:
 			#check only one requestId
 			self.get_server("server")
-			print "report_polling {}".format(data)
-			result = self.jps.report_polling_base(reqIds[0])
+			report_name = self.get_jasper_reqid_data(reqIds[0])
+			print "report_polling 5 {}".format(report_name)
+			result = self.jps.report_polling_base(reqIds[0], report_name)
 		print "result from polling {}".format(result)
 		result[0]["pformat"] = pformat
 
@@ -237,7 +240,7 @@ class JasperRoot(Jb.JasperBase):
 				raise frappe.PermissionError(_("No print permission!"))
 		params = rdoc.jasper_parameters
 		origin = rdoc.jasper_report_origin.lower()
-		result = []
+		result = [{}]
 		pformat = data.get('pformat')
 		#copies = [_("Single"), _("Duplicated"), _("Triplicate")]
 		try:
@@ -249,7 +252,7 @@ class JasperRoot(Jb.JasperBase):
 				if not path:
 					frappe.throw(_("%s: Import first a jrxml file!!!" % rdoc.name))
 				for_all_sites = rdoc.jasper_all_sites_report
-				result = self.jpl.run_local_report_async(path, rdoc, data=data, params=params, async=True, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
+				result = self.jpl.run_local_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
 			else:
 				path = rdoc.jasper_report_path
 				self.get_server("server")
@@ -257,7 +260,7 @@ class JasperRoot(Jb.JasperBase):
 					frappe.msgprint(_("JasperServer login error"))
 					return
 
-				result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, async=True, pformat=pformat, ncopies=ncopies)
+				result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies)
 			result[0]["pformat"] = pformat
 		except ValueError:
 			frappe.throw(_("Report number of copies error %s!!!" % rdoc.name))
@@ -268,17 +271,18 @@ class JasperRoot(Jb.JasperBase):
 		#check if this requestId is older than last timeout
 		self.validate_ticket(data)
 		d = self.get_jasper_reqid_data(data.get('requestId'))
+		report_name = d['data'].get("report_name")
 		if not d:
 			frappe.throw(_("Report Not Found!!!"))
 		reqids = d['data'].get('reqids')
-		print "new reqids {}".format(d)
+		print "new reqids 2 {} report_name {}".format(d, report_name)
 		content = []
 		fileName = None
 		try:
 			for ids in reqids:
 				for id in ids:
 					report = self.get_jasper_reqid_data(id)
-					print "new report {}".format(report)
+					print "new report 2 {}".format(report)
 					rdata = report['data'].get('result')
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")
@@ -297,33 +301,35 @@ class JasperRoot(Jb.JasperBase):
 						if rid_len == eid_len:
 							for i in range(rid_len):
 								content.append(self.jps.getReport(reqId[i], expId[i].get('id')))
-								self.getAttachments(reqId[i], expId[i].get('id'), expId[i], fileName)
+								self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name)
 
 						else:
 							content.append(self.jps.getReport(reqId[0], expId[0].get('id')))
-							self.getAttachments(reqId[0], expId[0].get('id'), expId[0])
+							self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
 					else:
 						self.get_server("local")
 						for i in range(rid_len):
 							print "get report local {}".format(reqId[i])
 							content.append(self.jpl.getLocalReport(reqId[i]))
+							#self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
 		except Exception as e:
 			return frappe.msgprint(_("There is no report, try again later. Error: {}".format(e)))
 
-		return fileName, content
+		return fileName, content, report_name
 
-	def getAttachments(self, reqId, expId, expIdObj, fileName):
+	def getAttachments(self, reqId, expId, expIdObj, report_name):
 		print "expIdObj {}".format(expIdObj.get('attachments'))
 		for attach in expIdObj.get('attachments',[]):
 			#atype = attach.get("contentType").split("/")
 			attachFileName = attach.get("fileName")
 			content = self.jps.getAttachment(reqId, expId, attachFileName)
 			#frappe.create_folder(os.path.join(get_site_path("public"), "images", fileName.split(".")[0]))
-			import jasper_erpnext_report
-			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
-			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
-			write_file(content.content, os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0], attachFileName), "wb")
+			from jasper_erpnext_report.utils.file import get_html_reports_images_path
+			#import jasper_erpnext_report
+			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+			#frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
+			image_path = get_html_reports_images_path(report_name)
+			write_file(content.content, os.path.join(image_path, attachFileName), "wb")
 
 
 

@@ -18,13 +18,13 @@ import JasperBase as Jb
 
 _logger = logging.getLogger(frappe.__name__)
 
-print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "xhtml", "pdf"]
+print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 
 class JasperLocal(Jb.JasperBase):
 	def __init__(self, doc={}):
 		super(JasperLocal, self).__init__(doc)
 
-	def run_local_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
+	def run_local_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1, for_all_sites=1):
 		"""
 		resps = []
 		if doc.jasper_report_type == "Server Hooks":
@@ -58,15 +58,15 @@ class JasperLocal(Jb.JasperBase):
 			ids = data.get('ids')
 			for id in ids:
 				data['ids'] = [id]
-				resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 		else:
-			resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 		cresp = self.prepareCollectResponse(resps)
 		#return resp[len(resp) - 1]
 		cresp["origin"] = "local"
 		return [cresp]
 
-	def _run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
+	def _run_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1, for_all_sites=1):
 	#_logger.info("jasper_compile jrxml dir {0} destFileName {1}".format(jrxml, destFileName))
 		pram_server = []
 		hashmap = jr.HashMap()
@@ -140,12 +140,13 @@ class JasperLocal(Jb.JasperBase):
 			res = self.prepareResponse({"reportURI": os.path.relpath(outputPath, jasper_path) + os.sep + reportName + "." + pformat}, sessionId)
 			#resp.append(res)
 			res["status"] = None
+			res["report_name"] = data.get("report_name")
 			resp.append(res)#{"requestId":sessionId, "status": None}
 			try:
 				for pram in self.get_ask_params(data):
 					hashmap.put(pram.get("name"), pram.get("value"))
 				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
-				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
+				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 				if data.get("grid_data", {}).get("data"):
 					thread.start_new_thread(self._export_query_report, (compiled_path + os.sep, reportName, outputPath + os.sep, hashmap, data.get("grid_data"), outtype, ) )
 				else:
@@ -159,6 +160,8 @@ class JasperLocal(Jb.JasperBase):
 		export_report = jr.ExportReport()
 		print "making 4 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, conn, outtype, hashmap)
 		export_report.export(compiled_path, reportName, outputPath, hashmap, conn, outtype)
+		if outtype == 7:#html file
+			self.copy_images(reportName)
 
 	def _export_query_report(self, compiled_path, reportName, outputPath, hashmap, grid_data, outtype):
 		export_query_report = jr.ExportQueryReport()
@@ -189,17 +192,22 @@ class JasperLocal(Jb.JasperBase):
 		"""
 		print "making 7 report compiled path {} reportName {} outputPath {} outtype {} hashmap {}".format(compiled_path, reportName, outputPath, outtype, hashmap)
 		export_query_report.export(compiled_path, reportName, outputPath, hashmap, tables, cols, outtype)
+		if outtype == 7:#html file
+			self.copy_images(reportName)
+
+	def copy_images(self, reportName):
+		pass
 
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
 			frappe.throw(_("No report for this reqid %s !!" % reqId[13:]))
 		output_path = data['data']['result'].get("uri")
-		print "output_path {0} rid {1} data {2}".format(output_path, reqId, data)
+		print "output_path 2 {0} rid {1} data {2}".format(output_path, reqId, data)
 		if os.path.exists(output_path):
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
-			print "local report exists {}".format(res)
+			print "local report exists 2 {}".format(res)
 		else:
 			res = self.prepareResponse({}, reqId)
 		return res

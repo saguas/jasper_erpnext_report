@@ -168,6 +168,18 @@ class JasperBase(object):
 		utils.jaspersession_set_value(reqId, data)
 		frappe.db.commit()
 
+	def get_jasper_reqid_data(self, reqId):
+		data = utils.get_jasper_data(reqId, get_from_db=self.get_jasper_reqid_data_from_db, args=[reqId])
+		if not data:
+			utils.delete_jasper_session(reqId, "tabJasperReqids where reqid='%s'" % reqId)
+		return frappe._dict({'data': data})
+
+	def get_jasper_reqid_data_from_db(self, *reqId):
+		rec = frappe.db.sql("""select reqid, data
+			from tabJasperReqids where
+			TIMEDIFF(NOW(), lastupdate) < TIME(%s) and reqid=%s""", (utils.get_expiry_period(reqId),reqId))
+		return rec
+
 	def insert_jasper_reqid_record(self, reqId, data):
 			frappe.db.sql("""insert into tabJasperReqids
 				(reqid, data, lastupdate)
@@ -213,6 +225,8 @@ class JasperBase(object):
 	def prepareCollectResponse(self, resps):
 		reqids = []
 		status = "ready"
+		print "get_jasper_reqid_data 8 {}".format(resps[0][0].get("report_name"))
+		report_name = resps[0][0].get("report_name")
 		for resp in reversed(resps):
 			ncopies = []
 			for r in resp:
@@ -225,29 +239,17 @@ class JasperBase(object):
 				status = "not ready"
 			reqids.append(ncopies)
 			#print "ncopies is {}".format(ncopies)
-		res = self.make_internal_reqId(reqids, status)
+		res = self.make_internal_reqId(reqids, status, report_name)
 
 		return res
 
-	def make_internal_reqId(self, reqids, status):
+	def make_internal_reqId(self, reqids, status, report_name):
 		intern_reqId = "intern_reqid_" + uuid.uuid4().hex
 		reqtime = frappe.utils.now()
-		reqDbObj = {"data":{"reqids": reqids, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId)}}
+		reqDbObj = {"data":{"reqids": reqids, "report_name": report_name, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId)}}
 		self.insert_jasper_reqid_record(intern_reqId, reqDbObj)
 		res = {"requestId": intern_reqId, "reqtime": reqtime, "status": status}
 		return res
-
-	def get_jasper_reqid_data(self, reqId):
-		data = utils.get_jasper_data(reqId, get_from_db=self.get_jasper_reqid_data_from_db, args=[reqId])
-		if not data:
-			utils.delete_jasper_session(reqId, "tabJasperReqids where reqid='%s'" % reqId)
-		return frappe._dict({'data': data})
-
-	def get_jasper_reqid_data_from_db(self, *reqId):
-		rec = frappe.db.sql("""select reqid, data
-			from tabJasperReqids where
-			TIMEDIFF(NOW(), lastupdate) < TIME(%s) and reqid=%s""", (utils.get_expiry_period(reqId),reqId))
-		return rec
 
 	#def run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
 	def run_report_async(self, doc, data={}, params=[]):
@@ -292,13 +294,13 @@ class JasperBase(object):
 		print "polling problems"
 		pass
 
-	def report_polling_base(self, reqId):
+	def report_polling_base(self, reqId, report_name):
 		result = []
 		req = [{}]
 		data = self.get_jasper_reqid_data(reqId)
 		if data:
 			d = data['data']
-			print "polling {}".format(d)
+			print "polling 3 {}".format(d)
 			for ids in d.get('reqids'):
 				for id in ids:
 					res = self.polling(id)
@@ -309,7 +311,7 @@ class JasperBase(object):
 				if not result:
 					break
 			for r in result:
-				new_data = {"data":{"result": r, "last_updated": frappe.utils.now(), 'session_expiry': d.get('session_expiry')}}
+				new_data = {"data":{"result": r, "report_name": report_name, "last_updated": frappe.utils.now(), 'session_expiry': d.get('session_expiry')}}
 				self.update_jasper_reqid_record(r.get('requestId'), new_data)
 			if result:
 				req = [{"requestId": reqId, "reqtime": frappe.utils.now(), "status": "ready"}]
