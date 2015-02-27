@@ -46,6 +46,14 @@ def before_install():
 		lastupdate datetime(6) DEFAULT NULL
 		)""")
 
+	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperClientHtmlDocs(
+		id INT NOT NULL AUTO_INCREMENT,
+		name varchar(255) DEFAULT NULL,
+		data longtext,
+		lastupdate datetime(6) DEFAULT NULL,
+		PRIMARY KEY id (id)
+		)""")
+
 	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListDoctype(
 		name varchar(255) DEFAULT NULL,
 		data longtext,
@@ -154,7 +162,7 @@ def get_jasper_data(cachename, get_from_db=None, *args, **kargs):
 		data = get_jasper_session_data_from_cache(cachename)
 		if not data:
 			data = get_jasper_data_from_db(get_from_db, *args, **kargs)
-			print "get_jasper_datas {} args {} kargs {}".format(get_from_db, args, kargs)
+			print "get_jasper_datas 2 {} args {} kargs {}".format(get_from_db, args, kargs)
 			if data:
 				#if there is data in db but not in cache then update cache
 				user = data.get("user")
@@ -188,10 +196,7 @@ def get_jasper_session_data_from_cache(sessionId):
 		print "******************** getting from cache cachename {} data {}".format(sessionId, data)
 		if data:
 			session_data = data.get("data", {})
-			time_diff = frappe.utils.time_diff_in_seconds(frappe.utils.now(),
-				session_data.get("last_updated"))
-			expiry = get_expiry_in_seconds(session_data.get("session_expiry"))
-
+			time_diff, expiry = get_jasper_session_expiry_seconds(session_data.get("last_updated"), session_data.get("session_expiry"))
 			if time_diff > expiry:
 				#delete_jasper_session(sessionId, tab)
 				#frappe.db.commit()
@@ -199,6 +204,13 @@ def get_jasper_session_data_from_cache(sessionId):
 				data = None
 
 		return data and frappe._dict(data.data)
+
+def get_jasper_session_expiry_seconds(last_update, session_expiry):
+	time_diff = frappe.utils.time_diff_in_seconds(frappe.utils.now(),
+		last_update)
+	expiry = get_expiry_in_seconds(session_expiry)
+	return time_diff, expiry
+
 
 def get_jasper_data_from_db(get_from_db=None, *args, **kargs):
 	#print "get_jasper_data_from_db {}".format(get_from_db)
@@ -260,9 +272,11 @@ def jaspersession_get_value(sessionId):
 def jaspersession_set_value(sessionId, data):
 	frappe.cache().set_value("jasper:" + sessionId, data)
 
-def delete_jasper_session(sessionId, tab="tabJasperSessions"):
+def delete_jasper_session(sessionId, tab="tabJasperSessions", where=None):
 	#frappe.cache().delete_value("jaspersession:" + sid)
 	frappe.cache().delete_value("jasper:" + sessionId)
+	if where:
+		frappe.db.sql("""delete from {} where {}""".format(tab, where))
 	frappe.db.sql("""delete from {}""".format(tab))
 	frappe.db.commit()
 
@@ -400,6 +414,7 @@ def do_doctype_from_jasper(data, reports, force=False):
 		#doc = _doctype_from_jasper_doc(report_name, "Jasper Reports", mydict)
 		doc = frappe.new_doc("Jasper Reports")
 
+		doc.name = report_name
 		doc.jasper_report_name = key
 		doc.jasper_report_path = uri
 		doc.idx = p_idx
@@ -668,6 +683,8 @@ def get_expiry_period(sessionId="jaspersession"):
 		exp_sec = "24:00:00"
 	elif "intern_reqid_" in sessionId or "local_report_" in sessionId:
 		exp_sec = "8:00:00"
+	elif "client_html_" in sessionId:
+		exp_sec = "00:00:10"
 	else:
 		exp_sec = frappe.defaults.get_global_default("jasper_session_expiry") or "12:00:00"
 
@@ -680,6 +697,8 @@ def get_expiry_period(sessionId="jaspersession"):
 def get_value_param_for_hook(param):
 	#if not data and not entered value then get default
 	default_value = param.jasper_param_value
+	if not default_value:
+		frappe.throw(_("Error, parameter {} needs a value!").format(param.jasper_param_name))
 	matchObj =re.match(r"^[\"'](.*)[\"']", default_value)
 	if matchObj:
 		print "default_value with replace {}".format(matchObj.group(1))

@@ -305,16 +305,20 @@ class JasperRoot(Jb.JasperBase):
 								content.append(c)
 								if file_ext == "html":
 									hash_obj = hashlib.md5(c)
-									hash = hash_obj.hexdigest()
-									self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name, hash)
+									self.html_hash = hash_obj.hexdigest()
+									self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name)
+									reportPath = self.get_html_path(report_name)
+									self.save_html_cache(report_name, reportPath)
 
 						else:
 							c = self.jps.getReport(reqId[0], expId[0].get('id'))
 							content.append(c)
 							if file_ext == "html":
 								hash_obj = hashlib.md5(c)
-								hash = hash_obj.hexdigest()
-								self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name, hash)
+								self.html_hash = hash_obj.hexdigest()
+								self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
+								reportPath = self.get_html_path(report_name)
+								self.save_html_cache(report_name, reportPath)
 					else:
 						self.get_server("local")
 						for i in range(rid_len):
@@ -326,7 +330,7 @@ class JasperRoot(Jb.JasperBase):
 
 		return fileName, content, report_name
 
-	def getAttachments(self, reqId, expId, expIdObj, report_name, hash):
+	def getAttachments(self, reqId, expId, expIdObj, report_name):
 		print "expIdObj {}".format(expIdObj.get('attachments'))
 		for attach in expIdObj.get('attachments',[]):
 			#atype = attach.get("contentType").split("/")
@@ -337,7 +341,7 @@ class JasperRoot(Jb.JasperBase):
 			#import jasper_erpnext_report
 			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#frappe.create_folder(os.path.join(path_jasper_module, "public", "images", fileName.split(".")[0]))
-			report_path = get_html_reports_path(report_name, hash=hash)
+			report_path = get_html_reports_path(report_name, hash=self.html_hash)
 			image_path = get_html_reports_images_path(report_path)
 			write_file(content.content, os.path.join(image_path, attachFileName), "wb")
 

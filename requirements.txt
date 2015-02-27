@@ -1,4 +1,3 @@
 frappe
 -e git+https://github.com/saguas/jasperserverlib.git
 PyPDF2
-TinyUrl

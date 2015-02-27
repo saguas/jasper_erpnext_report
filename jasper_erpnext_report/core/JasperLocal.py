@@ -4,8 +4,9 @@ __author__ = 'luissaguas'
 from frappe import _
 import frappe
 
-from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path, get_file
+from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path, get_file, get_html_reports_images_path
 import jasper_erpnext_report.utils.utils as utils
+
 
 import logging
 import uuid
@@ -163,7 +164,9 @@ class JasperLocal(Jb.JasperBase):
 		print "making 4 report compiled path {} reportName {} outputPath {} conn {} outtype {} hashmap {}".format(compiled_path, fileName, outputPath, conn, outtype, hashmap)
 		export_report.export(compiled_path, fileName, outputPath, hashmap, conn, outtype)
 		if outtype == 7:#html file
-			self.copy_images(outputPath, fileName, report_name, localsite)
+			content = get_file(outputPath + fileName + ".html")
+			self.copy_images(content, outputPath, fileName, report_name, localsite)
+			self.save_html_cache(report_name, self.report_html_path)
 
 	def _export_query_report(self, compiled_path, fileName, report_name, outputPath, hashmap, grid_data, outtype, localsite):
 		export_query_report = jr.ExportQueryReport()
@@ -195,18 +198,16 @@ class JasperLocal(Jb.JasperBase):
 		print "making 7 report compiled path {} reportName {} outputPath {} outtype {} hashmap {}".format(compiled_path, fileName, outputPath, outtype, hashmap)
 		export_query_report.export(compiled_path, fileName, outputPath, hashmap, tables, cols, outtype)
 		if outtype == 7:#html file
-			self.copy_images(outputPath, fileName, report_name, localsite)
+			content = get_file(outputPath + fileName + ".html")
+			self.copy_images(content, outputPath, fileName, report_name, localsite)
+			self.save_html_cache(report_name, self.report_html_path)
 
-	def copy_images(self, outputPath, fileName, report_name, localsite):
+	def copy_images(self, content, outputPath, fileName, report_name, localsite):
 		from distutils.dir_util import copy_tree
-		from jasper_erpnext_report.utils.file import get_html_reports_images_path, get_html_reports_path
-		import hashlib
-		content = get_file(outputPath + fileName + ".html")
-		hash_obj = hashlib.md5(content)
-		hash = hash_obj.hexdigest()
+
 		src = fileName + "." + "html_files"
 		html_files = os.path.join(outputPath, src)
-		report_path = get_html_reports_path(report_name, localsite=localsite, hash=hash)
+		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
 		dst = get_html_reports_images_path(report_path, where=src)
 		copy_tree(html_files, dst)
 

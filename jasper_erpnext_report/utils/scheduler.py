@@ -1,7 +1,7 @@
 __author__ = 'luissaguas'
 import frappe, logging
 from memcache_stats import MemcachedStats
-from jasper_erpnext_report.utils.utils import jasper_cache_data, delete_jasper_session, jaspersession_get_value, get_expiry_in_seconds
+from jasper_erpnext_report.utils.utils import jasper_cache_data, delete_jasper_session, jaspersession_get_value, get_expiry_in_seconds, get_jasper_session_expiry_seconds
 from jasper_erpnext_report.utils.file import remove_directory, get_jasper_path, remove_compiled_report
 #import jasper_erpnext_report
 
@@ -100,6 +100,33 @@ def clear_expired_jasper_sessions():
 	clear_all_jasper_reports(force=False)
 	frappe.db.commit()
 
+#necessario ir buscar tb a base de dados!
+#ainda nao esta a apagar. e necessario pegar no hash e apagar do cache e da db
+def clear_expired_jasper_html():
+	"""This function is meant to be called from scheduler"""
+	print "Clear expired jasper html"
+	names = frappe.db.sql("select name from `tab%s`" % ("Jasper Reports",), (), as_dict=True, debug=False)
+	print "names ... {}".format(names)
+	for name_obj in names:
+		name = "client_html_" + name_obj.name.replace(" ", "_")
+		data = frappe._dict(jaspersession_get_value(name) or {})
+	#_logger.info("jasperserver  get_jasper_session_data_from_cache {}".format(data))
+		print "******************** getting from cache cachename {} data {}".format("client_html_docs", data)
+		if data:
+			session_data = data.get("data", {})
+			time_diff, expiry = get_jasper_session_expiry_seconds(session_data.get("last_updated"), session_data.get("session_expiry"))
+			if time_diff > expiry:#remove from disc
+				print "reportPath {}".format(data['data'].get("reportPath"))
+				remove_directory(data['data'].get("reportPath"))
+				delete_jasper_session(name, tab="tabJasperClientHtmlDocs", where="name=" + name)
+
+
+def clear_all_jasper_html():
+	names = frappe.db.sql("select %s from `tab%s`" % ("name", "Jasper Reports"), (), as_dict=True, debug=False)
+	for name_obj in names:
+		name = "client_html_" + name_obj.name.replace(" ", "_")
+		delete_jasper_session(name)
+
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
 	local_session_data = frappe.local.session
@@ -123,5 +150,6 @@ def clear_cache():
 		frappe.cache().delete_value("jasper:" + "report_list_dirt_doc")
 		clear_all_jasper_sessions()
 		clear_all_jasper_reports()
+		clear_all_jasper_html()
 		frappe.db.commit()
 		#jaspersession_set_value("jasper_clear_cache_time", now)

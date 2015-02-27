@@ -10,7 +10,7 @@ from io import BytesIO
 import uuid
 
 import jasper_erpnext_report.utils.utils as utils
-from jasper_erpnext_report.utils.file import get_query
+from jasper_erpnext_report.utils.file import get_query, get_html_reports_path
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -25,6 +25,8 @@ class JasperBase(object):
 		self.user = frappe.local.session["user"]
 		self.sid = frappe.local.session["sid"]
 		self.reset_data_session()
+		self.report_html_path = None
+		self.html_hash = None
 		self.resume()
 
 	def reset_data_session(self):
@@ -196,6 +198,11 @@ class JasperBase(object):
 			TIMEDIFF(NOW(), lastupdate) < TIME("{1}")""".format(tab, utils.get_expiry_period("report_list_all")))
 		return rec
 
+	def get_session_from_db(self, tab="tabJasperClientHtmlDocs"):
+		rec = frappe.db.sql("""select name, data
+			from {0}""".format(tab))
+		return rec
+
 	def prepareResponse(self, detail, reqId):
 		uri = detail.get("reportURI")
 		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
@@ -320,6 +327,29 @@ class JasperBase(object):
 			frappe.throw(_("Report Not Found!!!"))
 		print "result in polling local {}".format(result)
 		return req
+
+	def get_html_path(self, report_name, localsite=None, content=None):
+		import hashlib
+		site = localsite or frappe.local.site
+		if not self.html_hash:
+			hash_obj = hashlib.md5(content)
+			self.html_hash = hash_obj.hexdigest()
+		self.report_html_path = get_html_reports_path(report_name, localsite=site, hash=self.html_hash)
+		return self.report_html_path
+
+	def save_html_cache(self, report_name, reportPath):
+		name = "client_html_" + report_name.replace(" ", "_")
+		new_data = frappe._dict({'data': {}})
+		data = utils.get_jasper_data(name, get_from_db=self.get_session_from_db, tab="tabJasperClientHtmlDocs")
+		if data:
+			rp = data['data']['reportPath']
+			if rp == reportPath:
+				data['data']['hash'] = self.html_hash
+				utils.update_list_all_memcache_db(data, cachename=name, tab="tabJasperClientHtmlDocs")
+				return
+		new_data['data']['reportPath'] = reportPath
+		new_data['data']['hash'] = self.html_hash
+		utils.insert_list_all_memcache_db(new_data['data'], cachename=name, tab="tabJasperClientHtmlDocs")
 
 	def filter_perm_roles(self, data):
 		removed = 0

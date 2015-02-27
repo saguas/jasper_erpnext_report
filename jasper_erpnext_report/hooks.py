@@ -97,6 +97,9 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_sessions"
+	],
+	"hourly": [
+		"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_html"
 	]
 }
 # scheduler_events = {

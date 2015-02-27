@@ -217,6 +217,7 @@ class JasperServer(Jb.JasperBase):
 				if value:
 					a = ["'%s'" % t for t in value]
 				else:
+					print "param for hook 2 {}".format(param.as_dict())
 					value = utils.get_value_param_for_hook(param)
 					if not isinstance(value, basestring):
 						a = ["'%s'" % t for t in list(value)]
