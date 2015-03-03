@@ -101,6 +101,15 @@
    "precision": ""
   }, 
   {
+   "default": "0", 
+   "description": "Check if you want to set permission at document level. Uncheck this if you don't want to set permission at doctype level.", 
+   "fieldname": "jasper_ignore_perm_roles", 
+   "fieldtype": "Check", 
+   "label": "Ignore Jasper Permission Roles", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
    "fieldname": "report_options", 
    "fieldtype": "Column Break", 
    "label": "Report Options", 
@@ -262,7 +271,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2014-12-29 10:53:23.507272", 
+ "modified": "2015-03-03 19:53:31.475636", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 

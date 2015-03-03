@@ -60,14 +60,6 @@ def before_install():
 		lastupdate datetime(6) DEFAULT NULL
 		)""")
 
-	'''frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperSessions(
-		user varchar(255) DEFAULT NULL,
-		sid varchar(255) DEFAULT NULL,
-		sessiondata longtext,
-		lastupdate datetime(6) DEFAULT NULL,
-		status varchar(20) DEFAULT NULL,
-		KEY sid (sid)
-		)""")'''
 
 def jasper_report_names_from_db(origin="both", filters_report={}, filters_param={}, filters_permrole={}):
 	ret = None
@@ -636,6 +628,7 @@ def check_queryString_param(query, param):
 
 	return ret
 
+"""
 def check_jasper_doc_perm(perms):
 	found = True
 	if frappe.local.session['user'] == "Administrator":
@@ -644,37 +637,12 @@ def check_jasper_doc_perm(perms):
 	for perm in perms:
 		jasper_can_read = perm.get('jasper_can_read', None)
 		jasper_role = perm.get('jasper_role', None)
-		print "check_jasper_perm read {0} role {1}".format(jasper_can_read, jasper_role)
+		print "check_jasper_perm 3 read {0} role {1} user_roles {2} perms {3}".format(jasper_can_read, jasper_role, user_roles, perms)
 		if jasper_role in user_roles and not jasper_can_read:
 			found = False
 			break
 	return found
-
-def check_jasper_perm(perms, ptypes=["read"]):
-	found = False
-
-	def check_perm(perms, user_roles, ptype):
-		found = False
-		for perm in perms:
-			jasper_perm_type = perm.get('jasper_can_' + ptype, None)
-			jasper_role = perm.get('jasper_role', None)
-			print "check_jasper_perm read {0} role {1}".format(jasper_perm_type, jasper_role)
-			if jasper_role in user_roles and jasper_perm_type:
-				found = True
-				break
-		return found
-
-	if frappe.local.session['user'] == "Administrator":
-		return True
-
-	user_roles = frappe.get_roles(frappe.local.session['user'])
-
-	for ptype in ptypes:
-		found = check_perm(perms, user_roles, ptype)
-		if found == False:
-			break
-
-	return found
+"""
 
 def get_expiry_period(sessionId="jaspersession"):
 	#exp_sec = "00:10:00"#frappe.defaults.get_global_default("session_expiry") or "06:00:00"
@@ -748,3 +716,89 @@ def jasper_params(doc, method, data, params):
 			param['value'].append('Guest')
 
 	return params
+
+
+def check_jasper_perm(perms, ptypes=("read",), user=None):
+		found = False
+
+		if isinstance(ptypes, basestring):
+			ptypes = (ptypes, )
+
+		if user == None:
+			user = frappe.local.session['user']
+
+		def check_perm(perms, user_roles, ptype):
+			found = False
+			for perm in perms:
+				jasper_perm_type = perm.get('jasper_can_' + ptype, None)
+				jasper_role = perm.get('jasper_role', None)
+				print "check_jasper_perm read 5 {0} role {1} user_roles {2} jasper_role in user_roles {3} perms {4}".format(jasper_perm_type, jasper_role, user_roles, jasper_role in user_roles, perms)
+				if jasper_role in user_roles and jasper_perm_type:
+					found = True
+					break
+			return found
+
+		if user == "Administrator":
+			return True
+
+		user_roles = frappe.get_roles(user)
+
+		for ptype in ptypes:
+			found = check_perm(perms, user_roles, ptype)
+			if found == False:
+				break
+
+		return found
+
+"""
+def check_jasper_perm(perms, ptypes=("read",)):
+		found = False
+
+		def check_perm(perms, user_roles, ptype):
+			found = False
+			for perm in perms:
+				jasper_perm_type = perm.get('jasper_can_' + ptype, None)
+				jasper_role = perm.get('jasper_role', None)
+				print "check_jasper_perm read {0} role {1}".format(jasper_perm_type, jasper_role)
+				if jasper_role in user_roles and jasper_perm_type:
+					found = True
+					break
+			return found
+
+		if frappe.local.session['user'] == "Administrator":
+			return True
+
+		user_roles = frappe.get_roles(frappe.local.session['user'])
+
+		for ptype in ptypes:
+			found = check_perm(perms, user_roles, ptype)
+			if found == False:
+				break
+
+		return found
+
+"""
+
+def check_frappe_permission(doctype, docname, ptypes=("read", )):
+	if isinstance(ptypes, basestring):
+		ptypes = (ptypes, )
+	perm = True
+	for ptype in ptypes:
+		if not frappe.has_permission(doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
+			print "get_reports_list 2 No {0} permission for doc {1}".format(ptype, docname)
+			perm = False
+			break
+	return perm
+
+#called from frappe.has_permission as controller
+def has_jasper_permission(doc, ptype, user):
+	perm = True
+	ignore_perm = jaspersession_get_value("jasper_ignore_perm_roles")
+	if ignore_perm is None:
+		ignore_perm = frappe.db.get_single_value("JasperServerConfig", "jasper_ignore_perm_roles")
+		jaspersession_set_value("jasper_ignore_perm_roles", ignore_perm)
+	print "ignore perm 6 {}".format(ignore_perm)
+	if not ignore_perm:
+		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
+
+	return perm

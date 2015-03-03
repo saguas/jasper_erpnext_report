@@ -20,6 +20,7 @@ class JasperRoot(Jb.JasperBase):
 	def __init__(self, doc={}):
 		self.jps = None
 		self.jpl = None
+		frappe.local.jasper_session_obj = self
 		super(JasperRoot, self).__init__(doc)
 
 	def get_server(self, origin):
@@ -72,7 +73,8 @@ class JasperRoot(Jb.JasperBase):
 	def _get_reports_list(self, filters_report={}, filters_param={}, force=False, cachename="report_list_all", tab="tabJasperReportListAll", update=False):
 		ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 		#check to see if there is any report by now. If there are reports don't check the server
-		if ret is None and self.use_server():
+		print "ret is none? {}".format(ret)
+		if self.user == "Administrator" and ret is None and self.use_server():
 			#called from client. Don't let him change old reports attributes
 			import_only_new = self.data['data'].get('import_only_new')
 			self.data['data']['import_only_new'] = 1
@@ -105,11 +107,13 @@ class JasperRoot(Jb.JasperBase):
 			utils.delete_jasper_session("report_list_all", "tabJasperReportListAll")
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			data = self._get_reports_list(filters_report=r_filters)
-			print "data new {}".format(data)
+
+		print "data new 2 {}".format(data)
 		if data:
 			utils.jaspersession_set_value("report_list_dirt_all", False)
 			data.pop('session_expiry',None)
 			data.pop('last_updated', None)
+
 			#if frappe.local.session['user'] != "Administrator":
 			self.filter_perm_roles(data)
 			if not self.check_server_status():
@@ -147,8 +151,7 @@ class JasperRoot(Jb.JasperBase):
 		else:
 			docnames = []
 
-		new_data = {}
-		added = 0
+		new_data = {'size': 0}
 		if frappe.local.session['sid'] == 'Guest':
 			return None
 
@@ -171,28 +174,10 @@ class JasperRoot(Jb.JasperBase):
 			utils.jaspersession_set_value("report_list_dirt_doc", False)
 			data.pop('session_expiry',None)
 			data.pop('last_updated', None)
-			for k,v in data.iteritems():
-				if isinstance(v, dict):
-					if v.get("Doctype name") == doctype:
-						if docnames and v.get('jasper_report_type') == "List":
-							continue
-						if frappe.local.session['user'] != "Administrator":
-							for docname in docnames:
-								for ptype in ("read", "print"):
-									if not frappe.has_permission(doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
-										print "No {0} permission for doc {1}".format(ptype, docname)
-										continue
-							rdoc = frappe.get_doc("Jasper Reports", k)
-							print "rdoc for list reports {}".format(rdoc.jasper_roles)
-							if not utils.check_jasper_doc_perm(rdoc.jasper_roles):
-								print "No {0} permission!".format("read")
-								continue
-						new_data[k] = v
-						added = added + 1
-		new_data['size'] = added
+			new_data = self.doc_filter_perm_roles(doctype, data, docnames)
 
 		if not self.check_server_status():
-			print "a remover {}".format(new_data)
+			print "a remover 2 {}".format(new_data)
 			self.remove_server_docs(new_data)
 
 		return new_data
@@ -230,13 +215,16 @@ class JasperRoot(Jb.JasperBase):
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
 			for docname in data.get('name_ids'):
 				for ptype in ("read", "print"):
-					if not frappe.has_permission(rdoc.jasper_doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
+					#if not frappe.has_permission(rdoc.jasper_doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
+					if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=ptype):
 						raise frappe.PermissionError(_("No {0} permission for doc {1} in doctype {3}!").format(ptype, docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports
-			if not utils.check_jasper_doc_perm(rdoc.jasper_roles):
+			#if not self.check_jasper_doc_perm(rdoc.jasper_roles):
+			if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
 				raise frappe.PermissionError(_("No print permission!"))
 		else:
-			if not utils.check_jasper_perm(rdoc.jasper_roles):
+			#if not self.check_jasper_perm(rdoc.jasper_roles):
+			if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
 				raise frappe.PermissionError(_("No print permission!"))
 		params = rdoc.jasper_parameters
 		origin = rdoc.jasper_report_origin.lower()
@@ -307,8 +295,9 @@ class JasperRoot(Jb.JasperBase):
 									hash_obj = hashlib.md5(c)
 									self.html_hash = hash_obj.hexdigest()
 									self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name)
-									reportPath = self.get_html_path(report_name)
-									self.save_html_cache(report_name, reportPath)
+									#reportPath = self.get_html_path(report_name)
+									#print "1- chegou aqui hash repport_name 2 {} hash {} reportPath {}".format(report_name, self.html_hash, reportPath)
+									#self.save_html_cache(report_name, reportPath)
 
 						else:
 							c = self.jps.getReport(reqId[0], expId[0].get('id'))
@@ -317,8 +306,9 @@ class JasperRoot(Jb.JasperBase):
 								hash_obj = hashlib.md5(c)
 								self.html_hash = hash_obj.hexdigest()
 								self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
-								reportPath = self.get_html_path(report_name)
-								self.save_html_cache(report_name, reportPath)
+								#print "2- chegou aqui hash repport_name {} hash {}".format(report_name, self.html_hash)
+								#reportPath = self.get_html_path(report_name)
+								#self.save_html_cache(report_name, reportPath)
 					else:
 						self.get_server("local")
 						for i in range(rid_len):

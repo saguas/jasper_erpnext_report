@@ -16,7 +16,7 @@ from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.utils.jasper_email import sendmail
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
-from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_jasper_perm
+from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission
 from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender
 from jasper_erpnext_report.utils.file import get_file
 
@@ -67,10 +67,9 @@ def _get_report(data):
 			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0]))
 			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-		hash_obj = hashlib.md5(content[0])
-		hash = hash_obj.hexdigest()
-		html_reports_path = get_html_reports_path(report_name, hash=hash)
-			#print "frappe.local.request 3 {}".format(frappe.local.request.host_url)
+		#hash_obj = hashlib.md5(content[0])
+		#hash = hash_obj.hexdigest()
+		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 			#write_file(c, os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0], fileName))
 		#write_file(c, os.path.join(html_reports_path, fileName))
 		write_file(content[0], os.path.join(html_reports_path, fileName))
@@ -89,9 +88,10 @@ def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None
 		if pformat == "html":
 			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-			hash_obj = hashlib.md5(content[0])
-			hash = hash_obj.hexdigest()
-			html_reports_path = get_html_reports_path(report_name, hash=hash)
+			#hash_obj = hashlib.md5(content[0])
+			#hash = hash_obj.hexdigest()
+			#print "jsr.html_hash 3 {}".format(jsr.html_hash)
+			html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 			full_path = os.path.join(html_reports_path, fileName)
 			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
 			print "relat_path in make_pdf {}".format(relat_path)
@@ -129,10 +129,10 @@ def jasper_server_login():
 
 @frappe.whitelist()
 def get_doc(doctype, docname):
-	import jasper_erpnext_report.utils.utils as utils
 	data = {}
+	#jsr = jasper_session_obj or Jr.JasperRoot()
 	doc = frappe.get_doc(doctype, docname)
-	if utils.check_jasper_perm(doc.get("jasper_roles", None)):
+	if check_frappe_permission(doctype, docname, ptypes=("read", )):
 		data = {"data": doc}
 	frappe.local.response.update(data)
 
@@ -183,8 +183,12 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 	#	print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy, set_lead=set_lead,
 	#	date=date)
 	#check permissions
+	#jsr = jasper_session_obj or Jr.JasperRoot()
 	perms = rdoc.get("jasper_roles")
-	if not check_jasper_perm(perms, ptypes=["email"]):
+	#TODO: must check for frappe permissions : jsr.check_frappe_permission(doctype, docname, ptypes=("email", )) and
+	#if not check_jasper_perm(perms, ptypes=("email", )):
+	print "email permission doctype {} report name {}".format(data.get("doctype"), data.get('report_name'))
+	if not check_frappe_permission(data.get("doctype"), data.get('report_name'), ptypes=("read", )):
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
 			doctype=data.get("doctype"), name=data.get('report_name')))
 

@@ -351,23 +351,69 @@ class JasperBase(object):
 		new_data['data']['hash'] = self.html_hash
 		utils.insert_list_all_memcache_db(new_data['data'], cachename=name, tab="tabJasperClientHtmlDocs")
 
+	#check what docs to show when global
 	def filter_perm_roles(self, data):
 		removed = 0
 		count = 0
 		toremove = []
 		for k,v in data.iteritems():
 			if isinstance(v, dict):
-				#found = False
 				count += 1
 				perms = v.pop("perms", None)
 				print "perms {}".format(perms)
-				found = utils.check_jasper_perm(perms)
+				#docname = k
+				frappe.flags.mute_messages = True
+				found = utils.check_frappe_permission("Jasper Reports", k, ptypes=("read", ))
+				"""
+				for ptype in ("read", "print"):
+					if not frappe.has_permission("Jasper Reports", ptype=ptype, doc=docname, user=frappe.local.session['user']):
+						print "Filter_perm_roles no 2 {0} permission for doc {1}".format("read", docname)
+						found = False
+						break
+					else:
+						found = True
+				"""
+				frappe.flags.mute_messages = False
+				#if found == True:
+				#	found = utils.check_jasper_perm(perms)
 				if not found:
 					toremove.append(k)
 					removed = removed + 1
 		for k in toremove:
 			data.pop(k, None)
 		data['size'] = count - removed
+
+	#check what docs to show when inside doctype
+	def doc_filter_perm_roles(self, doctype, data, docnames):
+		new_data = {}
+		added = 0
+		for k,v in data.iteritems():
+			if isinstance(v, dict):
+				if v.get("Doctype name") == doctype:
+					if docnames and v.get('jasper_report_type') == "List":
+						continue
+					if frappe.local.session['user'] != "Administrator":
+						frappe.flags.mute_messages = True
+						to_remove = False
+						ptypes = ("read", )
+						if not utils.check_frappe_permission("Jasper Reports", k, ptypes=ptypes):
+							continue
+						for docname in docnames:
+							if not utils.check_frappe_permission(doctype, docname, ptypes=ptypes):
+								to_remove = True
+								break
+						frappe.flags.mute_messages = False
+						if to_remove == True:
+							continue
+						#rdoc = frappe.get_doc("Jasper Reports", k)
+						#print "rdoc for list reports 2 {}".format(rdoc.jasper_roles)
+						#if not utils.check_jasper_perm(rdoc.jasper_roles):# or check_jasper_doc_perm
+						#	print "No {0} permission!".format("read")
+						#	continue
+					new_data[k] = v
+					added = added + 1
+		new_data['size'] = added
+		return new_data
 
 	#check if exist at least one docname in data
 	def check_docname(self, data, doctype, report):
@@ -387,3 +433,6 @@ class JasperBase(object):
 		time_diff = frappe.utils.time_diff_in_seconds(request_time, last_timeout) if last_timeout else None
 		if time_diff and time_diff < 0:
 			frappe.throw("RequestID not Valid!!!")
+
+	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
+		return None

@@ -231,6 +231,7 @@ jasper.getReport = function(msg){
 
 jasper.getList = function(page, doctype, docnames){
 	var jpage = frappe.pages[page];
+	console.log("jasper.getList docnames ", docnames, doctype);
 	if(jpage && jasper.pages[page]){
 		list = jasper.pages[page];
 		//console.log("exist lista ", list);

@@ -20,7 +20,7 @@
    "in_list_view": 1, 
    "label": "Parameter Name", 
    "no_copy": 0, 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": "", 
    "print_hide": 0, 
    "read_only": 0, 
@@ -42,7 +42,7 @@
    "label": "Parameter Type", 
    "no_copy": 0, 
    "options": "Check\nCode\nCurrency\nData\nDate\nDatetime\nFloat\nHTML\nImage\nInt\nLong Text\nPassword\nPercent\nSelect\nString\nTime", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": "", 
    "print_hide": 0, 
    "read_only": 0, 
@@ -64,7 +64,7 @@
    "label": "Parameter Action", 
    "no_copy": 0, 
    "options": "Automatic\nAsk", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": "", 
    "print_hide": 0, 
    "read_only": 0, 
@@ -87,7 +87,7 @@
    "in_list_view": 1, 
    "label": "Type", 
    "options": "Is for copies\nIs for where clause\nIs for page number\nIs for server hook\nOther", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": ""
   }, 
   {
@@ -95,7 +95,7 @@
    "fieldname": "jasper_param_description", 
    "fieldtype": "Small Text", 
    "label": "Description", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": ""
   }, 
   {
@@ -111,7 +111,7 @@
    "fieldtype": "Select", 
    "label": "Parameter Expression", 
    "options": "In\nNot In", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": ""
   }, 
   {
@@ -131,7 +131,7 @@
    "fieldname": "jasper_param_value", 
    "fieldtype": "Small Text", 
    "label": "Parameter Value", 
-   "permlevel": 0, 
+   "permlevel": 2, 
    "precision": ""
   }
  ], 
@@ -142,7 +142,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2014-12-12 19:08:10.277892", 
+ "modified": "2015-03-02 19:59:17.227173", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Parameter", 

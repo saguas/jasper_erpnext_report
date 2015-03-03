@@ -75,9 +75,9 @@ app_include_js = ["/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js", "/a
 # 	"Event": "frappe.core.doctype.event.event.get_permission_query_conditions",
 # }
 #
-# has_permission = {
-# 	"Event": "frappe.core.doctype.event.event.has_permission",
-# }
+has_permission = {
+	"Jasper Reports": "jasper_erpnext_report.utils.utils.has_jasper_permission",
+}
 
 # Document Events
 # ---------------
