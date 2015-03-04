@@ -9,7 +9,7 @@ from frappe.model.document import Document
 #from jasper_erpnext_report.utils.utils import get_jasper_session_data_from_db, get_jasper_session_data_from_cache
 #import json
 import jasper_erpnext_report.core.JasperRoot as Jr
-from jasper_erpnext_report.utils.utils import jaspersession_set_value
+from jasper_erpnext_report.utils.utils import jaspersession_set_value, delete_jasper_session
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -17,6 +17,9 @@ _logger = logging.getLogger(frappe.__name__)
 class JasperServerConfig(Document):
 	def on_update(self):
 		jaspersession_set_value("jasper_ignore_perm_roles", self.jasper_ignore_perm_roles)
+		delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
+		delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
+
 	def validate(self):
 		frappe.local.jasper_session_obj = Jr.JasperRoot(self)#JasperServerSession(self)
 		#frappe.local.jasper_session_obj.validate()

@@ -120,12 +120,14 @@ def insert_jasper_list_all(data, cachename="report_list_all", tab="tabJasperRepo
 		jaspersession_set_value(cachename, data)
 		frappe.db.commit()
 
-def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll"):
+def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
 	#data['size'] = len(data)
 	print "************* insert_list_all_memcache_db {} len {}".format(data, len(data))
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	#print "inserting data list {}".format(data)
+	for k,v in fields.iteritems():
+		data[k] = v
 	insert_jasper_list_all({"data":data}, cachename, tab)
 
 def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
@@ -136,12 +138,14 @@ def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperRepo
 		jaspersession_set_value(cachename, data)
 		frappe.db.commit()
 
-def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll"):
+def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	old_data = frappe._dict(jaspersession_get_value(cachename) or {})
 	new_data = old_data.get("data", {})
 	new_data.update(data)
+	for k,v in fields.iteritems():
+		new_data[k] = v
 	#new_data['size'] = len(new_data)
 	print "updating data list {}".format(data)
 	update_jasper_list_all({"data":new_data}, cachename, tab)
@@ -269,7 +273,8 @@ def delete_jasper_session(sessionId, tab="tabJasperSessions", where=None):
 	frappe.cache().delete_value("jasper:" + sessionId)
 	if where:
 		frappe.db.sql("""delete from {} where {}""".format(tab, where))
-	frappe.db.sql("""delete from {}""".format(tab))
+	else:
+		frappe.db.sql("""delete from {}""".format(tab))
 	frappe.db.commit()
 
 def get_expiry_in_seconds(expiry):
