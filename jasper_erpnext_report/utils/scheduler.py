@@ -28,7 +28,7 @@ def clear_all_jasper_sessions():
 	#frappe.only_for("Administrator")
 	for session in jasper_cache_data:
 		delete_jasper_session(session.get("mcache"), tab=session.get("db"))
-	
+
 def clear_jasper_list():
 	delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
 	delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")

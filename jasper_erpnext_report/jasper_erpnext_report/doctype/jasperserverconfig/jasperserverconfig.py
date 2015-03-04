@@ -17,8 +17,10 @@ _logger = logging.getLogger(frappe.__name__)
 class JasperServerConfig(Document):
 	def on_update(self):
 		jaspersession_set_value("jasper_ignore_perm_roles", self.jasper_ignore_perm_roles)
-		delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
-		delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
+		#delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
+		#delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
+		jaspersession_set_value("report_list_dirt_all", True)
+		jaspersession_set_value("report_list_dirt_doc", True)
 
 	def validate(self):
 		frappe.local.jasper_session_obj = Jr.JasperRoot(self)#JasperServerSession(self)
