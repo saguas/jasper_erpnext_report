@@ -153,13 +153,43 @@ class JasperBase(object):
 		return query
 
 	def check_ids_in_hooks(self, doc, data, params):
-		pram_server = [{"name": "name_ids", "attrs": params, "value": data.get('name_ids', [])}]
-		res = utils.call_hook_for_param(doc, data, pram_server)
-		print "res on hooks 2 {}".format(res)
+		#pram_server = [{"name": "name_ids", "attrs": params, "value": data.get('name_ids', [])}]
+		method = "on_jasper_params_ids"
+		res = utils.call_hook_for_param(doc, method, data, params)
+		"""
+		Hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"], "report_type": "List"}
+		"""
+		print "res on hooks 3 {}".format(res)
 		if res:
-			data['name_ids'] = res[0].get('value')
-			data['jasper_report_type'] = res[0].get('report_type', None)
-		return res[0]
+			data['name_ids'] = res.get('ids', [])
+			"""
+			The hooks method is responsible for change to the appropriate report type: Form or List
+			default is Form
+			"""
+			data['jasper_report_type'] = res.get('report_type', "Form")
+		return res
+
+	def get_where_clause_value(self, value, param):
+		#value = data.get('ids')
+		if value:
+			if isinstance(value, basestring):
+				a = ["'%s'" % t for t in list(value)]
+			else:
+				a = ["'%s'" % t for t in value]
+		else:
+			"""
+			get default value for id
+			"""
+			#print "param for hook 2 {}".format(param.as_dict())
+			value = utils.get_value_param_for_hook(param)
+			#if not isinstance(value, basestring):
+			if isinstance(value, basestring):
+				a = ["'%s'" % t for t in list(value)]
+			else:
+				a = ["'%s'" % t for t in value]
+				#a = list(a)
+		value = "where name %s (%s)" % (param.param_expression, ",".join(a))
+		return value
 
 	def update_jasper_reqid_record(self, reqId, data):
 		#print "reqID update db {}".format(str(data['data']))
@@ -272,21 +302,23 @@ class JasperBase(object):
 			name_ids = data.get('name_ids', [])
 			#if params or name_ids:
 			if not name_ids:
-				res = self.check_ids_in_hooks(doc, data, params)
+				res = None
+				if doc.jasper_report_type != "Server Hooks":
+					res = self.check_ids_in_hooks(doc, data, params)
 				print "hooks res {}".format(res)
 				if not res:
 					frappe.throw(_("Report {} input params error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
 					return
 		#print "name_ids from hooks {}".format(data.get('name_ids'))
 		#In General type you may change to Form or List and give ids and change some initial data
-		if doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form":
+		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form" :
 			if not data.get('ids', None):
 				data['ids'] = []
 			for elem in data.get('name_ids', []):
 				data['ids'].append(elem)
 			#data['ids'] = [data.get('name_ids', [])[0]]
 				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-		elif doc.jasper_report_type == "List" or data.get('jasper_report_type', None) == "List":
+		elif data.get('jasper_report_type', None) == "List" or doc.jasper_report_type == "List":
 			data['ids'] = data.get('name_ids', [])
 					#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 			#else:

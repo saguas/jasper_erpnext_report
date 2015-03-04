@@ -131,7 +131,8 @@ jasper.polling_report = function(data, $banner, timeout){
                            jasper.close_banner($banner);
                            if (what === "ok"){
                                var ptime = parseInt(frappe.boot.jasper_reports_list.jasper_polling_time);
-                               setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
+                               //setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
+							   jasper.polling_report(data, $banner, timeout);
                            }
                        });
 					   

@@ -75,8 +75,9 @@ class JasperReports(Document):
 		parent_path = os.path.normpath(os.path.join(compiled_path,".."))
 		remove_directory(parent_path)
 
-	def on_jasper_params(self, data=[], params=[]):
-		print "new params hooks {}".format(data)
+	def on_jasper_params_ids(self, data=[], params=[]):
+		print "new params hooks {} name {}".format(data, self.name)
+		"""
 		for param in params:
 			if param.get('name') != "name_ids":
 				pname = param.get("name")
@@ -92,9 +93,17 @@ class JasperReports(Document):
 				print "old_value {0} {1}".format(default_value, param.get('value'))
 			else:
 				param['value'].append('Administrator')
+		"""
+		ret = {"ids": ["Administrator", "luisfmfernandes@gmail.com"], "report_type": "List"}
 
-		return params
+		return ret
 
+	def on_jasper_params(self, data=[], params=[]):
+		print "new params hooks {} name {}".format(data, self.name)
+		a = []
+		for param in params:
+			a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
+		return a
 
 def _get_jrxml_path(doc):
 	jasper_path = get_jasper_path(doc.jasper_all_sites_report)

@@ -78,7 +78,8 @@ class JasperLocal(Jb.JasperBase):
 			p = param.jasper_param_name
 			value = ""
 			if is_copy == _("is for where clause"):
-				#value = data.get('name_ids')
+				value = self.get_where_clause_value(data.get('ids'), param)
+				"""
 				value = data.get('ids')
 				if value:
 					a = ["'%s'" % t for t in value]
@@ -90,7 +91,8 @@ class JasperLocal(Jb.JasperBase):
 						a = list(a)
 				#a = ["'%s'" % t for t in data.get('name_ids')]
 				value = "where name %s (%s)" % (param.param_expression, ",".join(a))
-			elif is_copy == _("Is for copies"):
+				"""
+			elif is_copy == _("is for copies"):
 				#set the number of copies
 				#indicate the index of param is for copies
 				pram_copy_name = p
@@ -114,11 +116,19 @@ class JasperLocal(Jb.JasperBase):
 			hashmap.put(p, value)
 		path_join = os.path.join
 		resp = []
-		params = utils.call_hook_for_param(doc, data, pram_server) if pram_server else []
-		print "params in local {}".format(params)
-		for param in params:
+		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
+		for param in res:
+			param_type = param.pop("param_type", None)
+			param.pop("attrs", None)
+			if param_type and param_type.lower() == _("is for where clause"):
+				param.setdefault("param_expression", "In")
+				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
+				param["value"] = value
+				param.pop("param_expression", None)
+
 			p = param.get('name')
 			value = param.get('value')
+			#print "params in local 3 name {} value {}".format(p, value)
 			hashmap.put(p, value)
 		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
 		conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":3306/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
@@ -127,11 +137,6 @@ class JasperLocal(Jb.JasperBase):
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
 		outtype = print_format.index(pformat)
-		"""
-		make copies (Single, Duplicated or Triplicated) only for pdf format
-		"""
-		if pformat != "pdf":
-			ncopies = 1
 
 		for m in range(ncopies):
 			if pram_copy_name:

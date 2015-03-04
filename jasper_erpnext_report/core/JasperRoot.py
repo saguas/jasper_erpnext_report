@@ -215,18 +215,15 @@ class JasperRoot(Jb.JasperBase):
 		rtype = rdoc.get("jasper_report_type")
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
 			for docname in data.get('name_ids'):
-				for ptype in ("read", "print"):
+				#for ptype in ("read", "print"):
 					#if not frappe.has_permission(rdoc.jasper_doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
-					if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=ptype):
-						raise frappe.PermissionError(_("No {0} permission for doc {1} in doctype {3}!").format(ptype, docname, rdoc.jasper_doctype))
+				if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=("read", "print")):
+					raise frappe.PermissionError(_("No {0} permission for doc {1} in doctype {3}!").format("read or print", docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports
 			#if not self.check_jasper_doc_perm(rdoc.jasper_roles):
-			if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
-				raise frappe.PermissionError(_("No print permission!"))
-		else:
-			#if not self.check_jasper_perm(rdoc.jasper_roles):
-			if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
-				raise frappe.PermissionError(_("No print permission!"))
+		if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
+			raise frappe.PermissionError(_("You don't have print permission!"))
+
 		params = rdoc.jasper_parameters
 		origin = rdoc.jasper_report_origin.lower()
 		result = [{}]
@@ -314,6 +311,10 @@ class JasperRoot(Jb.JasperBase):
 									#self.save_html_cache(report_name, reportPath)
 
 						else:
+							"""
+							This situation only occurs when i get multiples sub documents (len expId > 1) for one request (document).
+							This is jasper issue and it is here for future updates
+							"""
 							c = self.jps.getReport(reqId[0], expId[0].get('id'))
 							content.append(c)
 							if file_ext == "html":
@@ -393,5 +394,8 @@ class JasperRoot(Jb.JasperBase):
 		frappe.local.response.type = "download"
 
 def get_copies(rdoc, pformat):
+	"""
+	make copies (Single, Duplicated or Triplicated) only for pdf format
+	"""
 	copies = [_("Single"), _("Duplicated"), _("Triplicate")]
 	return copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1

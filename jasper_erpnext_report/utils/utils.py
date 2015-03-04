@@ -678,8 +678,7 @@ def get_value_param_for_hook(param):
 	return value
 
 #call hooks for params set as "Is for server hook"
-def call_hook_for_param(doc, *args):
-	method = "on_jasper_params"
+def call_hook_for_param(doc, method, *args):
 	print "args in call hooks {}".format(args)
 	#p = param.jasper_param_name
 	"""self = doc

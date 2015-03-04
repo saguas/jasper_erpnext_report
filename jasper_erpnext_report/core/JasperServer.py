@@ -184,11 +184,14 @@ class JasperServer(Jb.JasperBase):
 
 		return ret
 
-	def run_remote_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1):
+	def run_remote_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
 		resps = []
 		#data = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies)
 		data = self.run_report_async(doc, data=data, params=params)
-		if doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form":
+		"""
+		Run one report at a time for Form type report and many ids
+		"""
+		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form":
 			ids = data.get('ids')
 			for id in ids:
 				data['ids'] = [id]
@@ -213,18 +216,10 @@ class JasperServer(Jb.JasperBase):
 			value = ""
 			if is_copy == _("is for where clause"):
 				#value = data.get('name_ids')
-				value = data.get('ids')
-				if value:
-					a = ["'%s'" % t for t in value]
-				else:
-					print "param for hook 2 {}".format(param.as_dict())
-					value = utils.get_value_param_for_hook(param)
-					if not isinstance(value, basestring):
-						a = ["'%s'" % t for t in list(value)]
-					else:
-						a = list(a)
-				value = "where name %s (%s)" % (param.param_expression, ",".join(a))
-			elif is_copy == _("Is for copies") and pformat=="pdf":
+				value = self.get_where_clause_value(data.get('ids'), param)
+				#print "value in where clause value {} name".format(value, param.name)
+				#value = "where name %s (%s)" % (param.param_expression, ",".join(a))
+			elif is_copy == _("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
 				pram_copy_index = len(pram) - 1 if len(pram) > 0 else 0
@@ -242,14 +237,28 @@ class JasperServer(Jb.JasperBase):
 				value = data.get(p) or param.jasper_param_value
 			pram.append({"name":p, 'value':[value]})
 		resp = []
-		res = utils.call_hook_for_param(doc, data, pram_server) if pram_server else []
+		"""
+		Hook must return a list of dict with fields: {"name":"name of param", "value": [value_of_param], "param_type": "_(is for where clause)"}
+		param_type is optional
+		"""
+		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		for param in res:
-			param.pop("attrs")
+			param.pop("attrs", None)
+			param_type = param.pop("param_type", None)
 			print "pvalue {}".format(res)
+			if param_type and param_type.lower() == _("is for where clause"):
+				param.setdefault("param_expression", "In")
+				#print "param_expression 2 {}".format(param.param_expression)
+				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
+				#pram.append({"name":param.get("name", None), 'value':[value]})
+				param["value"] = [value]
+				param.pop("param_expression", None)
+				#print "value from hook where 3 value {} name {}".format(param.get("value"), param.get("name"))
+				#continue
 			pram.append(param)
+
 		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
-		if pformat != "pdf":
-			ncopies = 1#make copies only for pdf format
+
 		for m in range(ncopies):
 			if pram_copy_index >= 0:
 				pram[pram_copy_index]['value'] = [copies[m]]
