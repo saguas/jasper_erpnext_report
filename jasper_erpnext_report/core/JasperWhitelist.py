@@ -69,6 +69,7 @@ def _get_report(data):
 			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
 		#hash_obj = hashlib.md5(content[0])
 		#hash = hash_obj.hexdigest()
+		print "jsr.html_hash 6 {}".format(jsr.html_hash)
 		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 			#write_file(c, os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0], fileName))
 		#write_file(c, os.path.join(html_reports_path, fileName))

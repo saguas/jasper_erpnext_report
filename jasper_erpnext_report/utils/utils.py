@@ -46,14 +46,6 @@ def before_install():
 		lastupdate datetime(6) DEFAULT NULL
 		)""")
 
-	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperClientHtmlDocs(
-		id INT NOT NULL AUTO_INCREMENT,
-		name varchar(255) DEFAULT NULL,
-		data longtext,
-		lastupdate datetime(6) DEFAULT NULL,
-		PRIMARY KEY id (id)
-		)""")
-
 	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListDoctype(
 		name varchar(255) DEFAULT NULL,
 		data longtext,
@@ -657,7 +649,7 @@ def get_expiry_period(sessionId="jaspersession"):
 	elif "intern_reqid_" in sessionId or "local_report_" in sessionId:
 		exp_sec = "8:00:00"
 	elif "client_html_" in sessionId:
-		exp_sec = "00:00:10"
+		exp_sec = "00:10:00"
 	else:
 		exp_sec = frappe.defaults.get_global_default("jasper_session_expiry") or "12:00:00"
 
@@ -737,7 +729,7 @@ def check_jasper_perm(perms, ptypes=("read",), user=None):
 			for perm in perms:
 				jasper_perm_type = perm.get('jasper_can_' + ptype, None)
 				jasper_role = perm.get('jasper_role', None)
-				print "check_jasper_perm read 5 {0} role {1} user_roles {2} jasper_role in user_roles {3} perms {4}".format(jasper_perm_type, jasper_role, user_roles, jasper_role in user_roles, perms)
+				print "check_jasper_perm read 6 {0} role {1} user_roles {2} jasper_role in user_roles {3} perms {4}".format(jasper_perm_type, jasper_role, user_roles, jasper_role in user_roles, perms)
 				if jasper_role in user_roles and jasper_perm_type:
 					found = True
 					break
@@ -790,7 +782,7 @@ def check_frappe_permission(doctype, docname, ptypes=("read", )):
 	perm = True
 	for ptype in ptypes:
 		if not frappe.has_permission(doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
-			print "get_reports_list 2 No {0} permission for doc {1}".format(ptype, docname)
+			print "get_reports_list 3 No {0} permission for doc {1}".format(ptype, docname)
 			perm = False
 			break
 	return perm
@@ -802,8 +794,8 @@ def has_jasper_permission(doc, ptype, user):
 	if ignore_perm is None:
 		ignore_perm = frappe.db.get_single_value("JasperServerConfig", "jasper_ignore_perm_roles")
 		jaspersession_set_value("jasper_ignore_perm_roles", ignore_perm)
-	print "ignore perm 6 {}".format(ignore_perm)
-	if not ignore_perm:
+
+	if not cint(ignore_perm):
 		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
 
 	return perm

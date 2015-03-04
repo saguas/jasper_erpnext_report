@@ -5,6 +5,7 @@ import frappe
 
 import logging, json, os
 
+from frappe.utils import cint
 from jasper_erpnext_report.utils.file import write_file, get_extension
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
@@ -119,7 +120,7 @@ class JasperRoot(Jb.JasperBase):
 			if not self.check_server_status():
 				print "a remover {}".format(data)
 				self.remove_server_docs(data)
-
+		data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
 		return data
 
 	def remove_server_docs(self, data):
@@ -179,7 +180,7 @@ class JasperRoot(Jb.JasperBase):
 		if not self.check_server_status():
 			print "a remover 2 {}".format(new_data)
 			self.remove_server_docs(new_data)
-
+		new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
 		return new_data
 
 	def report_polling(self, data):
@@ -262,12 +263,23 @@ class JasperRoot(Jb.JasperBase):
 		report_name = d['data'].get("report_name")
 		if not d:
 			frappe.throw(_("Report Not Found!!!"))
+		"""
+		reqids represent the ids of documents.
+		Example:
+		if my document is of type (Report for) form and in list view i check more than one document, say n,
+		then it will ask the server for n documents at once
+		and for every document it will ask for one, two or tree copies
+		as may have single, duplicated or triplicated checked.
+		"""
 		reqids = d['data'].get('reqids')
-		print "new reqids 2 {} report_name {}".format(d, report_name)
+		print "new reqids 6 {} report_name {} reqids {}".format(d, report_name, reqids)
 		content = []
 		fileName = None
 		try:
 			for ids in reqids:
+				"""
+				ask the server for one, two or tree documents if single, duplicated or triplicated respectively
+				"""
 				for id in ids:
 					report = self.get_jasper_reqid_data(id)
 					print "new report 2 {}".format(report)
@@ -278,6 +290,7 @@ class JasperRoot(Jb.JasperBase):
 					print "expID array {}".format(expId)
 					fileName = expId[0].get("fileName", None)
 					file_ext = get_extension(fileName)
+					#this is for another situation
 					rid_len = 1
 					print "before get report local {}".format(reqId)
 					if not any("local_report" in r for r in reqId):
@@ -295,6 +308,7 @@ class JasperRoot(Jb.JasperBase):
 									hash_obj = hashlib.md5(c)
 									self.html_hash = hash_obj.hexdigest()
 									self.getAttachments(reqId[i], expId[i].get('id'), expId[i], report_name)
+									break
 									#reportPath = self.get_html_path(report_name)
 									#print "1- chegou aqui hash repport_name 2 {} hash {} reportPath {}".format(report_name, self.html_hash, reportPath)
 									#self.save_html_cache(report_name, reportPath)
@@ -313,7 +327,12 @@ class JasperRoot(Jb.JasperBase):
 						self.get_server("local")
 						for i in range(rid_len):
 							print "get report local {}".format(reqId[i])
-							content.append(self.jpl.getLocalReport(reqId[i]))
+							c = self.jpl.getLocalReport(reqId[i])
+							content.append(c)
+							if file_ext == "html":
+								hash_obj = hashlib.md5(c)
+								self.html_hash = hash_obj.hexdigest()
+								break
 							#self.getAttachments(reqId[0], expId[0].get('id'), expId[0], report_name)
 		except Exception as e:
 			return frappe.msgprint(_("There is no report, try again later. Error: {}".format(e)))

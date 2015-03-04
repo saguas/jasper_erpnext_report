@@ -360,10 +360,10 @@ class JasperBase(object):
 			if isinstance(v, dict):
 				count += 1
 				perms = v.pop("perms", None)
-				print "perms {}".format(perms)
 				#docname = k
 				frappe.flags.mute_messages = True
 				found = utils.check_frappe_permission("Jasper Reports", k, ptypes=("read", ))
+				print "perms 2 {} found {}".format(perms, found)
 				"""
 				for ptype in ("read", "print"):
 					if not frappe.has_permission("Jasper Reports", ptype=ptype, doc=docname, user=frappe.local.session['user']):

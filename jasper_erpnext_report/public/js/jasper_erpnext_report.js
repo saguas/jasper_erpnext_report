@@ -476,6 +476,8 @@ jasper.make_menu = function(list, key, skey){
 	//jasper_report_formats[list[key].formats[0]]
 	var f = list[key].formats;
     var email = list[key].email;
+	var mail_enabled = list.mail_enabled;
+	console.log("mail_enabled ", mail_enabled);
 	//var t = list[key].formats.join(":");
 	var icon_file = [];
 	var html = "";
@@ -483,7 +485,7 @@ jasper.make_menu = function(list, key, skey){
 		var type = f[i];
 		icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="jasper-%(type)s"></i>', {title:key + " - " + type, mykey:key, f:f[i], type: jasper_report_formats[type]}));
 	};
-    if (email === 1){
+    if (email === 1 && mail_enabled === 1){
         console.log("email ", email);
         icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="%(type)s"></i>', {title: "send by email", mykey:key, f:"email", type: jasper_report_formats["email"]}));
     }

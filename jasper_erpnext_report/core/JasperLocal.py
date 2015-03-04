@@ -127,8 +127,12 @@ class JasperLocal(Jb.JasperBase):
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
 		outtype = print_format.index(pformat)
+		"""
+		make copies (Single, Duplicated or Triplicated) only for pdf format
+		"""
 		if pformat != "pdf":
-			ncopies = 1#make copies only for pdf format
+			ncopies = 1
+
 		for m in range(ncopies):
 			if pram_copy_name:
 				hashmap.put(pram_copy_name, copies[m])
@@ -166,7 +170,7 @@ class JasperLocal(Jb.JasperBase):
 		if outtype == 7:#html file
 			content = get_file(outputPath + fileName + ".html")
 			self.copy_images(content, outputPath, fileName, report_name, localsite)
-			self.save_html_cache(report_name, self.report_html_path)
+			#self.save_html_cache(report_name, self.report_html_path)
 
 	def _export_query_report(self, compiled_path, fileName, report_name, outputPath, hashmap, grid_data, outtype, localsite):
 		export_query_report = jr.ExportQueryReport()
@@ -200,7 +204,7 @@ class JasperLocal(Jb.JasperBase):
 		if outtype == 7:#html file
 			content = get_file(outputPath + fileName + ".html")
 			self.copy_images(content, outputPath, fileName, report_name, localsite)
-			self.save_html_cache(report_name, self.report_html_path)
+			#self.save_html_cache(report_name, self.report_html_path)
 
 	def copy_images(self, content, outputPath, fileName, report_name, localsite):
 		from distutils.dir_util import copy_tree
@@ -231,8 +235,9 @@ class JasperLocal(Jb.JasperBase):
 			frappe.throw(_("No report for this reqid %s !!" % reqId))
 		print "local file {}".format(data)
 		output_path = data['data']['result'].get("uri")
-		with open(output_path, mode='rb') as file:
-			content = file.read()
+		#with open(output_path, mode='rb') as file:
+		#	content = file.read()
+		content = get_file(output_path, "rb")
 		return content
 
 	def getFileName(self, file):
