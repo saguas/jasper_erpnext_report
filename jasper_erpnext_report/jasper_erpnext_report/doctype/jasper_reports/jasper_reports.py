@@ -8,8 +8,9 @@ from frappe import _
 from frappe.model.document import Document
 from jasper_erpnext_report.utils.file import get_jasper_path, get_jrxml_path, delete_jrxml_images, get_params, get_query, get_images, get_image_name,\
 		remove_directory, get_jasper_path, get_compiled_path
-from jasper_erpnext_report.utils.utils import check_queryString_param, jaspersession_set_value
+from jasper_erpnext_report.utils.utils import check_queryString_param, jaspersession_set_value, jaspersession_get_value, check_jasper_perm
 import logging
+from frappe.utils import cint
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -103,6 +104,42 @@ class JasperReports(Document):
 		for param in params:
 			a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
 		return a
+
+
+"""
+Called from db_query.py method: def get_permission_query_conditions()
+In this case is for check jasper permission on the documents to show to the client and the associated count
+"""
+def get_permission_query_conditions(user):
+	print "jasper reports user perm {}".format(user)
+	if not user: user = frappe.local.session['user']
+	if user=="Administrator":
+		return ""
+	return """(exists(select * from `tabJasper PermRole` where `tabJasper PermRole`.parent=`tabJasper Reports`.`name` and
+				`tabJasper PermRole`.jasper_role in ('%(roles)s') and `tabJasper PermRole`.jasper_can_read = 1))
+		""" % {
+			"roles": "', '".join([frappe.db.escape(r) for r in frappe.get_roles(user)])
+		}
+
+
+"""
+Called from frappe.has_permission as controller
+Verify which docs pass jasper permissions
+"""
+def has_jasper_permission(doc, ptype, user):
+	perm = True
+	ignore_perm = jaspersession_get_value("jasper_ignore_perm_roles")
+	if ignore_perm is None:
+		ignore_perm = frappe.db.get_single_value("JasperServerConfig", "jasper_ignore_perm_roles")
+		jaspersession_set_value("jasper_ignore_perm_roles", ignore_perm)
+
+	if not cint(ignore_perm):
+		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
+
+	return perm
+
+#return """(tabToDo.owner = '{user}' or tabToDo.assigned_by = '{user}')"""\
+#			.format(user=frappe.db.escape(user))
 
 def _get_jrxml_path(doc):
 	jasper_path = get_jasper_path(doc.jasper_all_sites_report)

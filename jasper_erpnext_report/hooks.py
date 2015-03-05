@@ -71,12 +71,12 @@ app_include_js = ["/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js", "/a
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.core.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"Jasper Reports": "jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_permission_query_conditions",
+}
 #
 has_permission = {
-	"Jasper Reports": "jasper_erpnext_report.utils.utils.has_jasper_permission",
+	"Jasper Reports": "jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.has_jasper_permission",
 }
 
 # Document Events

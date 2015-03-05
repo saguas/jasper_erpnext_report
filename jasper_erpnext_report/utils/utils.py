@@ -786,15 +786,3 @@ def check_frappe_permission(doctype, docname, ptypes=("read", )):
 			break
 	return perm
 
-#called from frappe.has_permission as controller
-def has_jasper_permission(doc, ptype, user):
-	perm = True
-	ignore_perm = jaspersession_get_value("jasper_ignore_perm_roles")
-	if ignore_perm is None:
-		ignore_perm = frappe.db.get_single_value("JasperServerConfig", "jasper_ignore_perm_roles")
-		jaspersession_set_value("jasper_ignore_perm_roles", ignore_perm)
-
-	if not cint(ignore_perm):
-		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
-
-	return perm
