@@ -128,7 +128,8 @@ scheduler_events = {
 # Overriding Whitelisted Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.core.doctype.event.event.get_events": "jasper_erpnext_report.event.get_events"
-# }
+#override_whitelisted_methods = {
+#	"frappe.widgets.reportview.get": "jasper_erpnext_report.utils.reportview.get_list",
+#	"frappe.widgets.moduleview.get": "jasper_erpnext_report.utils.moduleview.get_count"
+#}
 

@@ -27,7 +27,6 @@ class JasperReports(Document):
 			delete_jrxml_images(self.doctype, self.name, self.jasper_all_sites_report)
 			self.query = ""
 
-
 	def before_save(self, method=None):
 		if not self.jasper_param_message:
 			self.jasper_param_message = frappe.db.get_values_from_single(["jasper_param_message"], None, "JasperServerConfig")[0][0].format(report=self.jasper_report_name, user=frappe.local.session['user'])
