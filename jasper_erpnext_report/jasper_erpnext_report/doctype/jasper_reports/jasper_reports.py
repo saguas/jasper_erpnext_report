@@ -111,9 +111,8 @@ Called from db_query.py method: def get_permission_query_conditions()
 In this case is for check jasper permission on the documents to show to the client and the associated count
 """
 def get_permission_query_conditions(user):
-	print "jasper reports user perm {}".format(user)
 	if not user: user = frappe.local.session['user']
-	if user=="Administrator":
+	if user=="Administrator" or ignore_jasper_perm():
 		return ""
 	return """(exists(select * from `tabJasper PermRole` where `tabJasper PermRole`.parent=`tabJasper Reports`.`name` and
 				`tabJasper PermRole`.jasper_role in ('%(roles)s') and `tabJasper PermRole`.jasper_can_read = 1))
@@ -128,15 +127,21 @@ Verify which docs pass jasper permissions
 """
 def has_jasper_permission(doc, ptype, user):
 	perm = True
+	if not ignore_jasper_perm():
+		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
+
+	return perm
+
+def ignore_jasper_perm():
 	ignore_perm = jaspersession_get_value("jasper_ignore_perm_roles")
 	if ignore_perm is None:
 		ignore_perm = frappe.db.get_single_value("JasperServerConfig", "jasper_ignore_perm_roles")
 		jaspersession_set_value("jasper_ignore_perm_roles", ignore_perm)
 
 	if not cint(ignore_perm):
-		perm = check_jasper_perm(doc.jasper_roles, ptype, user)
+		return False
 
-	return perm
+	return True
 
 #return """(tabToDo.owner = '{user}' or tabToDo.assigned_by = '{user}')"""\
 #			.format(user=frappe.db.escape(user))

@@ -227,6 +227,7 @@ def get_jasper_data_from_db(get_from_db=None, *args, **kargs):
 		data = None
 	return data#frappe._dict({'data': data})
 
+"""
 def get_jasper_data_from_db2(get_from_db=lambda: get_jasper_session_data_from_db):
 	print "get_jasper_data_from_db {}".format(get_from_db())
 	rec = get_from_db()()
@@ -241,6 +242,7 @@ def get_jasper_data_from_db2(get_from_db=lambda: get_jasper_session_data_from_db
 		#delete_jasper_session(cachename, "tabJasperReportList")
 		data = None
 	return data#frappe._dict({'data': data})
+"""
 
 #def get_jasper_reports_list_all_from_db(reqId):
 #	rec = frappe.db.sql("""select reqid, data
