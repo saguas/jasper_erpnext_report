@@ -112,7 +112,9 @@ In this case is for check jasper permission on the documents to show to the clie
 """
 def get_permission_query_conditions(user):
 	if not user: user = frappe.local.session['user']
-	if user=="Administrator" or ignore_jasper_perm():
+	if user=="Administrator":
+		return ""
+	if ignore_jasper_perm():
 		return ""
 	return """(exists(select * from `tabJasper PermRole` where `tabJasper PermRole`.parent=`tabJasper Reports`.`name` and
 				`tabJasper PermRole`.jasper_role in ('%(roles)s') and `tabJasper PermRole`.jasper_can_read = 1))

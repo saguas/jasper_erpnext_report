@@ -142,6 +142,7 @@ def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJaspe
 	print "updating data list {}".format(data)
 	update_jasper_list_all({"data":new_data}, cachename, tab)
 
+
 def get_jasper_data(cachename, get_from_db=None, *args, **kargs):
 
 		if frappe.local.session['sid'] == 'Guest':
@@ -788,3 +789,4 @@ def check_frappe_permission(doctype, docname, ptypes=("read", )):
 			break
 	return perm
 
+#select name, email from tabUser

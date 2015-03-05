@@ -289,7 +289,7 @@
    "options": "Jasper PermRole", 
    "permlevel": 1, 
    "precision": "", 
-   "reqd": 1
+   "reqd": 0
   }
  ], 
  "hide_heading": 0, 
@@ -300,7 +300,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-03-05 00:23:52.021330", 
+ "modified": "2015-03-05 19:49:44.081046", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 
@@ -360,6 +360,18 @@
    "set_user_permissions": 0, 
    "submit": 0, 
    "write": 0
+  }, 
+  {
+   "permlevel": 1, 
+   "read": 1, 
+   "role": "Administrator", 
+   "write": 1
+  }, 
+  {
+   "permlevel": 2, 
+   "read": 1, 
+   "role": "Administrator", 
+   "write": 1
   }
  ], 
  "read_only": 0, 

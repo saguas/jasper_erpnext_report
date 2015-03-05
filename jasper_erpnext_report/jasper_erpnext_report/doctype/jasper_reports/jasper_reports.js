@@ -62,10 +62,21 @@ cur_frm.cscript.show_fields = function(doc){
     
 };
 
+//frappe.ui.form.on("Jasper Reports", "save", function(frm) {
+//cur_frm.cscript["save"] = function(doc, dt, dn){
+$(document).on("save", function(ev, doc){
+	var cs = cur_frm.cscript;
+	if(doc.__islocal === 1){
+		//cs.show_fields(doc);
+		unhide_field(["jasper_upload_jrxml", "report_images:", "jasper_all_sites_report"]);
+    }
+});
+
 cur_frm.cscript.onload = function(doc){
     //$('.query').text("luis filipe")
     //cur_frm.fields_dict.query_html.$wrapper.html("<p>Luis</p>")
-    
+    //var cs = cur_frm.cscript;
+    //cs.show_fields(doc);
 }
 
 //this is for testing liveupdates with threads, pubsub and queue
