@@ -662,11 +662,14 @@ def get_expiry_period(sessionId="jaspersession"):
 	#print "expire period iss {}".format(exp_sec)
 	return exp_sec
 
-def get_value_param_for_hook(param):
+def get_value_param_for_hook(param, error=True):
 	#if not data and not entered value then get default
 	default_value = param.jasper_param_value
 	if not default_value:
-		frappe.throw(_("Error, parameter {} needs a value!").format(param.jasper_param_name))
+		if error:
+			frappe.throw(_("Error, parameter {} needs a value!").format(param.jasper_param_name))
+		else:
+			return
 	matchObj =re.match(r"^[\"'](.*)[\"']", default_value)
 	if matchObj:
 		print "default_value with replace {}".format(matchObj.group(1))

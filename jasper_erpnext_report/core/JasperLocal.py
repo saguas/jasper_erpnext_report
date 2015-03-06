@@ -104,7 +104,7 @@ class JasperLocal(Jb.JasperBase):
 				value = data.get('ids')
 				if not value:
 					#if not data and not entered value then get default
-					value = utils.get_value_param_for_hook(param)
+					value = utils.get_value_param_for_hook(param, error=False)
 				pram_server.append({"name":p, 'value':value, "attrs": param})
 				continue
 				#value = call_hook_for_param(doc, data, param)
@@ -119,8 +119,8 @@ class JasperLocal(Jb.JasperBase):
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		for param in res:
 			param_type = param.pop("param_type", None)
-			#param.pop("attrs", None)
-			del param["attrs"]
+			param.pop("attrs", None)
+			#del param["attrs"]
 			if param_type and param_type.lower() == _("is for where clause"):
 				param.setdefault("param_expression", "In")
 				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))

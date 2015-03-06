@@ -101,8 +101,9 @@ class JasperReports(Document):
 	def on_jasper_params(self, data=[], params=[]):
 		print "new params hooks {} name {}".format(data, self.name)
 		a = []
-		for param in params:
-			a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
+		#for param in params:
+			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
+		a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
 		return a
 
 

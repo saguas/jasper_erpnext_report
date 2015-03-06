@@ -23,6 +23,8 @@ def get_image_name(iname):
 	#	names = iname.split("/")
 	#else:
 	#	names = iname.split("\\")
+	if not iname:
+		return
 	names = iname.split(os.sep)
 	c = len(names)
 
@@ -183,7 +185,7 @@ def get_extension(fname):
 		return ext[1]
 	return None
 
-def write_file_jrxml(fname, content, content_type):
+def write_file_jrxml(fname, content, content_type=None):
 	path_join = os.path.join
 	dt = frappe.form_dict.doctype
 	if dt == "Jasper Reports":
@@ -342,6 +344,12 @@ def get_html_reports_images_path(report_path, where="images"):
 	path = os.path.join(report_path, where)
 	frappe.create_folder(path)
 	return path
+
+"""
+Function called to upload files from client
+"""
+def file_upload():
+	print "called test upload 2 {}".format(frappe.form_dict)
 
 # def insert_doc(dt, dn, fname, field, value, parentfield, doc_report):
 # 	mydict = {"updateDate":frappe.utils.now()}
