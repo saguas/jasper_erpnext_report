@@ -4,7 +4,7 @@ from frappe import _
 import frappe
 import json
 from urllib2 import unquote
-import logging, time, hashlib
+import logging, time
 from frappe.utils import cint
 from jasper_erpnext_report.utils.file import get_html_reports_path, write_file
 

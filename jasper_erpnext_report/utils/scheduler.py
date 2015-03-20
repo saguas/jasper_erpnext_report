@@ -1,6 +1,11 @@
 __author__ = 'luissaguas'
 import frappe, logging
-from memcache_stats import MemcachedStats
+try:
+	version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+	if version < 5:
+		from memcache_stats import MemcachedStats
+except:
+	pass
 from jasper_erpnext_report.utils.utils import jasper_cache_data, delete_jasper_session, jaspersession_get_value, get_expiry_in_seconds, get_jasper_session_expiry_seconds, get_expiry_period
 from jasper_erpnext_report.utils.file import remove_directory, get_jasper_path, remove_compiled_report
 
@@ -102,7 +107,9 @@ def clear_expired_jasper_sessions():
 			frappe.cache().delete_value("jasper:" + sessionId.get("mcache"))
 			frappe.db.sql("""delete from `%s` where reqid='%s'"""%(sessionId.get("db"), sessionId.get("mcache"),))
 	#frappe.db.sql("""delete from tabJasperSessions where TIMEDIFF(NOW(), lastupdate) > TIME("{0}")""".format(get_expiry_period()))
-	clear_all_jasper_reports(force=False)
+	version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+	if version < 5:
+		clear_all_jasper_reports(force=False)
 	frappe.db.commit()
 
 #remove from disc all reports that expired based on timestamp of html file
@@ -152,7 +159,9 @@ def clear_cache():
 		frappe.cache().delete_value("jasper:" + "report_list_dirt_all")
 		frappe.cache().delete_value("jasper:" + "report_list_dirt_doc")
 		clear_all_jasper_sessions()
-		clear_all_jasper_reports()
+		version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+		if version < 5:
+			clear_all_jasper_reports()
 		clear_expired_jasper_html()
 		clear_jasper_list()
 		frappe.db.commit()
