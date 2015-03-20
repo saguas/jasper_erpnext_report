@@ -1,12 +1,20 @@
 from __future__ import unicode_literals
 __author__ = 'luissaguas'
-import jasperserver.core as jasper
-from jasperserver.core.reportingService import ReportingService
-from jasperserver.core.ReportExecutionRequest import ReportExecutionRequest
-from jasperserver.resource_details import Details
-from jasperserver.repo_search import Search
-from jasperserver.resource_download import DownloadBinary
-from jasperserver.core.exceptions import Unauthorized, NotFound
+
+from jasper_erpnext_report import jasperserverlib
+
+try:
+	import jasperserver.core as jasper
+	from jasperserver.core.reportingService import ReportingService
+	from jasperserver.core.ReportExecutionRequest import ReportExecutionRequest
+	from jasperserver.resource_details import Details
+	from jasperserver.repo_search import Search
+	from jasperserver.resource_download import DownloadBinary
+	from jasperserver.core.exceptions import Unauthorized, NotFound
+	jasperserverlib = True
+except:
+	jasperserverlib = False
+	pass
 
 from frappe.utils import pprint_dict
 
@@ -20,7 +28,7 @@ import logging, json
 from io import BytesIO
 import inspect
 
-from jasper_erpnext_report.utils.file import get_params
+from jasper_erpnext_report.utils.file import JasperXmlReport
 import jasper_erpnext_report.utils.utils as utils
 
 import JasperBase as Jb
@@ -69,6 +77,8 @@ class JasperServer(Jb.JasperBase):
 		self.check_session()
 
 	def check_session(self):
+		if not jasperserverlib:
+			return
 		if self.data['data'] and self.data['data'].get('cookie', None):
 			self.resume_connection()
 		else:
@@ -168,7 +178,8 @@ class JasperServer(Jb.JasperBase):
 			r_param = r_details.getDescriptor().json_descriptor()
 			uri = r_param[0].get('jrxml').get('jrxmlFileReference').get('uri')
 			file_content = self.get_jrxml_from_server(uri)
-			params = get_params(BytesIO(file_content))
+			xmldoc = JasperXmlReport(BytesIO(file_content))
+			params = xmldoc.get_params()
 			query = self.get_query_jrxmlFile_from_server(file_content)
 			for param in params:
 				pname = param.xpath('./@name')
@@ -204,9 +215,13 @@ class JasperServer(Jb.JasperBase):
 
 	#run reports with http POST and run async and sync
 	def _run_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
+		pram, pram_server, copies = self.do_params(data, params, pformat)
+		pram_copy_index = copies.get("pram_copy_index", -1)
+		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
+		"""
 		pram = []
 		#self.doc = doc
-		pram.extend(self.get_ask_params(data))
+		#pram.extend(self.get_ask_params(data))
 		pram_server = []
 		pram_copy_index = -1
 		pram_copy_page_index = -1
@@ -234,17 +249,20 @@ class JasperServer(Jb.JasperBase):
 				continue
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
-				value = data.get(p) or param.jasper_param_value
+				value = data.get("params", {}).get(p) or param.jasper_param_value
+				#value = data.get(p) or param.jasper_param_value
 			pram.append({"name":p, 'value':[value]})
+		"""
 		resp = []
 		"""
 		Hook must return a list of dict with fields: {"name":"name of param", "value": [value_of_param], "param_type": "_(is for where clause)"}
 		param_type is optional
 		"""
+		"""
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		for param in res:
-			#param.pop("attrs", None)
-			del param["attrs"]
+			param.pop("attrs", None)
+			#del param["attrs"]
 			param_type = param.pop("param_type", None)
 			print "pvalue {}".format(res)
 			if param_type and param_type.lower() == _("is for where clause"):
@@ -257,6 +275,8 @@ class JasperServer(Jb.JasperBase):
 				#print "value from hook where 3 value {} name {}".format(param.get("value"), param.get("name"))
 				#continue
 			pram.append(param)
+		"""
+		pram.extend(self.get_param_hook(doc, data, pram_server))
 
 		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
 
@@ -266,10 +286,13 @@ class JasperServer(Jb.JasperBase):
 			if pram_copy_page_index >= 0:
 				pram[pram_copy_page_index]['value'] = [str(m) + _(" of ") + str(ncopies)]
 			result = self.run_async(path, pram, data.get("report_name"), pformat=pformat)
-			requestId = result.get('requestId')
-			reqDbObj = {"data":{"result": result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}}
-			self.insert_jasper_reqid_record(requestId, reqDbObj)
-			resp.append({"requestId":requestId, "report_name": data.get("report_name"), "status": result.get('status')})
+			if result:
+				requestId = result.get('requestId')
+				reqDbObj = {"data":{"result": result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}}
+				self.insert_jasper_reqid_record(requestId, reqDbObj)
+				resp.append({"requestId":requestId, "report_name": data.get("report_name"), "status": result.get('status')})
+			else:
+				frappe.msgprint(_("There was an error in report request "),raise_exception=True)
 		#TODO get reqId for check report state
 		return resp
 

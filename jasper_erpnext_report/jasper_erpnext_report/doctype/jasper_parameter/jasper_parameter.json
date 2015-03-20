@@ -53,7 +53,7 @@
   }, 
   {
    "allow_on_submit": 0, 
-   "default": "Automatic", 
+   "default": "Ask", 
    "description": "What Erpnext do with this parameter. Ask means to ask for the value of the parameter before make the report.\nAutomatic means that Erpnext will fill it for you.", 
    "fieldname": "jasper_param_action", 
    "fieldtype": "Select", 
@@ -105,12 +105,12 @@
    "precision": ""
   }, 
   {
-   "default": "In", 
+   "default": "", 
    "description": "Choose the expression to use: \nIn - to include all the selected ids.\nNot in - to exclude the selected ids.", 
    "fieldname": "param_expression", 
    "fieldtype": "Select", 
    "label": "Parameter Expression", 
-   "options": "In\nNot In", 
+   "options": "\nIn\nNot In", 
    "permlevel": 2, 
    "precision": ""
   }, 
@@ -127,7 +127,7 @@
    "precision": ""
   }, 
   {
-   "description": "The default value of the parameter. This value will be used if no other value is given.", 
+   "description": "Set the default value for the parameter. This value will be used if no other value is given. If the parameter is for where clause and you need to pass multiple values then separate them with comma. Ex. Administrator, Guest. Note: Do not put quotation marks or apostrophe in the names.\nFor the other cases pass them as needed by Jasper Report.", 
    "fieldname": "jasper_param_value", 
    "fieldtype": "Small Text", 
    "label": "Parameter Value", 
@@ -142,7 +142,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2015-03-02 19:59:17.227173", 
+ "modified": "2015-03-19 23:11:43.256080", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Parameter", 

@@ -45,6 +45,7 @@ try:
 
 	DefaultTableModel = getJavaClass('javax.swing.table.DefaultTableModel')
 	String = getJavaClass('java.lang.String')
+	Integer = getJavaClass('java.lang.Integer')
 	ArrayList = getJavaClass('java.util.ArrayList')
 #JRException = getJavaClass('net.sf.jasperreports.engine.JRException')
 #JREmptyDataSource = getJavaClass('net.sf.jasperreports.engine.JREmptyDataSource')

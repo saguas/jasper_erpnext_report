@@ -102,10 +102,26 @@
    "precision": ""
   }, 
   {
-   "fieldname": "jasper_upload_jrxml", 
-   "fieldtype": "Attach", 
-   "hidden": 0, 
+   "default": "Ask", 
+   "description": "Select the language to use in report.", 
+   "fieldname": "jasper_locale", 
+   "fieldtype": "Select", 
+   "label": "Locale", 
+   "options": "", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
+   "fieldname": "jasper_upload_jrxml_file", 
+   "fieldtype": "HTML", 
    "label": "Upload JRXML File", 
+   "permlevel": 1, 
+   "precision": ""
+  }, 
+  {
+   "fieldname": "jasper_upload_btn", 
+   "fieldtype": "Button", 
+   "label": "Upload", 
    "permlevel": 1, 
    "precision": ""
   }, 
@@ -203,6 +219,15 @@
    "precision": ""
   }, 
   {
+   "default": "0", 
+   "description": "Use Jasper Virtualizer. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).", 
+   "fieldname": "jasper_virtualizer", 
+   "fieldtype": "Check", 
+   "label": "Use Virtualizer", 
+   "permlevel": 2, 
+   "precision": ""
+  }, 
+  {
    "fieldname": "report_message:", 
    "fieldtype": "Section Break", 
    "label": "Report Message:", 
@@ -260,21 +285,6 @@
    "precision": ""
   }, 
   {
-   "fieldname": "report_images:", 
-   "fieldtype": "Section Break", 
-   "label": "Report Images:", 
-   "permlevel": 0, 
-   "precision": ""
-  }, 
-  {
-   "fieldname": "jasper_report_images", 
-   "fieldtype": "Table", 
-   "label": "Jasper Report Images", 
-   "options": "Jasper Report Image", 
-   "permlevel": 2, 
-   "precision": ""
-  }, 
-  {
    "fieldname": "permission:", 
    "fieldtype": "Section Break", 
    "label": "Permission Rules:", 
@@ -300,7 +310,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-03-05 19:49:44.081046", 
+ "modified": "2015-03-18 23:22:49.092276", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

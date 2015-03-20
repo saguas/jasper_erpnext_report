@@ -10,7 +10,7 @@ from io import BytesIO
 import uuid
 
 import jasper_erpnext_report.utils.utils as utils
-from jasper_erpnext_report.utils.file import get_query, get_html_reports_path
+from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -36,7 +36,6 @@ class JasperBase(object):
 		return False
 
 	def use_server(self):
-		#self.resume()
 		doc_jasper_server = self.doc.use_jasper_server.lower()
 		return doc_jasper_server == "jasperserver only" or doc_jasper_server == "both"
 
@@ -142,12 +141,96 @@ class JasperBase(object):
 			pram.append({"name":k, 'value':[v]})
 		return pram
 
+	def get_param_hook(self, doc, data, pram_server):
+		pram = []
+		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
+		if res is None:
+			frappe.throw(_("Error in report %s, there is no value for param in hook on_jasper_params!!!" % (doc.jasper_report_name)))
+		for param in res:
+			param.pop("attrs", None)
+			#del param["attrs"]
+			param_type = param.pop("param_type", None)
+			print "pvalue {}".format(res)
+			if param_type and param_type.lower() == _("is for where clause"):
+				param.setdefault("param_expression", "In")
+				#print "param_expression 2 {}".format(param.param_expression)
+				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
+				if not value:
+					frappe.throw(_("Error in report %s, there is no value for param %s in hook on_jasper_params!!!" % (doc.jasper_report_name, param.get("name", ""))))
+				#pram.append({"name":param.get("name", None), 'value':[value]})
+				param["value"] = [value]
+				param.pop("param_expression", None)
+				#print "value from hook where 3 value {} name {}".format(param.get("value"), param.get("name"))
+				#continue
+			value = param.get("value",None)
+			if value is not None and not isinstance(value, list):
+				value = [value]
+			try:
+				"""
+				Convert number to string
+				"""
+				number = value[0]
+				int(number)
+				param["value"] = [str(value[0])]
+			except ValueError:
+				param["value"] = value
+			pram.append(param)
+
+		return pram
+
+	def do_params(self, data, params, pformat):
+		pram = []
+		copies = {}
+		#self.doc = doc
+		#pram.extend(self.get_ask_params(data))
+		pram_server = []
+		pram_copy_index = -1
+		pram_copy_page_index = -1
+		for param in params:
+			is_copy = param.is_copy.lower()
+			p = param.jasper_param_name
+			value = ""
+			if is_copy == _("is for where clause"):
+				#value = data.get('name_ids')
+				value = self.get_where_clause_value(data.get('ids', []), param)
+				if not value:
+					"""
+					Check if the ids was sended by asked parameters
+					"""
+					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
+					print "getting value for param value 2 {}".format(value)
+				#print "value in where clause value {} name".format(value, param.name)
+				#value = "where name %s (%s)" % (param.param_expression, ",".join(a))
+			elif is_copy == _("is for copies") and pformat=="pdf":
+				#set the number of copies
+				#indicate the index of param is for copies
+				copies["pram_copy_index"] = len(pram) - 1 if len(pram) > 0 else 0
+
+			elif is_copy == _("is for page number") and pformat=="pdf":
+				copies["pram_copy_page_index"] = len(pram) - 1 if len(pram) > 0 else 0
+
+			elif is_copy == _("is for server hook"):
+				value = data.get('ids')
+				if not value:
+					#if not data and not entered value then get default first
+					value = utils.get_value_param_for_hook(param, error=False)
+				pram_server.append({"name":p, 'value': value, "attrs": param})
+				continue
+			else:
+				#value sent take precedence from value in doctype jasper_param_value
+				value = data.get("params", {}).get(p) or param.jasper_param_value
+				#value = data.get(p) or param.jasper_param_value
+			pram.append({"name":p, 'value':[value]})
+
+		return (pram, pram_server, copies)
+
 	def get_reports_list_from_db(self, filters_report={}, filters_param={}):
 		return utils.jasper_report_names_from_db(origin=self.get_report_origin(), filters_report=filters_report, filters_param=filters_param)
 
 	def get_query_jrxmlFile_from_server(self, file_content):
 		query = ""
-		list_query = get_query(BytesIO(file_content))
+		xmldoc = JasperXmlReport(BytesIO(file_content))
+		list_query = xmldoc.get_query()
 		if list_query:
 			query = list_query[0].text
 		return query
@@ -159,7 +242,7 @@ class JasperBase(object):
 		"""
 		Hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"], "report_type": "List"}
 		"""
-		print "res on hooks 3 {}".format(res)
+		print "res on hooks 4 {}".format(res)
 		if res:
 			data['name_ids'] = res.get('ids', [])
 			"""
@@ -169,24 +252,30 @@ class JasperBase(object):
 			data['jasper_report_type'] = res.get('report_type', "Form")
 		return res
 
-	def get_where_clause_value(self, value, param):
-		#value = data.get('ids')
+	def get_where_clause_value(self, value, param, error=False):
+
 		if value:
 			if isinstance(value, basestring):
-				a = ["'%s'" % t for t in list(value)]
+				a = ["'%s'" % frappe.utils.strip(t) for t in value.split(",")]
 			else:
-				a = ["'%s'" % t for t in value]
+				a = ["'%s'" % unicode(t) for t in value]
 		else:
 			"""
 			get default value for id
 			"""
 			#print "param for hook 2 {}".format(param.as_dict())
-			value = utils.get_value_param_for_hook(param)
-			#if not isinstance(value, basestring):
+			value = utils.get_value_param_for_hook(param, error=error)
 			if isinstance(value, basestring):
-				a = ["'%s'" % t for t in list(value)]
+				a = ["'%s'" % frappe.utils.strip(t) for t in value.split(",")]
+			elif value is not None:
+				a = ["'%s'" % unicode(t) for t in list(value)]
 			else:
-				a = ["'%s'" % t for t in value]
+				"""
+				If there is no default value for id then return. Probably there is one in the sended parameters
+				The Administrator need to set the parameter type to Ask` ad remove his default values
+				"""
+				return
+
 				#a = list(a)
 		value = "where name %s (%s)" % (param.param_expression, ",".join(a))
 		return value
@@ -262,7 +351,7 @@ class JasperBase(object):
 	def prepareCollectResponse(self, resps):
 		reqids = []
 		status = "ready"
-		print "get_jasper_reqid_data 8 {}".format(resps[0][0].get("report_name"))
+		#print "get_jasper_reqid_data 8 {}".format(resps[0][0].get("report_name"))
 		report_name = resps[0][0].get("report_name")
 		for resp in reversed(resps):
 			ncopies = []
@@ -320,13 +409,7 @@ class JasperBase(object):
 				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 		elif data.get('jasper_report_type', None) == "List" or doc.jasper_report_type == "List":
 			data['ids'] = data.get('name_ids', [])
-					#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-			#else:
-				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-		#else:
-		#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 
-		#return resps
 		return data
 
 	def polling(self, reqId):
@@ -343,6 +426,8 @@ class JasperBase(object):
 			for ids in d.get('reqids'):
 				for id in ids:
 					res = self.polling(id)
+					if not res:
+						frappe.msgprint(_("There was an error in report request "),raise_exception=True)
 					if res.get('status') != "ready":
 						result = []
 						break

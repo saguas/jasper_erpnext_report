@@ -10,6 +10,8 @@ from jasper_erpnext_report.utils.file import write_file, get_extension
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
 
+from jasper_erpnext_report import jasperserverlib
+
 from io import BytesIO
 from PyPDF2 import PdfFileMerger
 import cStringIO
@@ -75,7 +77,8 @@ class JasperRoot(Jb.JasperBase):
 		ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 		#check to see if there is any report by now. If there are reports don't check the server
 		print "ret is none? {}".format(ret)
-		if self.user == "Administrator" and ret is None and self.use_server():
+		#jasperserverlib sign if it was imported jasperserver, a library to connect to the jasperreport server
+		if self.user == "Administrator" and ret is None and self.use_server() and jasperserverlib:
 			#called from client. Don't let him change old reports attributes
 			import_only_new = self.data['data'].get('import_only_new')
 			self.data['data']['import_only_new'] = 1
@@ -214,14 +217,14 @@ class JasperRoot(Jb.JasperBase):
 		rdoc = frappe.get_doc(doctype, data.get('report_name'))
 		rtype = rdoc.get("jasper_report_type")
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
-			for docname in data.get('name_ids'):
+			for docname in data.get('name_ids', []):
 				#for ptype in ("read", "print"):
 					#if not frappe.has_permission(rdoc.jasper_doctype, ptype=ptype, doc=docname, user=frappe.local.session['user']):
 				if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=("read", "print")):
 					raise frappe.PermissionError(_("No {0} permission for doc {1} in doctype {3}!").format("read or print", docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports
 			#if not self.check_jasper_doc_perm(rdoc.jasper_roles):
-		if not utils.check_frappe_permission("Jasper Reports", data.get('report_name'), ptypes="read"):
+		if not utils.check_frappe_permission("Jasper Reports", data.get('report_name', ""), ptypes="read"):
 			raise frappe.PermissionError(_("You don't have print permission!"))
 
 		params = rdoc.jasper_parameters
@@ -233,7 +236,8 @@ class JasperRoot(Jb.JasperBase):
 			#ncopies = copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1
 			ncopies = get_copies(rdoc, pformat)
 			if origin == "localserver":
-				path = rdoc.jasper_upload_jrxml
+				#path = rdoc.jasper_upload_jrxml
+				path = rdoc.jrxml_root_path
 				self.get_server("local")
 				if not path:
 					frappe.throw(_("%s: Import first a jrxml file!!!" % rdoc.name))

@@ -60,7 +60,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 	#get all report names
 	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",\
 													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",\
-													"jasper_param_message", "jasper_report_type", "jasper_email"])
+													"jasper_param_message", "jasper_report_type", "jasper_email", "jasper_locale"])
 	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",\
 													"`tabJasper Parameter`.jasper_param_name as name", "`tabJasper Parameter`.jasper_param_action",\
 													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description"])
@@ -73,7 +73,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 			print "*************** name ************ {} for doctype {} filters {}".format(r.name, r.jasper_doctype, filters_report)
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
-							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email}
+							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}
 				for report in with_param:
 						name = report.parent
 						if name == r.name:
@@ -120,7 +120,10 @@ def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJaspe
 	#print "inserting data list {}".format(data)
 	for k,v in fields.iteritems():
 		data[k] = v
-	insert_jasper_list_all({"data":data}, cachename, tab)
+	try:
+		insert_jasper_list_all({"data":data}, cachename, tab)
+	except:
+		pass
 
 def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
 		frappe.db.sql("""update {0} set data="{1}",
@@ -474,6 +477,7 @@ def do_doctype_from_jasper(data, reports, force=False):
 def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"):
 	action_type = "Ask"
 	is_copy = "Other"
+	param_expression = ""
 	#doc = _doctype_from_jasper_doc(param_name, "Jasper Parameter", mydict)
 	doc = frappe.new_doc("Jasper Parameter")
 	#set the name here for support the same name from diferents reports
@@ -482,14 +486,15 @@ def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"
 	doc.jasper_param_name = param_name
 	doc.idx = c_idx
 	doc.jasper_param_type = param_type
-	doc.param_expression = "In"
+
 	if check_queryString_with_param(mydict.get("queryString"), param_name):
 		is_copy = "Is for where clause"
 		action_type = "Automatic"
+		param_expression = "In"
 	elif param_name in "where_not_clause":
 		is_copy = "Is for where clause"
-		doc.param_expression = "Not In"
 		action_type = "Automatic"
+		param_expression = "Not In"
 	elif param_name in "page_number":
 		is_copy = "Is for page number"
 		action_type = "Automatic"
@@ -500,6 +505,7 @@ def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"
 	doc.is_copy = is_copy
 	doc.jasper_param_action = action_type
 	doc.jasper_param_description = ""
+	doc.param_expression = param_expression
 
 	doc.parent = parent#key
 	doc.parentfield = "jasper_parameters"
@@ -621,10 +627,10 @@ def check_queryString_with_param(query, param):
 
 def check_queryString_param(query, param):
 	ret = False
-	for q in query:
-		text = q.text
-		print "queryString {}".format(text)
-		ret = check_queryString_with_param(text, param)
+	#for q in query:
+	#	text = q.text
+	#	print "queryString {}".format(text)
+	ret = check_queryString_with_param(query, param)
 
 	return ret
 
@@ -680,7 +686,9 @@ def get_value_param_for_hook(param, error=True):
 	else:
 		#this is the case when user enter "Administrator" and get translated to "'Administrator'"
 		#then we need to convert to "Administrator" or 'Administrator'
-		value = [str(default_value)]
+		#value = [str(default_value)]
+		print "value in get value param 2 {}".format(default_value.split(","))
+		value = default_value
 	return value
 
 #call hooks for params set as "Is for server hook"
@@ -791,5 +799,6 @@ def check_frappe_permission(doctype, docname, ptypes=("read", )):
 			perm = False
 			break
 	return perm
+
 
 #select name, email from tabUser

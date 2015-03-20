@@ -17,7 +17,7 @@ before_install = "jasper_erpnext_report.utils.utils.before_install"
 #on_logout = "jasper_erpnext_report.core.jaspersession.on_logout"
 boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 #clear_cache = "jasper_erpnext_report.utils.scheduler.clear_cache"
-write_file = "jasper_erpnext_report.utils.file.write_file_jrxml"
+#write_file = "jasper_erpnext_report.utils.file.write_file_jrxml"
 delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
 #website_clear_cache = "jasper_erpnext_report.core.jaspersession.website_clear_cache"
 # Includes in <head>
@@ -27,7 +27,7 @@ delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
 #app_include_js = "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"
 app_include_css = ["/assets/jasper_erpnext_report/css/callouts.css"]
 #app_include_css = "/assets/css/jasper_erpnext_report.css"
-app_include_js = ["/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]
+app_include_js = ["/assets/jasper_erpnext_report/js/jstree.min.js","/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]
 #app_include_js = ["/assets/jasper_erpnext_report/js/meteor.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]
 #app_include_js = ["/assets/jasper_erpnext_report/js/socket.io.js", "/assets/jasper_erpnext_report/js/meteor.js", "/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"]
 #app_include_js = [ "/assets/js/meteor.js" , "/assets/js/jasper_erpnext_report.js"]

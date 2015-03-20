@@ -36,6 +36,8 @@ def start_socketio():
 jasper_session_obj = frappe.local("jasper_session_obj")
 jasper_session = frappe.local("jasper_session")
 pyjnius = False
+jasperserverlib = False
+scriptlet = "net.ensode.jasperbook.PerformanceScriptlets"
 
 """s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 result = s.connect_ex(('', 8888))

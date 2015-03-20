@@ -26,6 +26,18 @@ _logger = logging.getLogger(frappe.__name__)
 def boot_session(bootinfo):
 	#bootinfo['jasper_server_info'] = get_server_info()
 	bootinfo['jasper_reports_list'] = get_reports_list_for_all()
+	from frappe.translate import get_lang_info
+	arr = []
+	langinfo = get_lang_info()
+	print "langinfo boot split 2 {}".format(langinfo)
+	for l in langinfo:
+		obj = {}
+		some_list = l.split("\t")
+		b = [frappe.utils.cstr(a).strip() for a in filter(None, some_list)]
+		obj["name"] = b[1]
+		obj["code"] = b[0]
+		arr.append(obj)
+	bootinfo["langinfo"] = arr
 
 
 @frappe.whitelist()
@@ -253,5 +265,9 @@ def get_jasper_email_report(data):
 	file_path = data.get("filepath")
 	print "get_jasper_email_report 3 {} {}".format(file_path, file_name)
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	output = get_file(file_path, modes="rb")
-	jsr.prepare_file_to_client(file_name, output)
+	try:
+		output = get_file(file_path, modes="rb")
+		jsr.prepare_file_to_client(file_name, output)
+	except:
+		frappe.throw(_("There is no %s report!!!" % file_name))
+
