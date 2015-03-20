@@ -311,11 +311,12 @@ class JasperBase(object):
 			utils.jaspersession_set_value(reqId, data)
 			frappe.db.commit()
 
-	def get_jasper_report_list_from_db(self, tab="tabJasperReportListAll"):
-		rec = frappe.db.sql("""select name, data
-			from {0} where
-			TIMEDIFF(NOW(), lastupdate) < TIME("{1}")""".format(tab, utils.get_expiry_period("report_list_all")))
-		return rec
+	#def get_jasper_report_list_from_db(self, tab="tabJasperReportListAll"):
+		#rec = frappe.db.sql("""select name, data
+		#	from {0} where
+		#	TIMEDIFF(NOW(), lastupdate) < TIME("{1}")""".format(tab, utils.get_expiry_period("report_list_all")))
+		#return rec
+	#	return
 
 	def get_session_from_db(self, tab="tabJasperClientHtmlDocs"):
 		rec = frappe.db.sql("""select name, data

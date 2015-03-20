@@ -9,7 +9,6 @@ from frappe.utils import cint
 from jasper_erpnext_report.utils.file import get_html_reports_path, write_file
 
 import jasper_erpnext_report, os
-#from frappe.core.doctype.communication.communication import make
 
 import JasperRoot as Jr
 from jasper_erpnext_report import jasper_session_obj
@@ -24,21 +23,33 @@ _logger = logging.getLogger(frappe.__name__)
 
 
 def boot_session(bootinfo):
-	#bootinfo['jasper_server_info'] = get_server_info()
 	bootinfo['jasper_reports_list'] = get_reports_list_for_all()
-	from frappe.translate import get_lang_info
-	arr = []
-	langinfo = get_lang_info()
-	print "langinfo boot split 2 {}".format(langinfo)
-	for l in langinfo:
-		obj = {}
-		some_list = l.split("\t")
-		b = [frappe.utils.cstr(a).strip() for a in filter(None, some_list)]
-		obj["name"] = b[1]
-		obj["code"] = b[0]
-		arr.append(obj)
+	arr = getLangInfo()
 	bootinfo["langinfo"] = arr
 
+def getLangInfo():
+	arr = []
+	version = cint(frappe.__version__.split(".", 1)[0])
+	if version < 5:
+		from frappe.translate import get_lang_info
+		langinfo = get_lang_info()
+		for l in langinfo:
+			obj = {}
+			some_list = l.split("\t")
+			b = [frappe.utils.cstr(a).strip() for a in filter(None, some_list)]
+			obj["name"] = b[1]
+			obj["code"] = b[0]
+			arr.append(obj)
+	else:
+		from frappe.geo.country_info import get_all
+		langinfo = get_all()
+		for k,v in langinfo.iteritems():
+			obj = {}
+			obj["name"] = k
+			obj["code"] = v.get("code")
+			arr.append(obj)
+
+	return arr
 
 @frappe.whitelist()
 def get_reports_list_for_all():
@@ -57,7 +68,7 @@ def report_polling(data):
 
 @frappe.whitelist()
 def get_report(data):
-	#print "data get_reportssss {}".format(unquote(data))
+
 	if not data:
 		frappe.throw(_("No data for this Report!!!"))
 	if isinstance(data, basestring):
@@ -66,32 +77,16 @@ def get_report(data):
 	fileName, content, report_name = _get_report(data)
 	return make_pdf(fileName, content, pformat, report_name)
 
-#def _get_report(data, merge_all=True, pages=None, email=False):
 def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	fileName, content, report_name = jsr.get_report_server(data)
 	print "in _get_report report_name {}".format(report_name)
 	pformat = data.get("pformat")
 	if pformat == "html":
-		#report_name = self.get_jasper_reqid_data(reqIds[0])
-		#print "data in _get_report 2 {}".format(data, report_name)
-		#for c in content:
-			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			#frappe.create_folder(os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0]))
-			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-		#hash_obj = hashlib.md5(content[0])
-		#hash = hash_obj.hexdigest()
 		print "jsr.html_hash 6 {}".format(jsr.html_hash)
 		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
-			#write_file(c, os.path.join(path_jasper_module, "public", "reports", frappe.local.site, fileName.split(".")[0], fileName))
-		#write_file(c, os.path.join(html_reports_path, fileName))
 		write_file(content[0], os.path.join(html_reports_path, fileName))
-	#file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
-	#if not email:
-	#	jsr.prepare_file_to_client(file_name, output)
-	#	return
 
-	#return file_name, output
 	return fileName, content, report_name
 
 def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None, email=False):
@@ -100,20 +95,11 @@ def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None
 	if not email:
 		if pformat == "html":
 			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			#html_reports_path = get_html_reports_path(fileName.split(".")[0])
-			#hash_obj = hashlib.md5(content[0])
-			#hash = hash_obj.hexdigest()
-			#print "jsr.html_hash 3 {}".format(jsr.html_hash)
 			html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 			full_path = os.path.join(html_reports_path, fileName)
 			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
 			print "relat_path in make_pdf {}".format(relat_path)
-			#import tinyurl
-			#url = frappe.request.host
-			#print "request ip 2 {}".format(url)
-			#t = tinyurl.create_one('http://' + url + "/assets/jasper_erpnext_report/" + relat_path)
 			return os.path.join("jasper_erpnext_report",relat_path)
-			#return content[0]
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
 
@@ -143,7 +129,6 @@ def jasper_server_login():
 @frappe.whitelist()
 def get_doc(doctype, docname):
 	data = {}
-	#jsr = jasper_session_obj or Jr.JasperRoot()
 	doc = frappe.get_doc(doctype, docname)
 	if check_frappe_permission(doctype, docname, ptypes=("read", )):
 		data = {"data": doc}
@@ -162,7 +147,6 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
-		#while result[0].get("status", "not ready") != "ready" and limit <= 10:
 		while not "status" in result[0] and limit <= 10:
 			time.sleep(cint(jasper_polling_time)/1000)
 			result = report_polling(poll_data)
@@ -173,7 +157,6 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		pformat = data.get("pformat")
 		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
 		ncopies = get_copies(rdoc, pformat)
-		#file_name, output = _get_report(result[0], merge_all=True, pages=None, email=True)
 		fileName, jasper_content, report_name = _get_report(result[0])
 		merge_all = True
 		pages = None
@@ -189,17 +172,8 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		frappe.errprint(frappe.get_traceback())
 		return
 
-	#attach = jasper_make_attach(data, file_name, output, attachments, result)
-
-	#make(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
-	#	sender=sender, recipients=recipients, communication_medium=communication_medium, send_email=False,
-	#	print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy, set_lead=set_lead,
-	#	date=date)
-	#check permissions
-	#jsr = jasper_session_obj or Jr.JasperRoot()
 	perms = rdoc.get("jasper_roles")
 	#TODO: must check for frappe permissions : jsr.check_frappe_permission(doctype, docname, ptypes=("email", )) and
-	#if not check_jasper_perm(perms, ptypes=("email", )):
 	print "email permission doctype {} report name {}".format(data.get("doctype"), data.get('report_name'))
 	if not check_frappe_permission(data.get("doctype"), data.get('report_name'), ptypes=("read", )):
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
@@ -214,9 +188,6 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 
 	sender = get_sender(sender)
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
-	#to get a report in another format to use in email
-	#from jasperserver.core.exportDescriptor import ExportDescriptor
-	#rr = ExportDescriptor()
 
 """
 def jasper_make_attach(data, file_name, output, attachments, result):

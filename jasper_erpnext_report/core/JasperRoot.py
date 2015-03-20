@@ -105,10 +105,12 @@ class JasperRoot(Jb.JasperBase):
 		print "dirty!! {}".format(dirt)
 		#dirt = False
 		if not dirt:
-			data = utils.get_jasper_data("report_list_all", get_from_db=self.get_jasper_report_list_from_db)
+			#data = utils.get_jasper_data("report_list_all", get_from_db=self.get_jasper_report_list_from_db)
+			data = utils.get_jasper_session_data_from_cache("report_list_all")
 
 		if not data:
-			utils.delete_jasper_session("report_list_all", "tabJasperReportListAll")
+			#utils.delete_jasper_session("report_list_all", "tabJasperReportListAll")
+			frappe.cache().delete_value("jasper:report_list_all")
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			data = self._get_reports_list(filters_report=r_filters)
 
@@ -163,10 +165,12 @@ class JasperRoot(Jb.JasperBase):
 		data = {}
 		#dirt = False
 		if not dirt:
-			data = utils.get_jasper_data("report_list_doctype", get_from_db=self.get_jasper_report_list_from_db, tab="tabJasperReportListDoctype")
+			#data = utils.get_jasper_data("report_list_doctype", get_from_db=self.get_jasper_report_list_from_db, tab="tabJasperReportListDoctype")
+			data = utils.get_jasper_session_data_from_cache("report_list_doctype")
 
 		if not data or not self.check_docname(data, doctype, report):
-			utils.delete_jasper_session("report_list_doctype", "tabJasperReportListDoctype")
+			#utils.delete_jasper_session("report_list_doctype", "tabJasperReportListDoctype")
+			frappe.cache().delete_value("jasper:report_list_doctype")
 			if doctype:
 				r_filters={"jasper_doctype": doctype}
 			else:

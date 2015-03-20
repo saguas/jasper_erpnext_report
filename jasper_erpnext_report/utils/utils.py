@@ -22,8 +22,8 @@ jasper_formats = ["pdf", "docx", "xls","ods","odt", "rtf"]
 jasper_report_types = ['jasper_print_pdf', 'jasper_print_rtf', 'jasper_print_docx', 'jasper_print_ods',\
 						'jasper_print_odt', 'jasper_print_xls', 'jasper_print_all']
 
-jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": "tabJasperReportListAll"},\
-					{"mcache":'report_list_doctype', "db": "tabJasperReportListDoctype"}]
+jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},\
+					{"mcache":'report_list_doctype', "db": None}]
 
 def before_install():
 	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperSessions(
@@ -40,18 +40,19 @@ def before_install():
 		KEY reqid (reqid)
 		)""")
 
-	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListAll(
-		name varchar(255) DEFAULT NULL,
-		data longtext,
-		lastupdate datetime(6) DEFAULT NULL
-		)""")
+	##TODO: to remove!!!!
+	if False:
+		frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListAll(
+			name varchar(255) DEFAULT NULL,
+			data longtext,
+			lastupdate datetime(6) DEFAULT NULL
+			)""")
 
-	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListDoctype(
-		name varchar(255) DEFAULT NULL,
-		data longtext,
-		lastupdate datetime(6) DEFAULT NULL
-		)""")
-
+		frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReportListDoctype(
+			name varchar(255) DEFAULT NULL,
+			data longtext,
+			lastupdate datetime(6) DEFAULT NULL
+			)""")
 
 def jasper_report_names_from_db(origin="both", filters_report={}, filters_param={}, filters_permrole={}):
 	ret = None
@@ -104,13 +105,13 @@ def jasper_print_formats(doc):
 	return ret
 
 def insert_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
-		frappe.db.sql("""insert into {0}
-			(name, data, lastupdate)
-			values ("{1}" , "{2}", NOW())""".format(tab, cachename, str(data['data'])))
+		#frappe.db.sql("""insert into {0}
+		#	(name, data, lastupdate)
+		#	values ("{1}" , "{2}", NOW())""".format(tab, cachename, str(data['data'])))
 		# also add to memcache
 		print "inserting data {0} cachename {1}".format(data['data'], cachename)
 		jaspersession_set_value(cachename, data)
-		frappe.db.commit()
+		#frappe.db.commit()
 
 def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
 	#data['size'] = len(data)
@@ -126,12 +127,12 @@ def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJaspe
 		pass
 
 def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
-		frappe.db.sql("""update {0} set data="{1}",
-				lastupdate=NOW() where TIMEDIFF(NOW(), lastupdate) < TIME("{2}")""".format(tab, str(data['data']), get_expiry_period(sessionId=cachename)))
+		#frappe.db.sql("""update {0} set data="{1}",
+		#		lastupdate=NOW() where TIMEDIFF(NOW(), lastupdate) < TIME("{2}")""".format(tab, str(data['data']), get_expiry_period(sessionId=cachename)))
 		# also add to memcache
 		print "inserting data {0} cachename {1}".format(data['data'], cachename)
 		jaspersession_set_value(cachename, data)
-		frappe.db.commit()
+		#frappe.db.commit()
 
 def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
@@ -267,13 +268,15 @@ def jaspersession_set_value(sessionId, data):
 	frappe.cache().set_value("jasper:" + sessionId, data)
 
 def delete_jasper_session(sessionId, tab="tabJasperSessions", where=None):
-	#frappe.cache().delete_value("jaspersession:" + sid)
+
 	frappe.cache().delete_value("jasper:" + sessionId)
-	if where:
+	if tab and where:
 		frappe.db.sql("""delete from {} where {}""".format(tab, where))
-	else:
+	elif tab:
 		frappe.db.sql("""delete from {}""".format(tab))
-	frappe.db.commit()
+
+	if tab:
+		frappe.db.commit()
 
 def get_expiry_in_seconds(expiry):
 		if not expiry: return 3600

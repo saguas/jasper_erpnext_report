@@ -3,7 +3,6 @@ import frappe, logging
 from memcache_stats import MemcachedStats
 from jasper_erpnext_report.utils.utils import jasper_cache_data, delete_jasper_session, jaspersession_get_value, get_expiry_in_seconds, get_jasper_session_expiry_seconds, get_expiry_period
 from jasper_erpnext_report.utils.file import remove_directory, get_jasper_path, remove_compiled_report
-#import jasper_erpnext_report
 
 
 _logger = logging.getLogger(frappe.__name__)
@@ -30,8 +29,10 @@ def clear_all_jasper_sessions():
 		delete_jasper_session(session.get("mcache"), tab=session.get("db"))
 
 def clear_jasper_list():
-	delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
-	delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
+	#delete_jasper_session("report_list_all", tab="tabJasperReportListAll")
+	frappe.cache().delete_value("jasper:report_list_all")
+	#delete_jasper_session("report_list_doctype", tab="tabJasperReportListDoctype")
+	frappe.cache().delete_value("jasper:report_list_doctype")
 
 def clear_all_jasper_reports(force=True):
 	#rec = frappe.db.sql("""select reqid from tabJasperReqids""")
