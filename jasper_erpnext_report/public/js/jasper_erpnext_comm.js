@@ -2,9 +2,13 @@ frappe.provide("jasper");
 
 jasper.CommunicationComposer = Class.extend({
 	init: function(opts) {
-		$.extend(this, opts)
-        var rname = this.jasper_doc.report_name
-        this.jasper_formats = this.list[rname].formats;
+		$.extend(this, opts);
+        var rname = this.jasper_doc.report_name;
+		this.jasper_formats = "";
+		for (var i=0; i < this.list[rname].formats.length; i++){
+			this.jasper_formats = this.jasper_formats + this.list[rname].formats[i] + "\n";
+		}
+		this.jasper_formats = this.jasper_formats + "html";
 		this.make();
 	},
 	make: function() {

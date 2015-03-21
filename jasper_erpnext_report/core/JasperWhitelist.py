@@ -90,13 +90,14 @@ def _get_report(data):
 def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None, email=False):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
+	#if not email:
+	if pformat == "html":
+		path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
+		full_path = os.path.join(html_reports_path, fileName)
+		relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+		return os.path.join("jasper_erpnext_report",relat_path)
 	if not email:
-		if pformat == "html":
-			path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
-			full_path = os.path.join(html_reports_path, fileName)
-			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
-			return os.path.join("jasper_erpnext_report",relat_path)
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
 
@@ -147,9 +148,9 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 			result = report_polling(poll_data)
 			limit += 1
 
+	pformat = data.get("pformat")
 	#we have to remove the original and send only duplicate
 	if result[0].get("status", "not ready") == "ready":
-		pformat = data.get("pformat")
 		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
 		ncopies = get_copies(rdoc, pformat)
 		fileName, jasper_content, report_name = _get_report(result[0])
@@ -159,10 +160,27 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 			merge_all = False
 			pages = get_pages(ncopies, len(jasper_content))
 
-		file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+		filepath = None
+		if pformat == "html":
+			print_html = True
+			filepath = output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			file_name = output.rsplit("/",1)
+			if len(file_name) > 1:
+				file_name = file_name[1]
+			else:
+				file_name = file_name[0]
+
+			#filepath = output
+			#s = output.split("/",1)[1]
+			#module_path = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "public", s))
+			#print "email output html path module_path 8 {} file_name {} filepath {}".format(module_path, file_name, filepath)
+			#output = frappe.read_file(module_path, raise_not_found=True)
+		else:
+			file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			output = output.getvalue()
 
 	else:
-		frappe.throw(_("Error generating PDF, try again later"))
+		frappe.throw(_("Error generating %s format, try again later") % (pformat,))
 		frappe.errprint(frappe.get_traceback())
 		return
 
@@ -172,13 +190,15 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
 			doctype=data.get("doctype"), name=data.get('report_name')))
 
-	sendmail(file_name, output, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+	sender = get_sender(sender)
+	sendmail(file_name, output, filepath, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
 
-	filepath = jasper_save_email(data, file_name, output, result[0].get("requestId"), sender)
+	if pformat != "html":
+		print "file_name in email make pdf 2 {}".format(file_name)
+		filepath = jasper_save_email(data, file_name, output, result[0].get("requestId"), sender)
 
-	sender = get_sender(sender)
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
 
 def prepare_polling(data):

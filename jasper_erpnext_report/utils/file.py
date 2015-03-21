@@ -267,7 +267,8 @@ def get_jrxml_path(dir_path, dn):
 def get_jasper_path(for_all_sites = False):
 	if not for_all_sites:
 		return 	get_site_path("jasper")
-	module_path = frappe.get_module_path("jasper_erpnext_report", "..", "jasper")
+	#module_path = frappe.get_module_path("jasper_erpnext_report", "..", "jasper")
+	module_path = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "jasper"))
 	return module_path
 
 
