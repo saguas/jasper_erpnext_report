@@ -65,7 +65,6 @@ def jasper_save_email(data, file_name, output, reqId, sender):
 	outputPath = path_join(jasper_path, jasper_path_intern)
 	frappe.create_folder(outputPath)
 	file_path = path_join(outputPath, file_name)
-	#file_path_intern = path_join(jasper_path_intern, file_name)
 	write_StringIO_to_file(file_path, output)
 
 	return file_path

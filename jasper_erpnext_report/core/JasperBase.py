@@ -40,21 +40,14 @@ class JasperBase(object):
 		return doc_jasper_server == "jasperserver only" or doc_jasper_server == "both"
 
 	def use_local(self):
-		#self.resume()
 		doc_jasper_server = self.doc.use_jasper_server.lower()
 		return doc_jasper_server == "local jrxml only" or doc_jasper_server == "both"
 
 	def get_report_origin(self):
-		#if not self.doc:
-		#	self.resume()
-		#	if not self.data["data"]:
-		#		self._login()
 		return self.doc.use_jasper_server.lower()
 
 	def get_jasperconfig_from_db(self):
-		from frappe.utils import pprint_dict
 		self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True)
-		print "getting from db jasperconfig!!! doc {}".format(pprint_dict(self.doc))
 		self.createJasperSession()
 
 	def resume(self):
@@ -66,7 +59,6 @@ class JasperBase(object):
 		else:
 			#if data session expire or not exist get from db the data, in this case no cookies!
 			self.get_jasperconfig_from_db()
-			#self.data = frappe._dict({'data': data, 'user':data.get("user")})
 
 		if not self.doc:
 			self.doc = self.data['data']
@@ -86,10 +78,8 @@ class JasperBase(object):
 
 	def update_data_cache(self):
 		self.data['data'] = {letter: i for letter,i in self.doc.iteritems() if letter not in jasper_fields_not_supported}
-		#self.data['data']['cookie'] = frappe.local.jasper_session.session.getSessionId() if frappe.local.jasper_session.session else {}
 		self.data['user'] = self.user
 		self.data['data']['last_updated'] = frappe.utils.now()
-		print "update_data_cache {}".format(self.data)
 
 	def insert_jasper_session_record(self):
 		frappe.db.sql("""insert into tabJasperSessions
@@ -122,7 +112,6 @@ class JasperBase(object):
 		# database persistence is secondary, don't update it too often
 		updated_in_db = False
 		if force_db or (time_diff==None) or (time_diff > 300):
-		#if force_db:
 			frappe.db.sql("""update tabJasperSessions set sessiondata=%s,
 				lastupdate=NOW() where TIMEDIFF(NOW(), lastupdate) < TIME(%s) and status='Active'""" , (str(self.data['data']), utils.get_expiry_period()))
 			utils.jaspersession_set_value("last_db_jasper_session_update", now)
@@ -148,20 +137,16 @@ class JasperBase(object):
 			frappe.throw(_("Error in report %s, there is no value for param in hook on_jasper_params!!!" % (doc.jasper_report_name)))
 		for param in res:
 			param.pop("attrs", None)
-			#del param["attrs"]
 			param_type = param.pop("param_type", None)
-			print "pvalue {}".format(res)
 			if param_type and param_type.lower() == _("is for where clause"):
 				param.setdefault("param_expression", "In")
-				#print "param_expression 2 {}".format(param.param_expression)
 				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
 				if not value:
 					frappe.throw(_("Error in report %s, there is no value for param %s in hook on_jasper_params!!!" % (doc.jasper_report_name, param.get("name", ""))))
-				#pram.append({"name":param.get("name", None), 'value':[value]})
+
 				param["value"] = [value]
 				param.pop("param_expression", None)
-				#print "value from hook where 3 value {} name {}".format(param.get("value"), param.get("name"))
-				#continue
+
 			value = param.get("value",None)
 			if value is not None and not isinstance(value, list):
 				value = [value]
@@ -181,11 +166,7 @@ class JasperBase(object):
 	def do_params(self, data, params, pformat):
 		pram = []
 		copies = {}
-		#self.doc = doc
-		#pram.extend(self.get_ask_params(data))
 		pram_server = []
-		pram_copy_index = -1
-		pram_copy_page_index = -1
 		for param in params:
 			is_copy = param.is_copy.lower()
 			p = param.jasper_param_name
@@ -198,9 +179,7 @@ class JasperBase(object):
 					Check if the ids was sended by asked parameters
 					"""
 					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
-					print "getting value for param value 2 {}".format(value)
-				#print "value in where clause value {} name".format(value, param.name)
-				#value = "where name %s (%s)" % (param.param_expression, ",".join(a))
+
 			elif is_copy == _("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
@@ -219,7 +198,7 @@ class JasperBase(object):
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
 				value = data.get("params", {}).get(p) or param.jasper_param_value
-				#value = data.get(p) or param.jasper_param_value
+
 			pram.append({"name":p, 'value':[value]})
 
 		return (pram, pram_server, copies)
@@ -236,13 +215,12 @@ class JasperBase(object):
 		return query
 
 	def check_ids_in_hooks(self, doc, data, params):
-		#pram_server = [{"name": "name_ids", "attrs": params, "value": data.get('name_ids', [])}]
+
 		method = "on_jasper_params_ids"
 		res = utils.call_hook_for_param(doc, method, data, params)
 		"""
 		Hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"], "report_type": "List"}
 		"""
-		print "res on hooks 4 {}".format(res)
 		if res:
 			data['name_ids'] = res.get('ids', [])
 			"""
@@ -263,7 +241,6 @@ class JasperBase(object):
 			"""
 			get default value for id
 			"""
-			#print "param for hook 2 {}".format(param.as_dict())
 			value = utils.get_value_param_for_hook(param, error=error)
 			if isinstance(value, basestring):
 				a = ["'%s'" % frappe.utils.strip(t) for t in value.split(",")]
@@ -276,16 +253,14 @@ class JasperBase(object):
 				"""
 				return
 
-				#a = list(a)
 		value = "where name %s (%s)" % (param.param_expression, ",".join(a))
 		return value
 
 	def update_jasper_reqid_record(self, reqId, data):
-		#print "reqID update db {}".format(str(data['data']))
+
 		frappe.db.sql("""update tabJasperReqids set data=%s, lastupdate=NOW()
 			where reqid=%s""",(str(data['data']), reqId))
 		# also add to memcache
-		print "inserting reqId {0} data {1}".format(reqId, data['data'])
 		utils.jaspersession_set_value(reqId, data)
 		frappe.db.commit()
 
@@ -307,16 +282,8 @@ class JasperBase(object):
 				values (%s , %s, NOW())""",
 					(reqId, str(data['data'])))
 			# also add to memcache
-			print "inserting reqId {0} data {1}".format(reqId, data['data'])
 			utils.jaspersession_set_value(reqId, data)
 			frappe.db.commit()
-
-	#def get_jasper_report_list_from_db(self, tab="tabJasperReportListAll"):
-		#rec = frappe.db.sql("""select name, data
-		#	from {0} where
-		#	TIMEDIFF(NOW(), lastupdate) < TIME("{1}")""".format(tab, utils.get_expiry_period("report_list_all")))
-		#return rec
-	#	return
 
 	def get_session_from_db(self, tab="tabJasperClientHtmlDocs"):
 		rec = frappe.db.sql("""select name, data
@@ -332,11 +299,8 @@ class JasperBase(object):
 				if i.get("status") == "ready":
 					id = i.get("id")
 					outr = i.get("outputResource", {})
-					print "in prepareResponse 3: {}".format(i)
 					contentType = outr.get("contentType", "")
 					if "html" in contentType:
-						print "prepareResponse is html request "
-						#afilename = uri.split("/")
 						options = i.get("options", {})
 						attachs = i.get("attachments", {})
 						ids.append({"id":id, "fileName": outr.get("fileName"), "attachmentsPrefix": options.get("attachmentsPrefix"),
@@ -352,20 +316,16 @@ class JasperBase(object):
 	def prepareCollectResponse(self, resps):
 		reqids = []
 		status = "ready"
-		#print "get_jasper_reqid_data 8 {}".format(resps[0][0].get("report_name"))
 		report_name = resps[0][0].get("report_name")
 		for resp in reversed(resps):
 			ncopies = []
 			for r in resp:
 				requestId = r.get('requestId')
 				ncopies.append(requestId)
-				#print "r is {}".format(r)
-				#insert_jasper_reqid_record(requestId, {"data":r})
 				if r.get('status') == "ready":
 					continue
 				status = "not ready"
 			reqids.append(ncopies)
-			#print "ncopies is {}".format(ncopies)
 		res = self.make_internal_reqId(reqids, status, report_name)
 
 		return res
@@ -378,43 +338,32 @@ class JasperBase(object):
 		res = {"requestId": intern_reqId, "reqtime": reqtime, "status": status}
 		return res
 
-	#def run_report_async(self, path, doc, data={}, params=[], async=True, pformat="pdf", ncopies=1, for_all_sites=1):
 	def run_report_async(self, doc, data={}, params=[]):
-		#resps = []
-		print "Parameters is list {} name_ids {}".format(params, data.get('name_ids', []))
 		if doc.jasper_report_type == "Server Hooks":
 			self.check_ids_in_hooks(doc, data, params)
 		if not doc.jasper_report_type == "General":
-			#get the ids for this report from hooks. Return a list of ids
-			#if doc.jasper_report_type == "Server Hooks":
-			#	self.check_ids_in_hooks(doc, data, params)
 
 			name_ids = data.get('name_ids', [])
-			#if params or name_ids:
 			if not name_ids:
 				res = None
 				if doc.jasper_report_type != "Server Hooks":
 					res = self.check_ids_in_hooks(doc, data, params)
-				print "hooks res {}".format(res)
 				if not res:
 					frappe.throw(_("Report {} input params error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
 					return
-		#print "name_ids from hooks {}".format(data.get('name_ids'))
 		#In General type you may change to Form or List and give ids and change some initial data
 		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form" :
 			if not data.get('ids', None):
 				data['ids'] = []
 			for elem in data.get('name_ids', []):
 				data['ids'].append(elem)
-			#data['ids'] = [data.get('name_ids', [])[0]]
-				#resps.append(self._run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+
 		elif data.get('jasper_report_type', None) == "List" or doc.jasper_report_type == "List":
 			data['ids'] = data.get('name_ids', [])
 
 		return data
 
 	def polling(self, reqId):
-		print "polling problems"
 		pass
 
 	def report_polling_base(self, reqId, report_name):
@@ -423,7 +372,6 @@ class JasperBase(object):
 		data = self.get_jasper_reqid_data(reqId)
 		if data:
 			d = data['data']
-			print "polling 3 {}".format(d)
 			for ids in d.get('reqids'):
 				for id in ids:
 					res = self.polling(id)
@@ -443,7 +391,6 @@ class JasperBase(object):
 		else:
 			print "Report Not Found."
 			frappe.throw(_("Report Not Found!!!"))
-		print "result in polling local {}".format(result)
 		return req
 
 	def get_html_path(self, report_name, localsite=None, content=None):
@@ -478,22 +425,9 @@ class JasperBase(object):
 			if isinstance(v, dict):
 				count += 1
 				perms = v.pop("perms", None)
-				#docname = k
 				frappe.flags.mute_messages = True
 				found = utils.check_frappe_permission("Jasper Reports", k, ptypes=("read", ))
-				print "perms 2 {} found {}".format(perms, found)
-				"""
-				for ptype in ("read", "print"):
-					if not frappe.has_permission("Jasper Reports", ptype=ptype, doc=docname, user=frappe.local.session['user']):
-						print "Filter_perm_roles no 2 {0} permission for doc {1}".format("read", docname)
-						found = False
-						break
-					else:
-						found = True
-				"""
 				frappe.flags.mute_messages = False
-				#if found == True:
-				#	found = utils.check_jasper_perm(perms)
 				if not found:
 					toremove.append(k)
 					removed = removed + 1
@@ -523,11 +457,6 @@ class JasperBase(object):
 						frappe.flags.mute_messages = False
 						if to_remove == True:
 							continue
-						#rdoc = frappe.get_doc("Jasper Reports", k)
-						#print "rdoc for list reports 2 {}".format(rdoc.jasper_roles)
-						#if not utils.check_jasper_perm(rdoc.jasper_roles):# or check_jasper_doc_perm
-						#	print "No {0} permission!".format("read")
-						#	continue
 					new_data[k] = v
 					added = added + 1
 		new_data['size'] = added

@@ -5,18 +5,16 @@ from frappe import _
 import frappe
 
 from frappe.utils import cint
+
 from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path, get_file, get_html_reports_images_path
 import jasper_erpnext_report.utils.utils as utils
-
+import jasper_erpnext_report.jasper_reports as jr
+import JasperBase as Jb
 
 import logging
 import uuid
 import thread
 import os
-
-import jasper_erpnext_report.jasper_reports as jr
-
-import JasperBase as Jb
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -64,13 +62,13 @@ class JasperLocal(Jb.JasperBase):
 			conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":3306/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
 
-		reportName = self.getFileName(path)#data.get("report_name")
+		reportName = self.getFileName(path)
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
 		outtype = print_format.index(pformat)
 
 		lang = data.get("params", {}).get("locale", None) or "EN"
-		print "jasper lang code {}".format(lang)
+
 		virtua = 0
 		if doc.jasper_virtualizer:
 			virtua = cint(frappe.db.get_value('JasperServerConfig', fieldname="jasper_virtualizer_pages")) or 0
@@ -79,18 +77,14 @@ class JasperLocal(Jb.JasperBase):
 			if pram_copy_index != -1:
 				pram_copy_name = pram[pram_copy_index].get("name","")
 				hashmap.put(pram_copy_name, copies[m])
-				#print "hashmap 2 put param {} value {}".format(pram_copy_name, copies[m])
 			if pram_copy_page_index != -1:
-				#if pram_copy_page_index != -1:
 				pram_copy_page_name = pram[pram_copy_page_index].get("name","")
 				hashmap.put(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
-				#print "hashmap 3 put param {} value {}".format(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
 			reqId = uuid.uuid4().hex
 			outputPath = path_join(compiled_path, reqId)
 			frappe.create_folder(outputPath)
 			sessionId = "local_report_" + reqId
 			res = self.prepareResponse({"reportURI": os.path.relpath(outputPath, jasper_path) + os.sep + reportName + "." + pformat}, sessionId)
-			#resp.append(res)
 			res["status"] = None
 			res["report_name"] = data.get("report_name")
 			resp.append(res)#{"requestId":sessionId, "status": None}
@@ -112,7 +106,6 @@ class JasperLocal(Jb.JasperBase):
 
 			except Exception as e:
 				frappe.throw(_("Error in report %s, error is: %s!!!" % (doc.jasper_report_name, e)))
-				#print "Error: unable to start thread"
 		return resp
 
 	def _export_report(self, mparams, report_name, localsite, grid_data):
@@ -148,7 +141,6 @@ class JasperLocal(Jb.JasperBase):
 		for k in columnNames:
 			cols.append(k.get("name"))
 
-		print "columns tables 8 {} columns {}".format(tables, cols)
 		return tables, cols
 
 
@@ -166,11 +158,9 @@ class JasperLocal(Jb.JasperBase):
 		if not data['data']:
 			frappe.throw(_("No report for this reqid %s !!" % reqId[13:]))
 		output_path = data['data']['result'].get("uri")
-		print "output_path 2 {0} rid {1} data {2}".format(output_path, reqId, data)
 		if os.path.exists(output_path):
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
-			print "local report exists 2 {}".format(res)
 		else:
 			res = self.prepareResponse({}, reqId)
 		return res
@@ -179,10 +169,7 @@ class JasperLocal(Jb.JasperBase):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
 			frappe.throw(_("No report for this reqid %s !!" % reqId))
-		print "local file {}".format(data)
 		output_path = data['data']['result'].get("uri")
-		#with open(output_path, mode='rb') as file:
-		#	content = file.read()
 		content = get_file(output_path, "rb")
 		return content
 

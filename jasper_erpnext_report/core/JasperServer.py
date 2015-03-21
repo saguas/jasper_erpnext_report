@@ -19,8 +19,6 @@ except:
 from frappe.utils import pprint_dict
 
 
-from jasper_erpnext_report.utils.report import prepareCollectResponse
-
 from frappe import _
 import frappe
 
@@ -32,8 +30,6 @@ from jasper_erpnext_report.utils.file import JasperXmlReport
 import jasper_erpnext_report.utils.utils as utils
 
 import JasperBase as Jb
-
-from frappe.core.doctype.communication.communication import make
 
 _logger = logging.getLogger(frappe.__name__)
 
@@ -56,7 +52,6 @@ def _jasperserver(fn):
 			return fn_result
 
 		except Unauthorized as e:
-			_logger.info("************************Decorator _jasperserver error {2} args {0} newargs {1}".format(args, newargs, e))
 			me._timeout()
 			fn_result = fn(*args, **newargs)
 			me.update()
@@ -87,7 +82,6 @@ class JasperServer(Jb.JasperBase):
 	def login(self):
 		self.connect()
 		if not self.in_jasper_session() and self.user == "Administrator":
-			#frappe.throw(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."))
 			self.send_email(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."), _("jasperserver login error"))
 
 	def in_jasper_session(self):
@@ -111,22 +105,15 @@ class JasperServer(Jb.JasperBase):
 
 		try:
 			if not self.doc:
-				#self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True)
-				#self.createJasperSession()
 				self.get_jasperconfig_from_db()
 
-			print "BEFORE jasper session connect doc 1 {}".format(self.doc)
 			self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url"), self.doc.get("jasper_username"), self.doc.get("jasper_server_password"))
-			print "AFTER jasper session connect {}".format(self.session)
+
 			self.update_cookie()
 			self.is_login = True
 
 		except Exception as e:
 			self.is_login = False
-			#if self.user == "Administrator":
-			_logger.info("jasperserver login error")
-				#frappe.msgprint(_("JasperServer login error, reason: {}".format(e)))
-			#else:
 			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
 			self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"), user=cur_user)
 
@@ -144,12 +131,10 @@ class JasperServer(Jb.JasperBase):
 		_logger.info("_timeout JasperServerSession login successfuly {0}".format(self.doc))
 
 	def update_cookie(self):
-		print "frappe.local.jasper_session.session.getSessionId() {}".format(frappe.local.jasper_session.session.getSessionId())
 		self.data['data']['cookie'] = frappe.local.jasper_session.session.getSessionId() if frappe.local.jasper_session.session else {}
 		self.update(force_cache=False, force_db=True)
 
 	def get_server_info(self):
-		print "session {}".format(self.session.session.getSessionId())
 		details = Details(self.session)
 		serverInfo = details.serverInfo()
 		return serverInfo
@@ -197,7 +182,6 @@ class JasperServer(Jb.JasperBase):
 
 	def run_remote_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
 		resps = []
-		#data = self.run_report_async(path, doc, data=data, params=params, async=async, pformat=pformat, ncopies=ncopies)
 		data = self.run_report_async(doc, data=data, params=params)
 		"""
 		Run one report at a time for Form type report and many ids
@@ -218,64 +202,7 @@ class JasperServer(Jb.JasperBase):
 		pram, pram_server, copies = self.do_params(data, params, pformat)
 		pram_copy_index = copies.get("pram_copy_index", -1)
 		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
-		"""
-		pram = []
-		#self.doc = doc
-		#pram.extend(self.get_ask_params(data))
-		pram_server = []
-		pram_copy_index = -1
-		pram_copy_page_index = -1
-		for param in params:
-			is_copy = param.is_copy.lower()
-			p = param.jasper_param_name
-			value = ""
-			if is_copy == _("is for where clause"):
-				#value = data.get('name_ids')
-				value = self.get_where_clause_value(data.get('ids'), param)
-				#print "value in where clause value {} name".format(value, param.name)
-				#value = "where name %s (%s)" % (param.param_expression, ",".join(a))
-			elif is_copy == _("is for copies") and pformat=="pdf":
-				#set the number of copies
-				#indicate the index of param is for copies
-				pram_copy_index = len(pram) - 1 if len(pram) > 0 else 0
-			elif is_copy == _("is for page number") and pformat=="pdf":
-				pram_copy_page_index = len(pram) - 1 if len(pram) > 0 else 0
-			elif is_copy == _("is for server hook"):
-				value = data.get('ids')
-				if not value:
-					#if not data and not entered value then get default
-					value = utils.get_value_param_for_hook(param)
-				pram_server.append({"name":p, 'value': value, "attrs": param})
-				continue
-			else:
-				#value sent take precedence from value in doctype jasper_param_value
-				value = data.get("params", {}).get(p) or param.jasper_param_value
-				#value = data.get(p) or param.jasper_param_value
-			pram.append({"name":p, 'value':[value]})
-		"""
 		resp = []
-		"""
-		Hook must return a list of dict with fields: {"name":"name of param", "value": [value_of_param], "param_type": "_(is for where clause)"}
-		param_type is optional
-		"""
-		"""
-		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
-		for param in res:
-			param.pop("attrs", None)
-			#del param["attrs"]
-			param_type = param.pop("param_type", None)
-			print "pvalue {}".format(res)
-			if param_type and param_type.lower() == _("is for where clause"):
-				param.setdefault("param_expression", "In")
-				#print "param_expression 2 {}".format(param.param_expression)
-				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
-				#pram.append({"name":param.get("name", None), 'value':[value]})
-				param["value"] = [value]
-				param.pop("param_expression", None)
-				#print "value from hook where 3 value {} name {}".format(param.get("value"), param.get("name"))
-				#continue
-			pram.append(param)
-		"""
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
 		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
@@ -305,45 +232,31 @@ class JasperServer(Jb.JasperBase):
 		rr.setParameters(pram)
 		rr.setAsync(True)
 		if pformat == "html":
-			#from jasper_erpnext_report.utils.file import get_html_reports_images_path
-			#import os, jasper_erpnext_report
-			#host_url = frappe.local.request.host_url
-			#rr.setBaseUrl(host_url)
-			#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-			#full_path = get_html_reports_images_path(report_name, "reports")
-			#relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
-			#print "report_name in run async 3 {}".format(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
-			#rr.setAttachmentsPrefix("http://localhost:8000/assets/css/images/Employees/")
-			#rr.setAttachmentsPrefix(host_url + "assets/jasper_erpnext_report/" + relat_path + "/")
 			rr.setAttachmentsPrefix("./images/")
 		try:
 			req = rs.newReportExecutionRequest(rr)
 			res = req.run().getResult("content")
-			print "res from server 2: {}".format(res)
 			res = json.loads(res)
 			resp = self.prepareResponse(res, res.get("requestId"))
 			resp["status"] = res.get("status")
 			return resp
 		except Exception as e:
 			if isinstance(e, Unauthorized):
-				print "e inside is : {}".format(e)
+
 				raise Unauthorized
 			else:
 				frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, e)))
 
 	@_jasperserver
 	def polling(self, reqId):
-		print "making the write polling!"
 		res = []
 		try:
 			rs = ReportingService(self.session)
 			rexecreq = rs.reportExecutionRequest(reqId)
 			status = rexecreq.status().content
-			print "status: status {} rexecreq {}".format(status, rexecreq)
 			status = json.loads(status)
 			if status.get("value") == "ready":
 				detail = self.reportExecDetail(rexecreq)
-				print "report detail 2: {} reqId {}".format(detail, reqId)
 				res = self.prepareResponse(detail, reqId)
 				if res.get('status', "") == "not ready":
 					res = self.prepareResponse({}, reqId)
@@ -375,21 +288,16 @@ class JasperServer(Jb.JasperBase):
 			frappe.throw(_("Not Found!!!"))
 
 	def getAttachment(self, reqId, expId, attachmentId):
-		print "getting attach {}".format(attachmentId)
 		try:
 			rs = ReportingService(self.session)
 			rexecreq = rs.reportExecutionRequest(reqId, expId)
 			content = rexecreq.export().attachment(attachmentId)
-			#print "attachment content 5 {}".format(content)
 			return content
 		except NotFound:
 			frappe.throw(_("Not Found!!!"))
 
 	def send_email(self, body, subject, user="no_reply@gmail.com"):
 		import frappe.utils.email_lib
-		#admin_mail = frappe.db.get_value("User", "Administrator", "email")
-		#print "admin_mails {}".format(frappe.utils.email_lib.get_system_managers())
-		#make(doctype="JasperServerConfig", content=body, subject=subject, sender=user, recipients=[admin_mail], send_email=True)
 		try:
 			frappe.utils.email_lib.sendmail_to_system_managers(subject, body)
 		except Exception as e:

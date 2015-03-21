@@ -80,10 +80,8 @@ def get_report(data):
 def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	fileName, content, report_name = jsr.get_report_server(data)
-	print "in _get_report report_name {}".format(report_name)
 	pformat = data.get("pformat")
 	if pformat == "html":
-		print "jsr.html_hash 6 {}".format(jsr.html_hash)
 		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 		write_file(content[0], os.path.join(html_reports_path, fileName))
 
@@ -98,7 +96,6 @@ def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None
 			html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
 			full_path = os.path.join(html_reports_path, fileName)
 			relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
-			print "relat_path in make_pdf {}".format(relat_path)
 			return os.path.join("jasper_erpnext_report",relat_path)
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
@@ -107,13 +104,11 @@ def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None
 
 @frappe.whitelist()
 def run_report(data, docdata=None):
-	from frappe.utils import pprint_dict
 	if not data:
 		frappe.throw("No data for this Report!!!")
 	if isinstance(data, basestring):
 		data = json.loads(data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	print "params in run_report 3 {}".format(pprint_dict(data))
 	return jsr.run_report(data, docdata=docdata)
 
 @frappe.whitelist()
@@ -167,14 +162,12 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
 
 	else:
-		print "not sent by email... {}".format(result)
 		frappe.throw(_("Error generating PDF, try again later"))
 		frappe.errprint(frappe.get_traceback())
 		return
 
-	perms = rdoc.get("jasper_roles")
+	#perms = rdoc.get("jasper_roles")
 	#TODO: must check for frappe permissions : jsr.check_frappe_permission(doctype, docname, ptypes=("email", )) and
-	print "email permission doctype {} report name {}".format(data.get("doctype"), data.get('report_name'))
 	if not check_frappe_permission(data.get("doctype"), data.get('report_name'), ptypes=("read", )):
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
 			doctype=data.get("doctype"), name=data.get('report_name')))
@@ -184,33 +177,9 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 		send_me_a_copy=send_me_a_copy)
 
 	filepath = jasper_save_email(data, file_name, output, result[0].get("requestId"), sender)
-	print "jasper email filepath {}".format(filepath)
 
 	sender = get_sender(sender)
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
-
-"""
-def jasper_make_attach(data, file_name, output, attachments, result):
-
-	from frappe.utils.file_manager import get_site_path
-	path_join = os.path.join
-	#rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
-	#for_all_sites = rdoc.jasper_all_sites_report
-	#jasper_path = get_jasper_path(for_all_sites)
-	public = get_site_path("public")
-	jasper_path_intern = path_join("jasper_sent_email", result[0].get("requestId"))
-	outputPath = path_join(public, jasper_path_intern)
-	frappe.create_folder(outputPath)
-	file_path = path_join(outputPath, file_name)
-	file_path_intern = path_join(jasper_path_intern, file_name)
-	write_StringIO_to_file(file_path, output)
-
-	attach = json.loads(attachments)
-	attach.append(file_path_intern)
-	print "sent by email 2... {} attach {}".format(file_path_intern, attach)
-
-	return json.dumps(attach)
-"""
 
 def prepare_polling(data):
 	reqids = []
@@ -234,7 +203,6 @@ def get_jasper_email_report(data):
 	data = json.loads(unquote(data))
 	file_name = data.get("filename")
 	file_path = data.get("filepath")
-	print "get_jasper_email_report 3 {} {}".format(file_path, file_name)
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	try:
 		output = get_file(file_path, modes="rb")
