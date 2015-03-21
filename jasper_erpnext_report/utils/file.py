@@ -271,7 +271,7 @@ def get_jasper_path(for_all_sites = False):
 	return module_path
 
 
-def jasper_compile_jrxml(fname, dt, dn, file_path, compiled_path):
+def jasper_compile_jrxml(fname, file_path, compiled_path):
 	c = len(fname) - 6
 	jasper_compile(file_path, os.path.join(compiled_path, fname[:c] + ".jasper"))
 
@@ -361,7 +361,7 @@ def write_file_jrxml(fname, content, content_type=None, parent=None):
 		fpath = write_file(content, file_path)
 		path =  os.path.relpath(fpath, jasper_path)
 		if ext == "jrxml":
-			jasper_compile_jrxml(fname, dt, dn, file_path, compiled_path)
+			jasper_compile_jrxml(fname, file_path, compiled_path)
 
 		return {
 			'name': autofilename or None,
