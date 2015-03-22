@@ -6,13 +6,28 @@ from frappe import _
 import json, os
 from email.utils import formataddr
 
-from jasper_erpnext_report.utils.file import get_jasper_path, write_file
+from jasper_erpnext_report.utils.file import get_jasper_path, write_file, get_html_reports_path
+
+
+def set_portal_link(sent_via, comm, endurl):
+	"""set portal link in footer"""
+	footer = ""
+
+	if frappe.website.utils.is_signup_enabled():
+		is_valid_recipient = frappe.utils.cstr(sent_via.get("email") or sent_via.get("email_id") or
+			sent_via.get("contact_email")) in comm.recipients
+		if is_valid_recipient:
+			url = frappe.utils.quoted("%s/%s" % (frappe.utils.get_url(), endurl))
+			footer = """<!-- Portal Link -->
+					<p><a href="%s" target="_blank">View this on our website</a></p>""" % url
+
+	return footer
 
 
 def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None, print_format=None, attachments='[]', send_me_a_copy=False):
 	footer = None
 
-	from frappe.core.doctype.communication.communication import get_email, attach_print, send, set_portal_link
+	from frappe.core.doctype.communication.communication import get_email, send
 
 	if sent_via:
 		if hasattr(sent_via, "get_sender"):
@@ -22,8 +37,8 @@ def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None
 		if hasattr(sent_via, "get_content"):
 			d.content = sent_via.get_content(d)
 
-	if print_html:
-		footer = "<hr>" + set_portal_link(frappe._dict({"doctype":"assets", "name": fileid}), d)
+	if print_format == "pdf" or print_html:
+		footer = "<hr>" + set_portal_link(sent_via, d, fileid)
 
 	mail = get_email(d.recipients, sender=d.sender, subject=d.subject,
 		msg=d.content, footer=footer)
@@ -52,9 +67,16 @@ def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, co
 	send_comm_email(d, file_name, output, fileid, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
 
-def jasper_save_email(data, file_name, output, reqId, sender):
+def get_email_pdf_path(report_name, reqId):
 
-	sender = get_sender(sender)
+	site = frappe.local.site
+
+	file_path = get_html_reports_path(report_name, where="reports", hash=reqId, localsite=site)
+
+	return file_path
+
+
+def get_email_other_path(data, file_name, reqId, sender):
 
 	path_join = os.path.join
 	rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
@@ -64,6 +86,12 @@ def jasper_save_email(data, file_name, output, reqId, sender):
 	outputPath = path_join(jasper_path, jasper_path_intern)
 	frappe.create_folder(outputPath)
 	file_path = path_join(outputPath, file_name)
+
+	return file_path
+
+
+def jasper_save_email(file_path, output):
+
 	write_file(output, file_path, modes="wb")
 
 	return file_path
@@ -79,3 +107,22 @@ def get_sender(sender):
 		sender = formataddr(sender)
 
 	return sender
+
+def set_jasper_email_doctype(parent_name, sent_to, sender, when, filepath, filename):
+	from frappe.model.naming import make_autoname
+
+	jer_doc = frappe.new_doc('Jasper Email Report')
+
+	jer_doc.jasper_email_report_name = parent_name
+	jer_doc.name = make_autoname(parent_name + '/.DD./.MM./.YY./.#######')
+	jer_doc.jasper_email_sent_to = sent_to
+	jer_doc.jasper_email_sender = sender
+	jer_doc.jasper_email_date = when
+	jer_doc.jasper_file_name = filename
+	jer_doc.jasper_report_path = filepath
+	jer_doc.idx = frappe.utils.cint(frappe.db.sql("""select max(idx) from `tabJasper Email Report`""")[0][0]) + 1
+
+	jer_doc.ignore_permissions = True
+	jer_doc.insert()
+
+	return jer_doc

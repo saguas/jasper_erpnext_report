@@ -113,7 +113,7 @@ def clear_expired_jasper_html():
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
-	local_session_data = frappe.local.session
+	#local_session_data = frappe.local.session
 	clear_cache()
 
 def clear_cache():

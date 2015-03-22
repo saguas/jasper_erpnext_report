@@ -16,7 +16,7 @@ from jasper_erpnext_report.utils.jasper_email import sendmail
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
 from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission
-from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender
+from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path
 from jasper_erpnext_report.utils.file import get_file
 
 _logger = logging.getLogger(frappe.__name__)
@@ -37,8 +37,12 @@ def getLangInfo():
 			obj = {}
 			some_list = l.split("\t")
 			b = [frappe.utils.cstr(a).strip() for a in filter(None, some_list)]
-			obj["name"] = b[1]
-			obj["code"] = b[0]
+			try:
+				obj["name"] = b[1]
+				obj["code"] = b[0]
+			except:
+				obj["name"] = ""
+				pass
 			arr.append(obj)
 	else:
 		from frappe.geo.country_info import get_all
@@ -75,7 +79,7 @@ def get_report(data):
 		data = json.loads(unquote(data))
 	pformat = data.get("pformat")
 	fileName, content, report_name = _get_report(data)
-	return make_pdf(fileName, content, pformat, report_name)
+	return make_pdf(fileName, content, pformat, report_name, reqId=data.get("requestId"))
 
 def _get_report(data):
 	jsr = jasper_session_obj or Jr.JasperRoot()
@@ -87,16 +91,50 @@ def _get_report(data):
 
 	return fileName, content, report_name
 
-def make_pdf(fileName, content, pformat, report_name, merge_all=True, pages=None, email=False):
+def getHtmlFilepath(report_name, fileName):
+	jsr = jasper_session_obj or Jr.JasperRoot()
+	path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+	html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
+	full_path = os.path.join(html_reports_path, fileName)
+	relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+	return os.path.join("jasper_erpnext_report",relat_path)
+
+def getPdfFilePath(file_name, filepath):
+
+	down = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "public", "reports", frappe.local.site))
+	norm = os.path.normpath(os.path.relpath(filepath, down))
+	path = os.path.join(norm, file_name)
+	return path
+
+def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True, pages=None, email=False):
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	#if not email:
 	if pformat == "html":
-		path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-		html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
-		full_path = os.path.join(html_reports_path, fileName)
-		relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
-		return os.path.join("jasper_erpnext_report",relat_path)
+		#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
+		#html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
+		#full_path = os.path.join(html_reports_path, fileName)
+		#relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
+		#return os.path.join("jasper_erpnext_report",relat_path)
+		filepath = getHtmlFilepath(report_name, fileName)
+		g = "jasper_erpnext_report/reports/" + frappe.local.site
+		path = os.path.normpath(os.path.relpath(filepath, g))
+		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+		if not email:
+			return url
+		return url, filepath
+
+	if pformat == "pdf":
+		#filepath = get_email_pdf_path(report_name, reqId)
+		filepath = get_email_pdf_path(report_name, reqId)
+		path = getPdfFilePath(file_name, filepath)
+		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+		if not email:
+			file_path = os.path.join(filepath, file_name)
+			jasper_save_email(file_path, output.getvalue())
+			return url
+		return file_name, filepath, output, url
+
 	if not email:
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
@@ -131,7 +169,7 @@ def get_doc(doctype, docname):
 	frappe.local.response.update(data)
 
 @frappe.whitelist()
-def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_received = "Sent",
+def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_or_received = "Sent",
 	sender=None, recipients=None, communication_medium="Email", send_email=False,
 	print_html=None, print_format=None, attachments='[]', send_me_a_copy=False, set_lead=True, date=None,
 	jasper_doc=None, docdata=None):
@@ -160,46 +198,61 @@ def jasper_make(doctype=None, name=None, content=None, subject=None, sent_or_rec
 			merge_all = False
 			pages = get_pages(ncopies, len(jasper_content))
 
-		filepath = None
+		sender = get_sender(sender)
+
 		if pformat == "html":
 			print_html = True
-			filepath = output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			#filepath = output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			#filepath = output = getHtmlFilepath(report_name, fileName)
+			url, filepath = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			output = filepath
 			file_name = output.rsplit("/",1)
 			if len(file_name) > 1:
 				file_name = file_name[1]
 			else:
 				file_name = file_name[0]
 
-			#filepath = output
-			#s = output.split("/",1)[1]
-			#module_path = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "public", s))
-			#print "email output html path module_path 8 {} file_name {} filepath {}".format(module_path, file_name, filepath)
-			#output = frappe.read_file(module_path, raise_not_found=True)
+			#g = "jasper_erpnext_report/reports/site1.local"
+			#path = os.path.normpath(os.path.relpath(filepath, g))
+			#url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+
+		elif pformat == "pdf":
+			print_format = "pdf"
+			file_name, filepath, output, url = make_pdf(fileName, jasper_content, pformat, report_name, reqId=result[0].get("requestId"), merge_all=merge_all, pages=pages, email=True)
+			output = output.getvalue()
+			#filepath = get_email_pdf_path(data.get('report_name'), result[0].get("requestId"))
+			#down = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "public", "reports", frappe.local.site))
+			#norm = os.path.normpath(os.path.relpath(filepath, down))
+			#path = os.path.join(norm, file_name)
+			#url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+
 		else:
 			file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
+			filepath = url = get_email_other_path(data, file_name, result[0].get("requestId"), sender)
 			output = output.getvalue()
+			#remove name from filepath
+			filepath = filepath.rsplit("/",1)[0]
+			print "other format email filepath 2 {} file_name {}".format(filepath, file_name)
 
 	else:
 		frappe.throw(_("Error generating %s format, try again later") % (pformat,))
 		frappe.errprint(frappe.get_traceback())
 		return
 
-	#perms = rdoc.get("jasper_roles")
 	#TODO: must check for frappe permissions : jsr.check_frappe_permission(doctype, docname, ptypes=("email", )) and
 	if not check_frappe_permission(data.get("doctype"), data.get('report_name'), ptypes=("read", )):
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
 			doctype=data.get("doctype"), name=data.get('report_name')))
 
-	sender = get_sender(sender)
-	sendmail(file_name, output, filepath, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+	sendmail(file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
 
 	if pformat != "html":
-		print "file_name in email make pdf 2 {}".format(file_name)
-		filepath = jasper_save_email(data, file_name, output, result[0].get("requestId"), sender)
+		file_path = os.path.join(filepath, file_name)
+		jasper_save_email(file_path, output)
 
-	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), filepath, file_name)
+	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
 
 def prepare_polling(data):
 	reqids = []

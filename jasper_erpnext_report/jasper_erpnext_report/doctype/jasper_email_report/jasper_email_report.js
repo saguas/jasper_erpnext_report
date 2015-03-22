@@ -18,15 +18,15 @@ cur_frm.cscript["get_report"] = function(doc, dt, dn){
 jasper.getJasperEmailReport = function(filepath, filename){
 	var ext = jasper.get_extention_name(filename);
 	var request = "";
-	if (ext === "html"){
-		request = frappe.urllib.get_base_url() + "/assets/" + encodeURI(filepath);
+	if (ext === "html" || ext === "pdf"){
+		request = frappe.urllib.get_base_url() + "/" + encodeURI(filepath);
 	}else{
 		var reqdata = {filepath: filepath, filename: filename};
     	request = "/api/method/jasper_erpnext_report.core.JasperWhitelist.get_jasper_email_report?data="+encodeURIComponent(JSON.stringify(reqdata));
 	}
 
     console.log("request ", request)
-    w = window.open(request);
+    w = window.open(request,"_self");
 	if(!w) {
 		msgprint(__("Please enable pop-ups"));
 	}

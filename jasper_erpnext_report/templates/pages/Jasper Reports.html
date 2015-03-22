@@ -1,3 +1,30 @@
 {% block content %}
-{% include "assets/jasper_erpnext_report/reports/site1.local/Cherry Local 4/6517a3480bd91b52ea4d2f396c93cfac/Cherry.html" ignore missing %}
+{% if jasper_report_path %}
+<div align="center">
+	<iframe src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" id="iframe1" onLoad="autoResize('iframe1');" seamless></iframe>
+</div>
+
+<script language="JavaScript">
+<!--
+function autoResize(id){
+    var newheight;
+    var newwidth;
+	
+	newheight = $(document).width();
+	newwidth = $(document).height();
+
+    document.getElementById(id).height= newheight;
+    document.getElementById(id).width= newwidth;
+	console.log("height ", newheight, newwidth);
+}
+//-->
+</script>
+
+{% else %}
+
+<div class="message-content">
+	<strong>{{ message }}</strong>
+</div>
+{% endif %}
 {% endblock %}
+

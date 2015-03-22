@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-sm-4">
+        <a href="/Jasper Reports/{{ doc.name }}">
+            <img src="{{ doc.jasper_report_type }}"
+                class="img-responsive" style="max-height: 200px">
+        </a>
+    </div>
+    <div class="col-sm-4">
+        <a href="/Jasper Reports/{{ doc.name }}"><h4>{{ doc.name }}</h4></a>
+        <p>{{ doc.name }}</p>
+        <p>{{ (doc.description[:200] + "...")
+            if doc.description|length > 200 else doc.description }}</p>
+        <p class="text-muted">Publisher: {{ doc.jasper_doctype }}</p>
+    </div>
+</div>
+

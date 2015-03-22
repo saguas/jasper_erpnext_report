@@ -190,7 +190,7 @@ jasper.getReport = function(msg){
 	var reqdata = msg[0];
     console.log("this reqdata ", reqdata)
     var w;
-    if (reqdata.pformat === "html"){
+    if (reqdata.pformat === "html" || reqdata.pformat === "pdf"){
         console.log("is html");
         frappe.call({
 	       "method": "jasper_erpnext_report.core.JasperWhitelist.get_report",
@@ -200,7 +200,8 @@ jasper.getReport = function(msg){
 	       callback: function(response_data){
 			   console.log("polling response ", response_data);
                console.log("local report ready!!! ", response_data.message);
-               w = window.open(frappe.urllib.get_base_url() + "/assets/" + encodeURI(response_data.message));
+               //w = window.open(frappe.urllib.get_base_url() + "/assets/" + encodeURI(response_data.message));
+			   w = window.open(frappe.urllib.get_base_url() + "/" + encodeURI(response_data.message), "_self");
                //var c = "/assets/" + response_data.message;
                //console.log("colorbox ", c)
                //$.colorbox({href: encodeURIComponent(c), opacity: 0.8, width: "90%", height: "90%"});
@@ -1092,7 +1093,7 @@ jasper.dialog_upload_tree =	frappe.ui.form.Control.extend({
 				parent_report: this.selected[0] || (this.root==="#"? "root":this.root),
 				doctype: me.frm.doctype,
 				docname: me.frm.docname,
-				method:  "jasper_erpnext_report.utils.file.file_upload"
+				method:  "jasper_erpnext_report.utils.upload.file_upload"
 			}
 		};
 		this.upload_options.on_attachs = function(args, dataurl) {

@@ -301,8 +301,8 @@ class JasperRoot(Jb.JasperBase):
 					else:
 						self.get_server("local")
 						for i in range(rid_len):
-							print "get report local {}".format(reqId[i])
 							c = self.jpl.getLocalReport(reqId[i])
+							print "get report local 2 {}".format(reqId[i], c)
 							content.append(c)
 							if file_ext == "html":
 								hash_obj = hashlib.md5(c)

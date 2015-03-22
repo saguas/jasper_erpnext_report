@@ -253,7 +253,7 @@ jasper.CommunicationComposer = Class.extend({
 		};
 
 		return frappe.call({
-			method:"jasper_erpnext_report.core.JasperWhitelist.jasper_make",
+			method:"jasper_erpnext_report.core.JasperWhitelist.jasper_make_email",
 			args: {
 				sender: [frappe.user_info(user).fullname, frappe.boot.user.email],
 				recipients: form_values.recipients,
