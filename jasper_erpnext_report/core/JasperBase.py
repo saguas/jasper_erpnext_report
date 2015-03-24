@@ -167,6 +167,8 @@ class JasperBase(object):
 		pram = []
 		copies = {}
 		pram_server = []
+		used_ids = False
+
 		for param in params:
 			is_copy = param.is_copy.lower()
 			p = param.jasper_param_name
@@ -179,7 +181,7 @@ class JasperBase(object):
 					Check if the ids was sended by asked parameters
 					"""
 					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
-
+				used_ids = True
 			elif is_copy == _("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
@@ -189,10 +191,11 @@ class JasperBase(object):
 				copies["pram_copy_page_index"] = len(pram) - 1 if len(pram) > 0 else 0
 
 			elif is_copy == _("is for server hook"):
-				value = data.get('ids')
+				#don't do server hook here. Get first all defaults values
+				value = data.get('ids') if not used_ids else None
 				if not value:
-					#if not data and not entered value then get default first
-					value = utils.get_value_param_for_hook(param, error=False)
+					#if not data then get default first
+					value = utils.get_default_param_value(param, error=False)
 				pram_server.append({"name":p, 'value': value, "attrs": param})
 				continue
 			else:
@@ -241,7 +244,7 @@ class JasperBase(object):
 			"""
 			get default value for id
 			"""
-			value = utils.get_value_param_for_hook(param, error=error)
+			value = utils.get_default_param_value(param, error=error)
 			if isinstance(value, basestring):
 				a = ["'%s'" % frappe.utils.strip(t) for t in value.split(",")]
 			elif value is not None:

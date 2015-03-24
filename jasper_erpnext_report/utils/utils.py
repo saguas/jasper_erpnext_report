@@ -108,7 +108,7 @@ def check_queryString_param(query, param):
 
 	return ret
 
-def get_value_param_for_hook(param, error=True):
+def get_default_param_value(param, error=True):
 	#if not data and not entered value then get default
 	default_value = param.jasper_param_value
 	if not default_value:

@@ -220,7 +220,7 @@
   }, 
   {
    "default": "0", 
-   "description": "Use Jasper Virtualizer. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).", 
+   "description": "Because you may have a very large amount of data, the jasper print might be a very large file. This can lead to an Out Of Memory exception. Use Jasper Virtualizer in this case. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).", 
    "fieldname": "jasper_virtualizer", 
    "fieldtype": "Check", 
    "label": "Use Virtualizer", 
@@ -310,7 +310,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-03-18 23:22:49.092276", 
+ "modified": "2015-03-24 22:53:08.703497", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 
