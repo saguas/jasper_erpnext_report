@@ -2,68 +2,63 @@
 
 {% block content %}
 {% if jasper_report_path %}
-<div id="outerviewer">
-	<iframe id="viewer" src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" onLoad="autoResize('viewer');" allowfullscreen="true" seamless="seamless"></iframe>
-</div>
-
-<script language="JavaScript">
-<!--
-function autoResize(id){
-    /*var newheight;
-    var newwidth;
-
-	newheight = $(window).height();//$(window).innerHeight();
-	newwidth = $(window).innerWidth();//$(window).height();
-
-    document.getElementById(id).height= newheight;
-    document.getElementById(id).width= newwidth - 300;
-    */
-    var win = $(window);
-
-	var viewport = {
-		top : win.scrollTop(),
-		left : win.scrollLeft()
-	};
-	viewport.right = viewport.left + win.width();
-	viewport.bottom = viewport.top + win.height();
-
-	document.getElementById(id).height= (- viewport.bottom)*(-1);
-    document.getElementById(id).width= (- viewport.right)*(-1 + 0.20);
-
-	//to print iframe content
-    //window.frames["viewer"].focus();
-    //window.frames["viewer"].print();
-
-    //to support fullscreen
-    //<button onclick="fullScreen()">Full Screen</button>
-    /*
-        <script>
-            function fullScreen() {
-              var viewer = document.getElementById('viewer');
-              var rFS = viewer.mozRequestFullScreen || viewer.webkitRequestFullscreen || viewer.requestFullscreen;
-              rFS.call(viewer);
-            }
-      </script>
-    */
-}
-
-//-->
-</script>
 
 {% if rtype == "html" %}
 
-<script>
+<div class="form-print-wrapper">
+        <div class="print-toolbar row" style="padding-top: 15px; padding-bottom: 5px; margin-top: -15px;
+            margin-bottom: 15px; padding-left: 15px; position:relative;">
+                <div class="col-xs-11 text-right" style="padding-top: 7px;">
+                    <strong style="margin-right: 7px;">fullscreen:</strong> <a id="resize"><i class="icon-resize-full"></i></a>
+                </div>
+        </div>
+</div>
+
+{% endif %}
+
+<div id="outerviewer" class="embed-responsive embed-responsive-4by3">
+
+    <iframe id="viewer" scrolling="true" onLoad="bind_events();" class="embed-responsive-item" src="{{ jasper_report_path }}" allowfullscreen="true" seamless="seamless"></iframe>
+
     <!--
-    $("#viewer").css({"padding":"10px",
-               "background":"#404040",
-               //"webkit-border-radius": "20px",
-               //"-moz-border-radius": "20px",
-               //"border-radius": "20px",
-               "margin":"0 auto",
-               "overflow":"hidden"
-    });
+	<iframe id="viewer" src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" onLoad="autoResize('viewer');" allowfullscreen="true" seamless="seamless"></iframe>
+	-->
+</div>
+
+
+
+
+{% if rtype == "html" %}
+    <script>
+    <!--
+        function bind_events() {
+            $(document).find(".close").click(function() {
+
+            });
+
+            $(document).find("#print").click(function() {
+                window.frames["viewer"].focus();
+                window.frames["viewer"].print();
+            });
+
+            $(document).find("#resize").click(function() {
+                var viewer = document.getElementById('viewer');
+                var rFS = viewer.mozRequestFullScreen || viewer.webkitRequestFullscreen || viewer.requestFullscreen;
+                rFS.call(viewer);
+            });
+        }
+        $("#viewer").css({
+            "padding":"10px",
+            "padding-top":"30px",
+           "background":"#404040",
+           "webkit-border-radius": "5px",
+           "-moz-border-radius": "5px",
+           "border-radius": "5px",
+           "margin":"0 auto",
+           "overflow":"hidden"
+        });
     //-->
-</script>
+    </script>
 {% endif %}
 
 {% else %}

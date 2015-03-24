@@ -111,7 +111,12 @@ class JasperReports(Document):
 	def jrxml_root_path(self):
 		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,\
 				"attached_to_report_name":"root"})
-		return docs[0].file_url
+		try:
+			root_path = docs[0].file_url
+		except:
+			frappe.msgprint(_("The report is missing."), raise_exception=True)
+
+		return root_path
 
 
 

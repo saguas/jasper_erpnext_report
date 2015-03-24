@@ -1619,6 +1619,7 @@ var NetworkManager = (function NetworkManagerClosure() {
   var PARTIAL_CONTENT_RESPONSE = 206;
 
   function NetworkManager(url, args) {
+	  
     this.url = url;
     args = args || {};
     this.isHttp = /^https?:/i.test(url);

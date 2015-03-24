@@ -751,6 +751,7 @@ var DownloadManager = (function DownloadManagerClosure() {
       (document.body || document.documentElement).appendChild(a);
       a.click();
       a.parentNode.removeChild(a);
+	  console.log("blobUrl a ", blobUrl);
     } else {
       if (window.top === window &&
           blobUrl.split('#')[0] === window.location.href.split('#')[0]) {
@@ -759,6 +760,7 @@ var DownloadManager = (function DownloadManagerClosure() {
         var padCharacter = blobUrl.indexOf('?') === -1 ? '?' : '&';
         blobUrl = blobUrl.replace(/#|$/, padCharacter + '$&');
       }
+	  alert("blobUrl "+ blobUrl);
       window.open(blobUrl, '_parent');
     }
   }
@@ -782,6 +784,7 @@ var DownloadManager = (function DownloadManagerClosure() {
       }
 
       var blobUrl = PDFJS.createObjectURL(data, contentType);
+	  alert("blobUrl " + blobUrl);
       download(blobUrl, filename);
     },
 
@@ -5769,6 +5772,7 @@ var PDFViewerApplication = {
   // TODO(mack): This function signature should really be pdfViewOpen(url, args)
   open: function pdfViewOpen(file, scale, password,
                              pdfDataRangeTransport, args) {
+
     if (this.pdfDocument) {
       // Reload the preferences if a document was previously opened.
       Preferences.reload();
@@ -5843,6 +5847,19 @@ var PDFViewerApplication = {
   },
 
   download: function pdfViewDownload() {
+	 //var url = window.$("#viewer").attr("src").split("file=")[1];
+	 var $ = window.parent.$;
+	 var url = $("#viewer").attr("src").split("file=")[1];
+	 console.log("parent ",window.parent.$);
+	 //var url = window.document.getElementByTagName('iframe').getAttribute("src");
+	 
+	 console.log("window jquery ", url);
+	 var w = window.parent.open(encodeURI(url));
+	 if(!w) {
+	 	msgprint(__("Please enable pop-ups"));
+	 }
+	/*
+	alert("download ");
     function downloadByUrl() {
       downloadManager.downloadUrl(url, filename);
     }
@@ -5873,6 +5890,7 @@ var PDFViewerApplication = {
       },
       downloadByUrl // Error occurred try downloading with just the url.
     ).then(null, downloadByUrl);
+	  */
   },
 
   fallback: function pdfViewFallback(featureId) {
@@ -6656,7 +6674,12 @@ function webViewerInitialized() {
   fileInput.setAttribute('type', 'file');
   fileInput.oncontextmenu = noContextMenuHandler;
   document.body.appendChild(fileInput);
-
+  
+  document.getElementById('openFile').setAttribute('hidden', 'true');
+  document.getElementById('secondaryOpenFile').setAttribute('hidden', 'true');
+  document.getElementById('print').setAttribute('hidden', 'true');
+  document.getElementById('secondaryPrint').setAttribute('hidden', 'true');
+  
   if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
     document.getElementById('openFile').setAttribute('hidden', 'true');
     document.getElementById('secondaryOpenFile').setAttribute('hidden', 'true');
@@ -6730,8 +6753,8 @@ function webViewerInitialized() {
   mozL10n.setLanguage(locale);
 
   if (!PDFViewerApplication.supportsPrinting) {
-    document.getElementById('print').classList.add('hidden');
-    document.getElementById('secondaryPrint').classList.add('hidden');
+  	document.getElementById('print').classList.add('hidden');
+  	document.getElementById('secondaryPrint').classList.add('hidden');
   }
 
   if (!PDFViewerApplication.supportsFullscreen) {
@@ -6831,11 +6854,11 @@ function webViewerInitialized() {
   document.getElementById('presentationMode').addEventListener('click',
     SecondaryToolbar.presentationModeClick.bind(SecondaryToolbar));
 
-  document.getElementById('openFile').addEventListener('click',
-    SecondaryToolbar.openFileClick.bind(SecondaryToolbar));
+  //document.getElementById('openFile').addEventListener('click',
+    //SecondaryToolbar.openFileClick.bind(SecondaryToolbar));
 
-  document.getElementById('print').addEventListener('click',
-    SecondaryToolbar.printClick.bind(SecondaryToolbar));
+  //document.getElementById('print').addEventListener('click',
+    //SecondaryToolbar.printClick.bind(SecondaryToolbar));
 
   document.getElementById('download').addEventListener('click',
     SecondaryToolbar.downloadClick.bind(SecondaryToolbar));
@@ -6848,6 +6871,7 @@ function webViewerInitialized() {
     PDFViewerApplication.setTitleUsingUrl(file);
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
+		alert("loaded!!!");
       PDFViewerApplication.open(new Uint8Array(xhr.response), 0);
     };
     try {

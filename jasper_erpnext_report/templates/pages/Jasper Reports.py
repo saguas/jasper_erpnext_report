@@ -19,11 +19,11 @@ def get_context(context):
 	}
 	"""
 	if frappe.local.session['sid'] == 'Guest':
-		return {"message":_("Please login first!"), "title":_("Not Permitted")}
+		return {"message":_("Please login first!"), "doc_title":_("Not Permitted")}
 
 	jasper_report_path = frappe.form_dict.jasper_doc_path
 	if not jasper_report_path:
-		return {"message":_("Switch to Desk to see the list of reports."), "title":_("Not Permitted")}
+		return {"message":_("Switch to Desk to see the list of reports."), "doc_title":_("Not Permitted")}
 
 	filename = jasper_report_path.rsplit("/",1)[1]
 	doc_title = jasper_report_path.split("/",1)[0]
