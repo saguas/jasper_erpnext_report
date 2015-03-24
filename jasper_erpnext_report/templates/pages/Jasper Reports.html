@@ -1,24 +1,70 @@
+{% block title %}{{ doc_title }}{% endblock %}
+
 {% block content %}
 {% if jasper_report_path %}
-<div align="center">
-	<iframe src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" id="iframe1" onLoad="autoResize('iframe1');" seamless></iframe>
+<div id="outerviewer">
+	<iframe id="viewer" src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" onLoad="autoResize('viewer');" allowfullscreen="true" seamless="seamless"></iframe>
 </div>
 
 <script language="JavaScript">
 <!--
 function autoResize(id){
-    var newheight;
+    /*var newheight;
     var newwidth;
-	
-	newheight = $(document).width();
-	newwidth = $(document).height();
+
+	newheight = $(window).height();//$(window).innerHeight();
+	newwidth = $(window).innerWidth();//$(window).height();
 
     document.getElementById(id).height= newheight;
-    document.getElementById(id).width= newwidth;
-	console.log("height ", newheight, newwidth);
+    document.getElementById(id).width= newwidth - 300;
+    */
+    var win = $(window);
+
+	var viewport = {
+		top : win.scrollTop(),
+		left : win.scrollLeft()
+	};
+	viewport.right = viewport.left + win.width();
+	viewport.bottom = viewport.top + win.height();
+
+	document.getElementById(id).height= (- viewport.bottom)*(-1);
+    document.getElementById(id).width= (- viewport.right)*(-1 + 0.20);
+
+	//to print iframe content
+    //window.frames["viewer"].focus();
+    //window.frames["viewer"].print();
+
+    //to support fullscreen
+    //<button onclick="fullScreen()">Full Screen</button>
+    /*
+        <script>
+            function fullScreen() {
+              var viewer = document.getElementById('viewer');
+              var rFS = viewer.mozRequestFullScreen || viewer.webkitRequestFullscreen || viewer.requestFullscreen;
+              rFS.call(viewer);
+            }
+      </script>
+    */
 }
+
 //-->
 </script>
+
+{% if rtype == "html" %}
+
+<script>
+    <!--
+    $("#viewer").css({"padding":"10px",
+               "background":"#404040",
+               //"webkit-border-radius": "20px",
+               //"-moz-border-radius": "20px",
+               //"border-radius": "20px",
+               "margin":"0 auto",
+               "overflow":"hidden"
+    });
+    //-->
+</script>
+{% endif %}
 
 {% else %}
 

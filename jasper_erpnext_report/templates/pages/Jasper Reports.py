@@ -26,10 +26,10 @@ def get_context(context):
 		return {"message":_("Switch to Desk to see the list of reports."), "title":_("Not Permitted")}
 
 	filename = jasper_report_path.rsplit("/",1)[1]
-
+	doc_title = jasper_report_path.split("/",1)[0]
 	ext = get_extension(filename)
 	viewer = viewer_pdf if "pdf" in ext else viewer_html
-	return viewer(filename)
+	return viewer(doc_title)
 
 def viewer_html(filename):
 	jasper_report_path = frappe.form_dict.jasper_doc_path
@@ -38,7 +38,9 @@ def viewer_html(filename):
 	url = url + "/assets/jasper_erpnext_report/reports/" + frappe.local.site + "/" + jasper_report_path
 	url = frappe.utils.quote_urls(url)
 	return {
-		"jasper_report_path": url#"http://localhost:8000/assets/jasper_erpnext_report/pdfjs/web/viewer.html?file=Cherry.pdf"
+		"jasper_report_path": url,#"http://localhost:8000/assets/jasper_erpnext_report/pdfjs/web/viewer.html?file=Cherry.pdf"
+		"doc_title": filename,
+		"rtype":"html"
 	}
 
 def viewer_pdf(filename):
@@ -51,9 +53,13 @@ def viewer_pdf(filename):
 	if url.endswith("/"): url = url[:-1]
 
 	urlpdf = url + "/assets/jasper_erpnext_report/reports/"+ frappe.local.site + "/" + jasper_report_path
+	#urlpdf = "/assets/jasper_erpnext_report/reports/"+ frappe.local.site + "/" + jasper_report_path
 	url = frappe.utils.quote_urls(urlpdf)
 	urlbase = frappe.utils.get_url() + "/assets/jasper_erpnext_report/pdfjs/web/viewer.html?file=" + url
+	#urlbase = frappe.utils.get_url() + "/assets/jasper_erpnext_report/ViewerJS/viewer.html#" + url
 	urlbase = frappe.utils.quote_urls(urlbase)
 	return {
-		"jasper_report_path": urlbase
+		"jasper_report_path": urlbase,
+		"doc_title": filename,
+		"rtype":"pdf"
 	}
