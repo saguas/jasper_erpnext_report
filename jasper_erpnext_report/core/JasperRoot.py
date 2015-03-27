@@ -116,7 +116,10 @@ class JasperRoot(Jb.JasperBase):
 			self.filter_perm_roles(data)
 			if not self.check_server_status():
 				self.remove_server_docs(data)
-		data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
+			try:
+				data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
+			except:
+				data['mail_enabled'] = "disabled"
 		return data
 
 	def remove_server_docs(self, data):

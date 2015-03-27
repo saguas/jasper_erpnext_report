@@ -72,13 +72,16 @@ cur_frm.cscript.jasper_connect_update_btn = function(doc){
 		};
 		var infostr = info.join("\n");
 		console.log("info ", infostr);
+
 		doc.jasper_server_name = infostr;
 		cur_frm.cscript.serverInfo(doc);
+
 	});
 }
 
 cur_frm.cscript.refresh = function(doc){
-    
+
+    console.log("refresh single ", doc);
     //$(cur_frm.get_field("query_html").wrapper).find('.query').text('luis')
     //this.set_value("query_html", "12234");
     var timeout = " To change Jasper Session expire time, please go to <code><strong>Setup->Settings->System Settings</strong></code>" 
@@ -96,11 +99,15 @@ cur_frm.cscript.refresh = function(doc){
     //cur_frm.fields_dict.query_html.$wrapper.html("<div class='panel panel-primary'><pre class='bg-warning'>" + doc.query + "</pre></div>")
         cur_frm.fields_dict.jasper_server_timeout_html.$wrapper.html(code);
         cur_frm.cscript.serverInfo(doc);
-        console.log("query: ", code);
 }
 
 cur_frm.cscript.serverInfo = function(doc){
-    arr_info = doc.jasper_server_name.split("\n")
+    arr_info = doc.jasper_server_name;
+    if (arr_info){
+	arr_info = arr_info.split("\n");
+    }else{
+	arr_info = [];
+    }
     /*var code = '<div class="panel panel-default">'
                  + '<div class="panel-heading">'
                     + '<h3 class="panel-title">Server Timeout Value</h3>'
@@ -109,6 +116,8 @@ cur_frm.cscript.serverInfo = function(doc){
                     + '<pre class="bs-callout bs-callout-info">' + doc.jasper_server_name + '</pre>'
                  + '</div>'
               + '</div>';*/
+
+   console.log("arr_info: ", arr_info);
     
     var code = '<div class="panel panel-default">'
                      + '<div class="panel-heading">'
@@ -133,12 +142,25 @@ cur_frm.cscript.serverInfo = function(doc){
     cur_frm.fields_dict.server_info_html.$wrapper.html(code);
 }
 
+cur_frm.cscript.use_jasper_server = function(doc, val){
+	console.log("use jasper server ", doc, val);
+	if (doc.use_jasper_server === __("Local jrxml only") || doc.use_jasper_server === __("None")){
+		hide_field(["jasper_server_url","jasper_report_root_path", "jasper_username", "jasper_server_password",
+		 "jasper_connect_update_btn", "import_all_reports", "import_only_new", "server_info_html",
+		 "jasper_session_timeout"]);
+	}else{
+		unhide_field(["jasper_server_url","jasper_report_root_path", "jasper_username", "jasper_server_password",
+		 "jasper_connect_update_btn", "import_all_reports", "import_only_new", "server_info_html",
+		 "jasper_session_timeout"]);
+	}
+}
+
 cur_frm.cscript.custom_validate = function(doc) {
 
 	//this.register_event_save();
 	
 	//var args = {name:"luis", idade:45};
-    var args = {report_name:"Cherry", doctype:"Jasper Reports", name_ids:["Administrator"], pformat:"pdf"};
+    //var args = {report_name:"Cherry", doctype:"Jasper Reports", name_ids:["Administrator"], pformat:"pdf"};
 	
     console.log("validate called ");
 	//jasper.get_jasper_report("/reports/erpnext/Leaf_Red_Table_Based", "run_report","pdf", args);

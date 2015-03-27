@@ -15,21 +15,6 @@ _logger = logging.getLogger(frappe.__name__)
 
 jasper_formats = ["pdf", "docx", "xls","ods","odt", "rtf"]
 
-def before_install():
-	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperSessions(
-		user varchar(255) DEFAULT NULL,
-		sessiondata longtext,
-		lastupdate datetime(6) DEFAULT NULL,
-		status varchar(20) DEFAULT NULL
-		)""")
-
-	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReqids(
-		reqid varchar(255) DEFAULT NULL,
-		data longtext,
-		lastupdate datetime(6) DEFAULT NULL,
-		KEY reqid (reqid)
-		)""")
-
 
 def jasper_report_names_from_db(origin="both", filters_report={}, filters_param={}, filters_permrole={}):
 	ret = None

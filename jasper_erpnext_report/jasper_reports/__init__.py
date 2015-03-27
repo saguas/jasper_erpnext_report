@@ -20,7 +20,10 @@ dirname = os.path.dirname
 parent_path = dirname(dirname(__file__))
 rel_path = os.path.relpath(os.path.join(parent_path, "java"),dirname(__file__))
 rel_path_curr = os.path.relpath(parent_path, os.getcwd())
-os.environ['CLASSPATH'] = os.environ['CLASSPATH'] + ":" +norm_path(join_path(parent_path,"java/lib/*")) + ":."
+try:
+    os.environ['CLASSPATH'] = os.environ['CLASSPATH'] + ":" +norm_path(join_path(parent_path,"java/lib/*")) + ":."
+except:
+    pass
 
 try:
 	from jnius import autoclass

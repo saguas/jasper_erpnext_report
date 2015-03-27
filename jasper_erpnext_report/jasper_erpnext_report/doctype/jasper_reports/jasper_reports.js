@@ -76,8 +76,9 @@ cur_frm.cscript.refresh = function(doc){
     //cur_frm.fields_dict.query_html.$wrapper.html("<div class='panel panel-primary'><pre class='bg-warning'>" + doc.query + "</pre></div>")
     cur_frm.fields_dict.query_html.$wrapper.html(code)
     console.log("query: ", code)
-    cs.update_upload(doc);
-
+    if(doc.__islocal !== 1){
+        cs.update_upload(doc);
+	}
 	var locals = ["Ask"];
 	locals.push.apply(locals, jasper.make_country_list());
 	if (doc.jasper_report_origin === "LocalServer"){
@@ -155,13 +156,15 @@ $(document).on("save", function(ev, doc){
 cur_frm.cscript.onload = function(doc){
     //$('.query').text("luis filipe")
     //cur_frm.fields_dict.query_html.$wrapper.html("<p>Luis</p>")
-    var cs = cur_frm.cscript;
-    var opts = cur_frm.get_field("jasper_upload_jrxml_file");
-    console.log("onload ", opts);
-    //cs.show_fields(doc);
-    console.log("from doc ", doc);
-    opts["docname"] = cur_frm.docname;
-    cs.upload = new jasper.dialog_upload_tree(opts);
+    if(doc.__islocal !==1){
+	    var cs = cur_frm.cscript;
+	    var opts = cur_frm.get_field("jasper_upload_jrxml_file");
+	    console.log("onload ", opts);
+	    //cs.show_fields(doc);
+	    console.log("from doc ", doc);
+	    opts["docname"] = cur_frm.docname;
+	    cs.upload = new jasper.dialog_upload_tree(opts);
+	}
     //var lang_default = frappe.defaults.get_user_default("language");
     //cur_frm.set_df_property("jasper_locale", "default", lang_default);
     //var wr = '<div id="' + this.parent + '" style="width:500px;height:250px;"></div>';

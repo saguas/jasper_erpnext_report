@@ -118,7 +118,7 @@ jasper.polling_report = function(data, $banner, timeout){
 					   console.log("polling not ready count ", jasper.poll_count);
 					   if (jasper.poll_count <= 9 ){
 						   jasper.poll_count++;
-						   var ptime = parseInt(frappe.boot.jasper_reports_list.jasper_polling_time);
+						   var ptime = parseInt(frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list.jasper_polling_time);
 						   console.log("ptime ", ptime);
 						   setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
 						   return;
@@ -130,7 +130,7 @@ jasper.polling_report = function(data, $banner, timeout){
                        show_banner_message(banner_msg, ".try_again_report", ".cancel_report", "#FFFF99", function($banner, what){
                            jasper.close_banner($banner);
                            if (what === "ok"){
-                               var ptime = parseInt(frappe.boot.jasper_reports_list.jasper_polling_time);
+                               var ptime = parseInt(frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list.jasper_polling_time);
                                //setTimeout(jasper.polling_report, ptime, data, $banner, timeout);
 							   jasper.polling_report(data, $banner, timeout);
                            }
@@ -445,8 +445,8 @@ setJasperDropDown = function(list, callback){
 };
 
 jasper.get_jasperdoc_from_name = function(rname, rpage){
-    var robj = frappe.boot.jasper_reports_list[rname];
-    if (robj === undefined){
+    var robj = frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list[rname];
+    if (robj === undefined || robj === null){
 		var page = rpage;
 		if (!page){
 			page = jasper.get_page();
@@ -456,7 +456,7 @@ jasper.get_jasperdoc_from_name = function(rname, rpage){
 			robj = jasper.pages[page][rname];
 		};
     }
-    if (robj === undefined){
+    if (robj === undefined || robj === null){
         var route = frappe.get_route();
         var len = route.length;
         var r;
@@ -468,7 +468,7 @@ jasper.get_jasperdoc_from_name = function(rname, rpage){
 			robj = jasper.report[r][rname];
     }
     
-    if (robj === undefined)
+    if (robj === undefined || robj === null)
         return
 	
 	return robj;

@@ -2,7 +2,7 @@ frappe.provide("jasper");
 
 
 cur_frm.cscript.refresh = function(doc){
-	if (doc.__islocal === 1)
+	if (doc && doc.__islocal === 1)
 		hide_field(["get_report"]);
 };
 
@@ -35,7 +35,7 @@ jasper.getJasperEmailReport = function(filepath, filename){
 jasper.get_extention_name = function(filename){
 	var ext = "pdf";
 	var arr = filename.split(".");
-	if (arr.length > 0){
+	if (arr.length > 1){
 		ext = arr[arr.length - 1];
 	}
 

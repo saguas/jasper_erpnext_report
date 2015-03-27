@@ -122,6 +122,8 @@ class JasperReports(Document):
 
 @frappe.whitelist()
 def get_attachments(dn):
+	if not dn:
+		return
 	attachments = []
 	for f in frappe.db.sql("""select name, file_name, file_url, attached_to_report_name from
 		`tabFile Data` where attached_to_name=%s and attached_to_doctype=%s""",

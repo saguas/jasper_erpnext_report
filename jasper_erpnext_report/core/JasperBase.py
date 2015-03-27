@@ -36,18 +36,26 @@ class JasperBase(object):
 		return False
 
 	def use_server(self):
-		doc_jasper_server = self.doc.use_jasper_server.lower()
-		return doc_jasper_server == "jasperserver only" or doc_jasper_server == "both"
+		try:
+			doc_jasper_server = self.doc.use_jasper_server.lower()
+			return doc_jasper_server == "jasperserver only" or doc_jasper_server == "both"
+		except:
+			return False
 
 	def use_local(self):
 		doc_jasper_server = self.doc.use_jasper_server.lower()
 		return doc_jasper_server == "local jrxml only" or doc_jasper_server == "both"
 
 	def get_report_origin(self):
-		return self.doc.use_jasper_server.lower()
+		try:
+			origin = self.doc.use_jasper_server.lower()
+		except:
+			origin = "localserver"
+		return origin
 
 	def get_jasperconfig_from_db(self):
-		self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True)
+		self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True) or frappe._dict({})
+		print "get_jasperconfig_from_db {}".format(self.doc)
 		self.createJasperSession()
 
 	def resume(self):
@@ -61,7 +69,7 @@ class JasperBase(object):
 			self.get_jasperconfig_from_db()
 
 		if not self.doc:
-			self.doc = self.data['data']
+			self.doc = self.data['data'] or frappe._dict({})
 
 	def get_jasper_session_data(self):
 		data = utils.get_jasper_data("jaspersession")
