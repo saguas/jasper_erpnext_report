@@ -204,7 +204,7 @@ class JasperBase(object):
 				#if not value:
 					#if not data then get default first
 				value = utils.get_default_param_value(param, error=False)
-				pram_server.append({"name":p, 'value': value, "attrs": param, "ids": data.get('ids')})
+				pram_server.append({"name":p, 'value': value, "attrs": param})
 				continue
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
