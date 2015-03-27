@@ -200,11 +200,11 @@ class JasperBase(object):
 
 			elif is_copy == _("is for server hook"):
 				#don't do server hook here. Get first all defaults values
-				value = data.get('ids') if not used_ids else None
-				if not value:
+				#value = data.get('ids') if not used_ids else None
+				#if not value:
 					#if not data then get default first
-					value = utils.get_default_param_value(param, error=False)
-				pram_server.append({"name":p, 'value': value, "attrs": param})
+				value = utils.get_default_param_value(param, error=False)
+				pram_server.append({"name":p, 'value': value, "attrs": param, "ids": data.get('ids')})
 				continue
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
