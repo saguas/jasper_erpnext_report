@@ -93,6 +93,10 @@ doc_events = {
 	}
 }
 
+fixtures = [
+	["Custom Field",{"name":["File Data-attached_to_report_name"]}]
+]
+
 # Scheduled Tasks
 # ---------------
 scheduler_events = {
