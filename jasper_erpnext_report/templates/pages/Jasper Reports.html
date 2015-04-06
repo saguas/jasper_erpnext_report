@@ -9,7 +9,8 @@
         <div class="print-toolbar row" style="padding-top: 15px; padding-bottom: 5px; margin-top: -15px;
             margin-bottom: 15px; padding-left: 15px; position:relative;">
                 <div class="col-xs-11 text-right" style="padding-top: 7px;">
-                    <strong style="margin-right: 7px;">fullscreen:</strong><a id="resize"><i class="icon-resize-full"></i></a>
+                    <button id="jasper_print" type="button" class="btn btn-primary icon-print"> Print</button>
+                    <button id="jasper_fullscreen" type="button" class="btn btn-primary icon-fullscreen"> Fullscreen</button>
                 </div>
         </div>
 </div>
@@ -26,37 +27,10 @@
 </div>
 
 
-
-
 {% if rtype == "html" %}
     <script>
     <!--
-        function bind_events() {
-            $(document).find(".close").click(function() {
-
-            });
-
-            $(document).find("#print").click(function() {
-                window.frames["viewer"].focus();
-                window.frames["viewer"].print();
-            });
-
-            $(document).find("#resize").click(function() {
-                var viewer = document.getElementById('viewer');
-                var rFS = viewer.mozRequestFullScreen || viewer.webkitRequestFullscreen || viewer.requestFullscreen;
-                rFS.call(viewer);
-            });
-        }
-        $("#viewer").css({
-            "padding":"10px",
-            "padding-top":"30px",
-           "background":"#404040",
-           "webkit-border-radius": "7px",
-           "-moz-border-radius": "7px",
-           "border-radius": "7px",
-           "margin":"0 auto",
-           "overflow":"hidden"
-        });
+        {% include "templates/includes/jasper_viewer.js" %}
     //-->
     </script>
 {% endif %}
@@ -69,3 +43,8 @@
 {% endif %}
 {% endblock %}
 
+{% block sidebar %}
+
+{% include "templates/includes/jasper_sidebar.html" %}
+
+{% endblock %}
