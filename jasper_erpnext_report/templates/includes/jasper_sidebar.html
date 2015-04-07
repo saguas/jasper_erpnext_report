@@ -4,7 +4,7 @@
 {%- for child in children -%}
 <div class="sidebar-item">
 	<a href="{{ child.jasper_report_path }}" class="no-decoration {% if (pathname or "")==(child.jasper_report_path or "") %}active{% endif %}">
-		{{  child.title or child.page_title or (child.jasper_email_report_name or "").replace("_", " ").title() }} ({{child.jasper_file_name.rsplit(".")[1]}}) - {{child.jasper_email_date}}
+		{{  child.title or child.page_title or (child.jasper_email_report_name or "").replace("_", " ").title() }} ({{child.jasper_file_name.rsplit(".")[1]}}) - <span class="label label-info">{{child.jasper_email_date}}</span>
 	</a>
 </div>
 {%- endfor -%}

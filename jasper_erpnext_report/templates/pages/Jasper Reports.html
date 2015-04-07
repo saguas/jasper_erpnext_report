@@ -1,50 +1,48 @@
 {% block title %}{{ doc_title }}{% endblock %}
 
 {% block content %}
-{% if jasper_report_path %}
+
+    {% if not message %}
 
 
-{% if rtype == "html" %}
-<div class="form-print-wrapper">
-        <div class="print-toolbar row" style="padding-top: 15px; padding-bottom: 5px; margin-top: -15px;
-            margin-bottom: 15px; padding-left: 15px; position:relative;">
-                <div class="col-xs-11 text-right" style="padding-top: 7px;">
-                    <button id="jasper_print" type="button" class="btn btn-primary icon-print"> Print</button>
-                    <button id="jasper_fullscreen" type="button" class="btn btn-primary icon-fullscreen"> Fullscreen</button>
-                </div>
+        {% if rtype == "html" %}
+            <div class="form-print-wrapper">
+                    <div class="print-toolbar row" style="padding-top: 15px; padding-bottom: 5px; margin-top: -15px;
+                        margin-bottom: 15px; padding-left: 15px; position:relative;">
+                            <div class="col-xs-11 text-right" style="padding-top: 7px;">
+                                <button id="jasper_print" type="button" class="btn btn-primary icon-print"> Print</button>
+                                <button id="jasper_fullscreen" type="button" class="btn btn-primary icon-fullscreen"> Fullscreen</button>
+                            </div>
+                    </div>
+            </div>
+
+        {% endif %}
+
+        <div id="outerviewer" class="embed-responsive embed-responsive-4by3">
+
+            <iframe id="jasper_viewer" class="embed-responsive-item" src="{{ jasper_report_path }}" allowfullscreen="true" seamless="seamless">
+            </iframe>
+
         </div>
-</div>
 
-{% endif %}
+        {% if rtype == "html" %}
+            <script>
+            <!--
+                {% include "templates/includes/jasper_viewer.js" %}
+            //-->
+            </script>
+        {% endif %}
 
-<div id="outerviewer" class="embed-responsive embed-responsive-4by3">
+    {% else %}
 
-    <iframe id="viewer" onLoad="bind_events();" class="embed-responsive-item" src="{{ jasper_report_path }}" allowfullscreen="true" seamless="seamless"></iframe>
-
-    <!--
-	<iframe id="viewer" src= "{{ jasper_report_path }}" marginheight="0" frameborder="0" onLoad="autoResize('viewer');" allowfullscreen="true" seamless="seamless"></iframe>
-	-->
-</div>
-
-
-{% if rtype == "html" %}
-    <script>
-    <!--
-        {% include "templates/includes/jasper_viewer.js" %}
-    //-->
-    </script>
-{% endif %}
-
-{% else %}
-
-<div class="message-content">
-	<strong>{{ message }}</strong>
-</div>
-{% endif %}
+        <div class="message-content">
+            <strong>{{ message }}</strong>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block sidebar %}
 
-{% include "templates/includes/jasper_sidebar.html" %}
+    {% include "templates/includes/jasper_sidebar.html" %}
 
 {% endblock %}

@@ -28,7 +28,15 @@ def get_context(context):
 	filename = jasper_report_path.rsplit("/",1)[1]
 	doc_title = jasper_report_path.split("/",1)[0]
 	ext = get_extension(filename)
-	viewer = viewer_pdf if "pdf" in ext else viewer_html
+	#viewer = viewer_pdf if "pdf" in ext else viewer_html
+
+	if "pdf" == ext:
+		viewer = viewer_pdf
+	elif "html" == ext:
+		viewer = viewer_html
+	else:
+		return {"message":_("Switch to Desk to see the list of reports."), "doc_title":_("Not Permitted")}
+	#viewer = viewer_pdf if "pdf" in ext else viewer_html
 
 	user_email = frappe.db.get_value("User", frappe.session.user, "email")
 	#sent_to = frappe.db.get_value("Jasper Email Report", frappe.session.user, "jasper_email_sent_to")
@@ -37,6 +45,7 @@ def get_context(context):
 	context.pathname = "Jasper Reports?jasper_doc_path=" + jasper_report_path
 	print "context pathname children {} jasper_report_path {}".format(context.pathname, context.children)
 	return viewer(doc_title)
+
 
 def viewer_html(filename):
 	jasper_report_path = frappe.form_dict.jasper_doc_path

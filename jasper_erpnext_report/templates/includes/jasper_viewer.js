@@ -3,18 +3,23 @@
 function bind_events() {
 
 	$(document).find("#jasper_print").click(function() {
-		window.frames["viewer"].focus();
-		window.frames["viewer"].print();
+		window.frames["jasper_viewer"].focus();
+		window.frames["jasper_viewer"].print();
 	});
 
 	$(document).find("#jasper_fullscreen").click(function() {
-		var viewer = document.getElementById('viewer');
+		var viewer = document.getElementById('jasper_viewer');
 		var rFS = viewer.mozRequestFullScreen || viewer.webkitRequestFullscreen || viewer.requestFullscreen;
 		rFS.call(viewer);
 	});
+
 };
 
-$("#viewer").css({
+$("#jasper_viewer").ready(function(){
+	bind_events();
+});
+
+$("#jasper_viewer").css({
 	"padding":"10px",
 	"padding-top":"30px",
    "background":"#404040",
