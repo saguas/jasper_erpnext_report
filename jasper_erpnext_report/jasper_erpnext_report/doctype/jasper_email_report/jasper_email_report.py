@@ -12,7 +12,7 @@ class JasperEmailReport(Document):
 
 	def validate(self):
 		if not self.jasper_email_report_name:
-			raise frappe.PermissionError(_("You are not allowed to add this doc"))
+			raise frappe.PermissionError(_("You are not allowed to add this document"))
 
 	def on_trash(self):
 		if frappe.local.session['user'] == "Administrator":
@@ -21,4 +21,4 @@ class JasperEmailReport(Document):
 				root_path = file_path.rsplit("/",1)
 				remove_directory(root_path[0])
 			return True
-		raise frappe.PermissionError(_("You are not allowed to remove this doc"))
+		raise frappe.PermissionError(_("You are not allowed to remove this document"))

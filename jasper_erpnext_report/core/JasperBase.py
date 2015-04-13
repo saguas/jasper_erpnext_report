@@ -150,7 +150,7 @@ class JasperBase(object):
 				param.setdefault("param_expression", "In")
 				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
 				if not value:
-					frappe.throw(_("Error in report %s, there is no value for param %s in hook on_jasper_params!!!" % (doc.jasper_report_name, param.get("name", ""))))
+					frappe.throw(_("Error in report %s, there is no value for parameter %s in hook on_jasper_params!!!" % (doc.jasper_report_name, param.get("name", ""))))
 
 				param["value"] = [value]
 				param.pop("param_expression", None)
