@@ -53,7 +53,7 @@ def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None
 		try:
 			mail.attach_file(a)
 		except IOError:
-			frappe.throw(_("Unable to find attachment {0}").format(a))
+			frappe.throw(_("Unable to find attachment {0}.").format(a))
 
 	send(mail)
 

@@ -43,7 +43,7 @@
    "reqd": 0
   }, 
   {
-   "description": "Name of report document that this report is associated.", 
+   "description": "Name of erpnext report document that this report is associated.", 
    "fieldname": "report", 
    "fieldtype": "Link", 
    "in_list_view": 1, 
@@ -54,6 +54,7 @@
   }, 
   {
    "default": "JasperServer", 
+   "description": "Choose where to make this report. LocalServer means in the local machine without Jasper Server. You don't need Jasper Server to make this report.\nJasperServer means that you will need to install Jasper Server and get the report from there.", 
    "fieldname": "jasper_report_origin", 
    "fieldtype": "Select", 
    "label": "Choose Origin", 
@@ -63,7 +64,7 @@
   }, 
   {
    "allow_on_submit": 0, 
-   "description": "Path where to locate the report in jasper server or locally.", 
+   "description": "Path where to locate the report in jasper server or if locally where in the local disk.", 
    "fieldname": "jasper_report_path", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -92,7 +93,7 @@
   }, 
   {
    "default": "Form", 
-   "description": "If this report  is for printing information about some doctype then choose Form. If this report is for printing a list of doctype's with some information then choose List.\nIf this report is for ask by hooks which doctype's then choose Server. Choose General if this report does't require any doctype id and yet you want it in some doctype because of permissions.", 
+   "description": "If this report  is for printing information about some doctype then choose Form. If this report is for printing a list of doctypes with some information, then choose List.\nIf this report is for ask by server hooks which doctype's then choose Server Hooks. Choose General if this report does't require any doctype id and yet you want it in some doctype because of permissions.", 
    "fieldname": "jasper_report_type", 
    "fieldtype": "Select", 
    "in_list_view": 1, 
@@ -133,12 +134,12 @@
    "precision": ""
   }, 
   {
-   "default": "Single", 
-   "description": "The number of copies when print a report.", 
+   "default": "Original", 
+   "description": "The number of copies when print a report. Original for one, duplicated for two and triplicate for three.", 
    "fieldname": "jasper_report_number_copies", 
    "fieldtype": "Select", 
    "label": "Report Number of Copies", 
-   "options": "Single\nDuplicated\nTriplicate", 
+   "options": "Original\nDuplicated\nTriplicate", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -193,7 +194,7 @@
   }, 
   {
    "default": "0", 
-   "description": "Print type by document.", 
+   "description": "Choose the print type for document.", 
    "fieldname": "jasper_print_rtf", 
    "fieldtype": "Check", 
    "label": "RTF", 
@@ -202,7 +203,7 @@
   }, 
   {
    "default": "1", 
-   "description": "Send by email.", 
+   "description": "Send by email. Permit send this report by email.", 
    "fieldname": "jasper_email", 
    "fieldtype": "Check", 
    "label": "Email?", 
@@ -236,7 +237,7 @@
   }, 
   {
    "default": "", 
-   "description": "Put here the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.", 
+   "description": "Choose the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.", 
    "fieldname": "jasper_param_message", 
    "fieldtype": "Text", 
    "label": "Message", 
@@ -310,7 +311,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-03-24 22:53:08.703497", 
+ "modified": "2015-04-14 22:04:55.684578", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

@@ -66,7 +66,7 @@ def jasper_print_formats(doc):
 def validate_print_permission(doc):
 	for ptype in ("read", "print"):
 		if not frappe.has_permission(doc.doctype, ptype, doc):
-			raise frappe.PermissionError(_("No {0} permission").format(ptype))
+			raise frappe.PermissionError(_("You don't have {0} permission.").format(ptype))
 
 def import_all_jasper_remote_reports(docs, force=True):
 	frappe.only_for("Administrator")
@@ -98,7 +98,7 @@ def get_default_param_value(param, error=True):
 	default_value = param.jasper_param_value
 	if not default_value:
 		if error:
-			frappe.throw(_("Error, parameter {} needs a value!").format(param.jasper_param_name))
+			frappe.throw(_("Error, parameter {} needs a value.").format(param.jasper_param_name))
 		else:
 			return
 	matchObj =re.match(r"^[\"'](.*)[\"']", default_value)

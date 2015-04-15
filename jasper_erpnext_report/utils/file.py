@@ -71,7 +71,7 @@ def write_file(content, file_path, modes="w+"):
 def check_extension(fname):
 	ext = get_extension(fname)
 	if ext and ext.lower() not in jasper_ext_supported:
-		frappe.msgprint(_("Please select a file with extension jrxml"),
+		frappe.msgprint(_("Please select a file with extension jrxml."),
 			raise_exception=True)
 	return ext.lower()
 
@@ -97,7 +97,7 @@ def write_file_jrxml(fname, content, content_type=None, parent=None):
 		if ext != "jrxml":
 			docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "name": parent})
 			if not docs:
-				frappe.msgprint(_("Add a report file first"), raise_exception=True)
+				frappe.msgprint(_("Add a report first."), raise_exception=True)
 			for doc in docs:
 				jrxml_ext = get_extension(doc.file_name)
 				if jrxml_ext == "jrxml":
@@ -109,15 +109,15 @@ def write_file_jrxml(fname, content, content_type=None, parent=None):
 					else:
 						value = xmldoc.get_attrib("resourceBundle")
 						if not value or value not in fname:
-							frappe.msgprint(_("This report does't have %s as properties" % (fname,)),raise_exception=True)
+							frappe.msgprint(_("This report does't have %s as properties." % (fname,)),raise_exception=True)
 						file_path= path_join(compiled_path, os.path.normpath(fname))
 					break
 				else:
-					frappe.msgprint(_("Add a report file for this report first"),raise_exception=True)
+					frappe.msgprint(_("Add a file for this report first."),raise_exception=True)
 		else:
 			rname = check_if_jrxml_exists_db(dt, dn, fname, parent)
 			if rname or check_root_exists(dt,dn,parent):
-				frappe.msgprint(_("Remove first the report file (%s) associated with this doc or (%s) is a wrong parent !" % (rname, rname)),
+				frappe.msgprint(_("Remove first the file (%s) associated with this document or (%s) is a wrong parent." % (rname, rname)),
 					raise_exception=True)
 			jrxml_path = get_jrxml_path(jasper_path, dn)
 			file_path = path_join(jrxml_path, fname)
@@ -130,9 +130,9 @@ def write_file_jrxml(fname, content, content_type=None, parent=None):
 					s = sub.rsplit("/",1)
 					if len(s) > 1:
 						if not (s[1][:-7] == fname[:-6]):
-							frappe.msgprint(_("The report %s is not a sub report of %s"  % (fname[:-6], s[1][:-7])),raise_exception=True)
+							frappe.msgprint(_("The report %s is not a subreport of %s."  % (fname[:-6], s[1][:-7])),raise_exception=True)
 					elif not (sub[:-7] == fname[:-6]):
-						frappe.msgprint(_("The report %s is not a sub report of %s"  % (fname[:-6], sub[:-7])),raise_exception=True)
+						frappe.msgprint(_("The report %s is not a subreport of %s."  % (fname[:-6], sub[:-7])),raise_exception=True)
 
 			xmldoc = JasperXmlReport(BytesIO(content))
 			xmldoc.change_subreport_expression_path()

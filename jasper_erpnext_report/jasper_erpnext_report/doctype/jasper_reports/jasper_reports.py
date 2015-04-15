@@ -103,7 +103,8 @@ class JasperReports(Document):
 		#for param in params:
 			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
 		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
-		a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": _("is for where clause")})
+		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": _("is for where clause")})
+		a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
 		#a.append({"name": params[0].get("name"), "value":345})
 		return a
 
@@ -152,7 +153,7 @@ def getSubReportsQuery(xmlroot, doc):
 			#check if the subreport has subreports too
 			subquery.extend(getSubReportsQuery(xmldoc, doc))
 		except:
-			frappe.msgprint(_("Subreport %s is missing" % (report_path)), raise_exception=True)
+			frappe.msgprint(_("Subreport %s is missing." % (report_path)), raise_exception=True)
 
 	return subquery
 
@@ -176,7 +177,7 @@ def check_for_report_images(xmldoc, doc):
 		if not found:
 			image_names_not_found.append(report_image_name)
 	if not report_images_count == len(images):
-		frappe.throw(_("Import %s image(s) for report %s first!!!" % (",".join(image_names_not_found),doc.jasper_report_name)))
+		frappe.throw(_("Import %s image(s) for report %s first." % (",".join(image_names_not_found),doc.jasper_report_name)))
 
 """
 Called from db_query.py method: def get_permission_query_conditions()

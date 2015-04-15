@@ -74,7 +74,7 @@ def report_polling(data):
 def get_report(data):
 
 	if not data:
-		frappe.throw(_("No data for this Report!!!"))
+		frappe.throw(_("There is no data for this Report."))
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
 	pformat = data.get("pformat")
@@ -235,7 +235,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			print "other format email filepath 2 {} file_name {}".format(filepath, file_name)
 
 	else:
-		frappe.throw(_("Error generating %s format, try again later") % (pformat,))
+		frappe.throw(_("Error generating %s format, try again later.") % (pformat,))
 		frappe.errprint(frappe.get_traceback())
 		return
 
@@ -272,7 +272,7 @@ def get_pages(ncopies, total_pages):
 @frappe.whitelist()
 def get_jasper_email_report(data):
 	if not data:
-		frappe.throw(_("No data for this Report!!!"))
+		frappe.throw(_("There is no data for this Report."))
 	data = json.loads(unquote(data))
 	file_name = data.get("filename")
 	file_path = data.get("filepath")
@@ -281,5 +281,5 @@ def get_jasper_email_report(data):
 		output = get_file(file_path, modes="rb")
 		jsr.prepare_file_to_client(file_name, output)
 	except:
-		frappe.throw(_("There is no %s report!!!" % file_name))
+		frappe.throw(_("There is no %s report." % file_name))
 

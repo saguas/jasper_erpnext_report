@@ -209,7 +209,7 @@ class JasperXmlReport():
 		image_path = self.lxml_parser_images(image_name)
 
 		if not image_path:
-			frappe.msgprint(_("This image (%s) don't exist in this report" % image_name),
+			frappe.msgprint(_("This image (%s) don't exist in this report." % image_name),
 				raise_exception=True)
 
 		return image_path

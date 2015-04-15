@@ -28,7 +28,7 @@ jasper.getJasperEmailReport = function(filepath, filename){
     console.log("request ", request)
     var w = window.open(request,"_self");
 	if(!w) {
-		msgprint(__("Please enable pop-ups"));
+		msgprint(__("Please enable pop-ups."));
 	}
 };
 

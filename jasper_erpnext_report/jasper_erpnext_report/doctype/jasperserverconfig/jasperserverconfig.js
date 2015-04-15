@@ -144,7 +144,7 @@ cur_frm.cscript.serverInfo = function(doc){
 
 cur_frm.cscript.use_jasper_server = function(doc, val){
 	console.log("use jasper server ", doc, val);
-	if (doc.use_jasper_server === __("Local jrxml only") || doc.use_jasper_server === __("None")){
+	if (doc.use_jasper_server === "Local jrxml only" || doc.use_jasper_server === "None"){
 		hide_field(["jasper_server_url","jasper_report_root_path", "jasper_username", "jasper_server_password",
 		 "jasper_connect_update_btn", "import_all_reports", "import_only_new", "server_info_html",
 		 "jasper_session_timeout"]);

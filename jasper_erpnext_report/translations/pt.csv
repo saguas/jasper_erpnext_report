@@ -1,215 +1,223 @@
  of ,
-%s: Import first a jrxml file!!!,%s: Importar primeiro o ficheiro jrxml!!!
+%s: Import first a jrxml file.,%s: Importe primeiro o ficheiro do tipo jrxml.
 Accounts Manager,Gestor de Contas
-Add a report file first,Adicionar um relatório primeiro
-Add a report file for this report first,Adicione primeiro um ficheiro para este relatório.
+Add a file for this report first,Adicione um ficheiro para este relatório primeiro
+Add a report first.,Adicione primeiro um relatório.
 Added {0},Adicionado {0}
 Administrator,Administrador
 All,Todos
-Ask,Ask
+Ask,Perguntar
 Automatic,Automático
 "Because you may have a very large amount of data, the jasper print might be a very large file. This can lead to an Out Of Memory exception. Use Jasper Virtualizer in this case. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).","Uma vez que poderá ter uma grande quantidade de dadis, os dados da impressão em memória poderá ser muito grande. Isto pode levar a uma excepção relativa à falta de memória. Para tal use o Virtualizador do jasper. Atribuir em setup->JasperServerConfig o número máximo de páginas do relatório que serão guardadas na memória principal (RAM) antes de guardar as secções do relatório na memória virtual (DISCO)."
 Both,Ambos
 Check,Verificar
-Check if you want to set permission at document level. Uncheck this if you don't want to set permission at doctype level.,Check if you want to set permission at document level. Uncheck this if you don't want to set permission at doctype level.
-Choose Origin,Escolher Origem
-Choose if this report is for all sites or just for current site.  This way you don't have to insert the same reports in all sites.,Escolher se este relatório é para todos os sites ou só para o corrente. Desta forma não é necessário inserir o mesmo relatório em todos os sites.
+Check if you want to set permission at document level. Uncheck if you don't want to set permission at doctype level.,Marque como selecionado se quer colocar as permissões ao nível do documento. Desmarque caso contrário.
+Choose Origin,Escolha a origem
+Choose if this report is for all sites or just for current site.  This way you don't have to insert the same reports in all sites.,Escolha se este relatório é para todos os sites ou apenas para o site corrente. Desta forma não será necessário inserir o relatório em todos os sites.
 "Choose the expression to use: 
-In - to include all the selected ids.
-Not in - to exclude the selected ids.","Choose the expression to use: 
-In - to include all the selected ids.
-Not in - to exclude the selected ids."
+'In' - to include all the selected ids.
+'Not in' - to exclude the selected ids.","Escoha a expressão a usar na cláusula where: 
+'In' - por forma a incluir todos os ids selecionados.
+'Not in' - para excluir os ids selecionados."
+Choose the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.,Introduza aqui a mensagem que será usada nas caixas de diálogos que serão apresentadas quando for pedido para introduzir um valor para os parâmetros do tipo 'Perguntar'.
+Choose the print type for document.,Escolha os tipos de impressão do documento.
+Choose where the reports are stored. Choose JasperServer only if you only want reports from Jasper Server. Choose Local jrxml only if you only want reports from python local module and don't want reports from Jasper Server.,Escoha onde são/estão guardados os relatórios. Escolha Apenas Servidor de Jasper se quiser usar apenas o servidor do Jasper. Escolha Apenas jrxml Local se quiser apenas usar as capacidades do módulo de python e não quer usar o servidor do Jasper.
+"Choose where to make this report. LocalServer means in the local machine without Jasper Server. You don't need Jasper Server to make this report.
+JasperServer means that you will need to install Jasper Server and get the report from there.","Escolha onde fazer o relatório. Escolha Servidor Local para criar localmente sem utilizar o Servidor de Jasper.
+Escolha Servidor do Jasper se tem ou tenciona instalar o servidor do Jasper e criar os relatórios nele."
 Code,Código
-Connect to Jasper Server and/or update data.,Conectar ao servidor de Jasper e/ou atualizar os dados.
-Connect/Update,Connect/Update
+Connect to Jasper Server and/or update data.,Ligar ao Servidor de Jasper e/ou atualizar os relatórios.
+Connect/Update,Ligar/Atualizar
 Currency,Moeda
 Data,Dados
 Date,Data
 Datetime,Datetime
-Describe this parameter. The description will be used if the parameter is of action 'Ask' to describe the parameter.,Descreve este parâmetro. A descrição será usada se o parâmetro tem como ação 'Perguntar' para o descrever.
+Describe this parameter. The description will be used if the parameter is of action 'Ask' to describe the parameter.,Descreve este parâmetro. A descrição será usada se o parâmetro tem como ação 'Perguntar'.
 Description,Descrição
 Doctype,Doctype
-Don't Show report,Não mostrar o relatório
+Don't Show report,Esconder o relatório
 Duplicated,Duplicado
 Email,E-mail
 Email?,Email?
-Enter the JasperServer Password.,Introiduza a palavra passe do Servidor de Jasper.
-Enter the root path to where are the reports located in JasperServer.,Introduza o caminho da pasta raiz onde se encontra o relatório no servidor Jasper.
-"Enter the url where is located the JasperServer, port included.","Introduza o endereço de url onde se encontra o Servidor de Jasper, porta incluída."
-Enter the username of the user with permissions to run reports on the JasperSerever.,Introduza o nome do utilizador com permissões para gerar relatórios no Servidor de jasper.
-"Error generating %s format, try again later","Error generating %s format, try again later"
-"Error in report %s, error is: %s!!!","Erro no relatório %s, erro é: %s!!!"
-"Error in report %s, server error is: %s!!!","Erro no relatório %s, erro do servidor é: %s!!!"
-"Error in report %s, there is  a problem with value for param in hook on_jasper_params!!!","Erro no relatório %s, existe um problema com o valor do parãmetro no hook on_jasper_params!!!"
-"Error in report %s, there is no value for param in hook on_jasper_params!!!","Erro no relatório %s, não existe nenhum valor para o param no hook on_jasper_params!!!"
-"Error in report %s, there is no value for parameter %s in hook on_jasper_params!!!","Error in report %s, there is no value for parameter %s in hook on_jasper_params!!!"
-"Error in report {}, error is: {}","Error in report {}, error is: {}"
-"Error while compiling report %s, error is: %s!!!","Erro ao compilar o relatório %s, erro é: %s!!!"
-"Error, parameter {} needs a value!","Erro, parâmetro {} precisa de um valor!"
+Enter the Jasper Server Password.,Indique a palavra passe do servidor de Jasper.
+Enter the root path to where are the reports located in Jasper Server.,Indique o caminho da pasta onde estão os relatórios localizados no servidor de Jasper.
+"Enter the url where is located the Jasper Server, port included.","Indique o endereço de url onde se encontra o servidor de Jasper, porta incluída."
+Enter the username of the user with permissions to run reports on the Jasper Server.,Indique o nome de utilizador do utilizador com permissões para gerar relatórios no servidor de Jasper.
+"Error generating %s format, try again later.","Erro ao gerar o formato %s, tenta outra vez mais tarde."
+"Error in report %s, error is: %s.","Erro no relatório %s, erro é: %s."
+"Error in report %s, server error is: %s!!!","Erro no relatório %s, erro no servidor é: %s!!!"
+"Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params.","Erro no relatório %s, ocorreu um problema como valor do parâmetro no hook do sevidor: on_jasper_params."
+"Error in report %s, there is no value for parameter %s in server hook: on_jasper_params.","Erro no relatório %s, não existe nenhum valor para o parâmetro %s no hook do servidor: on_jasper_params."
+"Error in report %s, there is no value for parameter in server hook: on_jasper_params.","Erro no relatório %s, ocorreu um problema como valor do parâmetro no hook do sevidor: on_jasper_params."
+"Error in report {}, error is: {}","Erro no relatório {}, o erro é: {}"
+"Error while compiling report %s, error is: %s.","Erro ao compilar o relatório %s, erro é: %s,"
+"Error, parameter {} needs a value.","Erro, parâmetro {} tem de ter um valor."
 File,Arquivo
-File path of report.,Caminho do relatório.
 Float,Flutuar
 For all sites,Para todos os sites
 Form,forma
 General,Geral
-General print type. Choose the default print type for all documents.,Tipo de impressão geral. Escolha o tipo de impressão por defeito para todos os documentos.
-Get Report,Obter Relatório
+General print type. Choose the default print type for all documents.,Tipo geral de impressão. Escolha o tipo de impressão para todos os documentos.
+Get Report,Obter o relatório
 Get the report that was sent.,Obter o relatório que foi enviado.
-"If this report  is for printing information about some doctype then choose Form. If this report is for printing a list of doctype's with some information then choose List.
-If this report is for ask by hooks which doctype's then choose Server. Choose General if this report does't require any doctype id and yet you want it in some doctype because of permissions.","Se este relatório é para imprimir informação sobre um dado doctype, então escolha Form. Se este relatório é para imprimir uma lista de doctype's com alguma informação, então escolha List. 
-Se este relatório é para ser usado pelo sistema de hook do servidor na escolha do doctype, então escolha Server. Escolha Geral se este relatório não requer qualquer identificação de doctype, mas mesmo assim quer colocá-lo num doctype por razão de permissão."
-Ignore Jasper Permission Roles,Ignorar as permissões do Jasper
+"If this report  is for printing information about some doctype then choose Form. If this report is for printing a list of doctypes with some information, then choose List.
+If this report is for ask by server hooks which doctype's then choose Server Hooks. Choose General if this report does't require any doctype id and yet you want it in some doctype because of permissions.","Se este relatório é para imprimir informação sobre um dado doctype então escolha Formulário. Se o relatório é para imprimir uma lista de doctypes com alguma informação sobre os mesmos, então escolaha List.
+Se o relatório é para pedir ao servidor por meio de hook qual o ou os doctypes, então escolha Hooks do Servidor. Escolha Geral se este relatório não requer nenhum doctype mas mesmo assim quer beneficiar das permissões associadas ao doctype."
+Ignore Jasper Permission Roles,Ignorar as funções de permissão
 Image,Imagem
 Images,Imagens
-Import %s image(s) for report %s first!!!,Importar %s imagem(ens) para o relatório %s primeiro!!!
-Import All Reports,Importar todos os relatórios
-Import Only New Reports,Importar apenas novos Relatórios
-Import all reports from Jasper Report Root Path given.,Importar todos os relatórios do caminho raiz selecionado.
-Import only new reports in server repository.,Importar apenas os relatórios novos do repositório do servidor.
+Import %s image(s) for report %s first.,Importar a imagem(ens) %s para o relatório %s primeiro.
+Import All Reports,Importar todos os relatórios.
+Import Only New Reports,Importar apenas relatórios novos
+Import all reports from root path given above.,Importar todos os relatórios a partir do caminho indicado.
+Import only the new reports in server repository.,Importar apenas os relatórios novos do repositório do servidor.
 In,in
 Int,Int.
-Is for copies,É para copias
-Is for page number,É para numerar a página
-Is for server hook,É para o hook do lado do servidor
+Is for copies,É para cópias
+Is for page number,É para paginar
+Is for server hook,É para o hook do servidor
 Is for where clause,É para cláusula where
-"Is this param indication of Single, Duplicated or Triplicate for the number of copies or is for where clause.
-If you select ""Other"" you must give the value or it will be ignored.","Este parâmetro é correspondente ao número de copias, indicando Original (Único), Duplicado ou Triplicado ou é para a cláusula where.
-Se selecionar ""Outros"" é necessário atribuir um valor ou será ignorado."
-Jasper Email Report,Jasper Email Report
-Jasper Erpnext Report,Jasper Erpnext Report
+Jasper Email Report,Relatórios Enviados por Email
+Jasper Erpnext Report,Erpnext Relatório Em Jasper
 Jasper Parameter,Parâmetros do Jasper
 Jasper Parameters,Parâmetros do Jasper
 Jasper PermRole,Jasper PermRole
-Jasper Polling Time:,Tempo entre verificações dos relatórios do Jasper:
+Jasper Polling Time:,Tempo entre verificações:
 Jasper Report File,Ficheiro do Jasper Report
 Jasper Report Image,Imagem do Jasper Report
-Jasper Report Images,Imagem do Jasper Report
-Jasper Report Name,Nome do Jasper Report
-Jasper Report Path,Jasper Report Path
-Jasper Report Root Path,Caminho Raiz do Jasper Report
-Jasper Reports,Jasper Reports
-Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius).,Servidor de Jasper está em baixo. Por favor verifique o servidor ou mude para o servidor local (Será necessário o modulo pyjnius).
-Jasper Session Timeout,Jasper Fim de Sessão
+Jasper Report Images,Imagens do Relatório de Jasper
+Jasper Report Name,Nome do Relatório de Jasper
+Jasper Report Path,Caminho para o Relatório em Jasper
+Jasper Report Root Path,Jasper Report Root Path
+Jasper Reports,Relatórios do Jasper
+Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius).,Servidor de Jasper está em baixo. Por favor verifique o servidor ou mude para local apenas (será necessário o módulo de python pyjnius).
+"Jasper Server, email error: {}","Servidor de Jasper, erro no email: {}"
+"Jasper Server, login error","Servidor Jasper, erro no início de sessão"
+"Jasper Server, login error.","Servidor de Jasper, erro ao iniciar a sessão."
+"Jasper Server, login error. Reason: {}","Servidor de Jasper, erro ao iníciar a sessão. Razão: {}"
+Jasper Session Timeout Value,Tempo Máximo de Sessão do Servidor de Jasper
 Jasper User Name,Nome do utilizador de Jasper
-JasperServer,JasperServer
-JasperServer URL,URL do JasperServer
-JasperServer login error,JasperServer erro ao iniciar sessão
-"JasperServer login error, reason: {}","JasperServer erro de início de sessão, razão: {}"
-JasperServer only,Apenas JasperServer
+JasperServer,Servidor de Jasper
+JasperServer URL,Endereço de URL do Servidor de Jasper
+JasperServer only,Apenas Servidor de Jasper
 JasperServerConfig,JasperServerConfig
 List,Lista
 Local jrxml only,Apenas Local jrxml
-LocalServer,LocalServer
-Locale,Locale
+LocalServer,Servidor Local
+Locale,Localização
 Long Text,Texto Longo
 Message,Mensagem
 Name,Nome
-Name of doctype document that this report is associated.,Nome do documento doctype que este relatório está associado.
-Name of report document that this report is associated.,Nome do documento que está associado a este relatório.
+Name of doctype document that this report is associated.,Nome do documento doctype ao qual este relatório está associado.
+Name of erpnext report document that this report is associated.,Nome do relatório Erpnext ao qual este relatório está associado.
 Name of the parameter,Nome do parâmetro
 Name of the report.,Nome do relatório.
-No data for this Report!!!,No data for this Report!!!
-No data for to be polling!!!,Não existe dados para verificar se o relatório está concluído!!!
-No report for this reqid %s !!,Não existe nenhum relatório para o reqid %s !!
-No {0} permission,Sem permissão {0}
-No {0} permission for doc {1} in doctype {3}!,No {0} permission for doc {1} in doctype {3}!
+No report for this requestid %s.,Nenhum relatório para o requestid %s.
+No {0} permission for document {1} in doctype {3}.,Não tem {0} permissão para o documento {1} no doctype {3}.
 None,Nenhum
 Not Found!!!,Não foi encontrado!!!
 Not In,Not In
 Not Permitted,Não Permitido
+Original,Original
 Other,Outro
 Parameter Action,Ação do Parâmetro
-Parameter Expression,Parâmetro do tipo Expression
-Parameter Name,Nome do Parâmetro
+Parameter Expression,Expressão do Parâmetro
+Parameter Name,Nome do parâmetro
 Parameter Type,Tipo do parâmetro
-Parameter Value,Valor do Parâmetro
-Parameter data type.,Tipo do Parâmetro.
+Parameter Value,Valor do parâmetro
+Parameter data type.,Tipo do parâmetro.
 Parameters:,Parâmetros:
 Password,Senha
-Path where to locate the report in jasper server or locally.,Caminho onde localizar o relatório no servidor de jasper ou localmente.
+Path of report.,Caminho para o relatório.
+Path where to locate the report in jasper server or if locally where in the local disk.,Caminho onde encontrar o relatório no servidor de Jasper ou se local onde encontrar no disco.
 Percent,Por cento
-Permission Rules:,Regras de Permissões:
+Permission Rules:,Regras para permissões:
 Permission:,Permissões:
 Please enable pop-ups,Schakel pop - ups
-Please fill in the following parameters in order to complete the report.,Please fill in the following parameters in order to complete the report.
-Please login first!,Por favor faça primeiro o início de sessão!
-Please select a file,Por favor selecione um ficheiro
-Please select a file with extension jrxml,Por favor selecione um ficheiro com extensão jrxml
-Polling time in milliseconds.,Tempo entre verificação em milissegundos.
-Print type by document.,Print type by document.
-Put here the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.,Introduza aqui a mensagem que será usada na caixa de diálogo que será apresentado quando for necessário introduzir parâmetros do tipo 'Perguntar'.
+Please enable pop-ups.,Por favor permita a abertura de janelas no seu browser.
+Please fill in the following parameters in order to complete the report.,Por favor introduza os seguintes parâmetros por forma a terminar o relatório.
+Please login first!,Por favor faça o início de sessão primeiro!
+Please login first.,Por favor faça primeiro o início de sessão.
+Please select a file with extension jrxml.,Por favor selecione um ficheiro com extensão jrxml.
+Please select a file.,Por favor selecione um ficheiro.
+Polling time in milliseconds.,Tempo entre verificações em milissegundos.
+Put here the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.,Introduza aqui a mensagem que será usada nas caixas de diálogos que serão apresentadas quando for pedido para introduzir um valor para os parâmetros do tipo 'Perguntar'.
 Query String,Query String
 Read,Ler
-Remove first the report file (%s) associated with this doc or (%s) is a wrong parent !,Remova primeiro o ficheiro (%s) associado com este documento ou (%s) é um pai errado!
-Remove the report from the list of reports to print.,Remove o relatório da lista de relatórios a imprimir.
+Remove first the file (%s) associated with this document or (%s) is a wrong parent.,Remova primeiro o ficheiro (%s) associado com este documento ou (%s) não é um relatório principal.
+Remove the report from the list of reports to print.,Retira o relatório da lista dos relatórios a usar para impressão.
 Report,Relatório
-Report Default Number of Copies,Relatório Número de Copias por defeito
+Report Default Number of Copies,Número de cópias por defeito do relatório
 Report Message:,Mensagem do Relatório:
 Report Name,Nome do Relatório
-Report Not Found!!!,Relatório não encontrado!!!
-Report Number of Copies,Relatório Número de Copias
+Report Not Found.,Não foi encontrado o relatório.
+Report Number of Copies,Número de cópias do relatório
 Report Options,Opções do Relatório
 Report Path,Caminho do relatório
 Report for:,Relatório para:
-Report number of copies error %s!!!,Erro no relatório relacionado com o número de cópias %s!!!
-Report {} input params error. This report is of type {} and needs at least one name.,Report {} input params error. This report is of type {} and needs at least one name.
-Reports are stored in JasperServer?,Relatórios estão gravados no Servidor de Jasper?
+Report {} input parameters error. This report is of type {} and needs at least one name.,Relatório {} erro nos parâmetros introduzidos. Este relatório é do tipo {} i precisa pelo menos de um nome.
+"Report, number of copies error %s.","Relatório, erro no número de cópias %s."
 Role,Papel
 Roles,Funções
 Select,Selecionar
-Select the language to use in report.,Selecione a língua a usar no relatório.
-Send by email.,Enviado por email.
+Select the language to use in report.,Indique a linguagem a usar no relatório.
+Send by email. Permit send this report by email.,Enviar por email. Permite que este relatório seja enviado por email.
 Sender,Remetente
-Sent to:,Sent to:
+Sent to:,Enviado para:
 Server,Servidor
-Server Hooks,Hooks do lado do Servidor
-Set Jasper parameters.,Atribuír parâmetros do Jasper.
+Server Hooks,Hooks do lado do sevidor
+Set Jasper parameters.,Indicar Parâmetros do Jasper.
 "Set the default value for the parameter. This value will be used if no other value is given. If the parameter is for where clause and you need to pass multiple values then separate them with comma. Ex. Administrator, Guest. Note: Do not put quotation marks or apostrophe in the names.
-For the other cases pass them as needed by Jasper Report.","Atribui o valor por defeito ao parâmetro. Este valor será usado se não for atribuído outro valor. Se o parâmetro é para a cláusula where e for necessário passar múltiplos valores então deve separá-los com vírgula. Ex. Administrador, Convidado. Nota: Não colocar aspas or apóstrofes nos nomes.
-Para os outros casos passar como são necessário no relatório."
+For the other cases pass them as needed by the report.","Indique o valor por defeito para o parâmetro. Este valor será usado se não for indicado outro valor. Se o parâmetro é para uma cláusula where e for necessário indicar mais do que um valor estes devem ser separados por vírgulas. Ex. Administrador, Convidado. Nota: Não ponha aspas ou apóstrofe nos nomes.
+Para os outros tipos indique-os consoante a necessidade do relatório."
 Single,Único
-"Something was wrong, no doc!!!",Algo correu mal no documento!!!
+"Something was wrong, there is no document!!!","Algo correu mal, não existe nenhum documento!!!"
 String,String
-Subreport %s is missing,Sub-relatório %s em falta
-Switch to Desk to see the list of emailed reports.,Mudar para o Desk para ver a lista de relatórios enviados por email.
-Switch to Desk to see the list of reports.,Mude para Desk para ver a lista de relatórios.
-The default number of copies when print a report. This can be changed by report.,The default number of copies when print a report. This can be changed by report.
-The jasper path to report that was sent.,O caminho do relatório jasper que foi enviado.
-The maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).,O número máximo de páginas que serão guardados na memória principal (RAM) antes de começar a guardar as seções do relatório na memória virtual (Disco).
-The number of copies when print a report.,O número de copias do relatório a fazer.
-The report %s is not a sub report of %s,O relatório %s não é um sub relatório de %s
+Subreport %s is missing.,Falta o sub-relatório %s.
+Switch to Desk to see the list of emailed reports.,Mude para o Desk para ver a lista de relatórios enviados por email.
+Switch to Desk to see the list of reports.,Mude para o Desk para ver a lista de relatórios.
+The default number of copies when print a report. This can be changed by report.,O número de cópias por defeito quando imprimir o relatório. Este valor pode ser alterado no relatório.
+The jasper path to report that was sent.,O caminho do relatório enviado.
+The maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).,O número máximo de páginas do relatório que serão guardadas na memória principal (RAM) antes de que as seções do relatório sejam guardadas na memória virtual (DISK).
+The name of the report.,O nome do ralatório.
+"The number of copies when print a report. Original for one, duplicated for two and triplicate for three.","O número de cópias quando imprimir o relatório. Original para uma, duplicado para duas e triplicado para três."
+The report %s is not a subreport of %s.,O relatório %s não é um sub.relatório de %s.
 The report is missing.,O relatório não foi encontrado.
-There is no %s report!!!,Não existe %s relatório!!!
-"There is no report, try again later. Error: {}","Não existe nenhum relatório, tente outra vez mais tarde. Erro: {}"
+There is no %s report.,Não existe nenhum %s relatório.
+There is no data for this Report.,Não existe dados pata este relatório.
+There is no report to poll,Não existe nenhum relatório para verificar o estado
+"There is no report, try again later. Error: {}","Não existe nenhum relatório, tente mais tarde. Erro: {}"
 There is no report.,Não existe nenhum relatório.
 There was an error in report request ,
-This image (%s) don't exist in this report,Esta imágem (%s) não existe neste relatório
-This report does't have %s as properties,Este relatório não tem %s como propriedade
+This image (%s) don't exist in this report.,Esta imagen (%s) não existe no relatório.
+"This parameter is  Original (one), Duplicated (two) or Triplicate (three) for the number of copies or is for where clause.
+If you select ""Other"" you must give the value or it will be ignored.","O Parâmetro é Original (um), Duplicado (dois) ou triplicado (três) relativo ao número de cópias ou é para uma cláusula where.
+Se selecionou ""Outros"" deve ser indicado um valor ou o parâmetro será ignorado."
+This report does't have %s as properties.,Este relatório não tem %s como propriedade.
 Time,Tempo
+To whom the email was sent.,A quem foi enviado o email.
 Triplicate,Triplicado
 Type,Tipo
-Unable to find attachment {0},Incapaz de encontrar apego {0}
+Unable to find attachment {0}.,Não foi possível encontrar o anexo {0}.
 Upload,uploaden
-Upload JRXML File,Enviar Ficheiro JRXML
-Use JasperServer / Local jrxml,Usar  JasperServer / Local jrxml
+Upload JRXML File,Enviar um ficheiro JRXML
+Use JasperServer / Local jrxml,Usar Servidor de Jasper / Local jrxml
 Use Virtualizer,Usar o Virtualizador
-Virtualizer Maximum Pages In RAM,Virtualizador Número Máximo de Páginas Em RAM
+Virtualizer Maximum Pages In RAM,"Virtualizador, Número máximo de páginas em RAM"
 "What Erpnext do with this parameter. Ask means to ask for the value of the parameter before make the report.
-Automatic means that Erpnext will fill it for you.","O que faz o Erpnext com este parâmetro. 'Perguntar' significa perguntar pelo valor do parâmetro antes de fazer o relatório.
-'Automático' significa que o Erpnext preencherá o valor automaticamente."
+Automatic means that Erpnext will fill it for you.","O que deve fazer o Erpnext com este parâmetro. 'Perguntar' significa pedir o seu valor antes de fazer o relatório.
+'Automático' significa que o Erpnext indicará o valor."
 When,Quando
 When was sent.,Quando foi enviado.
 Who sent the email.,Quem enviou o email.
-Who the email was sent.,A Quem foi enviado o email.
-You are not allowed to add this document,Não tem permissões para adicionar este documento
-You are not allowed to remove this document,Não tem permissões para remover este documento
-You are not allowed to send emails related to,Não tem permissões para enviar emails para
-You don't have local server. Install pyjnius first.!!!,Não tem servidor local. Instale primeiro o pyjnius.!!!
-You don't have print permission!,Não tem permissões de impressão!
-You need to provide the doctype name or report name!!!,É necessário fornecer o nome do doctype ou do relatório!!!
-is for copies,é para copias
-is for page number,é para numerar páginas
-is for server hook,é para o hook do servidor
+You are not allowed to add this document.,Não tem permissões para adicionar este documento.
+You are not allowed to remove this document.,Não tem permissões para remover este documento.
+You are not allowed to send emails related to,Não tem permissões para enviar emails direcionados a
+You don't have local server. Install python module pyjnius first.,Não tem servidor local. Instale primeiro o módulo do python com o nome de pyjnius.
+You don't have print permission.,Não tem permissões para imprimir.
+You don't have {0} permission.,Não tem permissões de {0}.
+You need to provide the doctype name or the report name.,É necessário indicar o nome do doctype ou o nome do relatório em Erpnext.
+is for copies,é para cópias
+is for page number,é para paginar
+is for server hook,é para hook do servidor
 is for where clause,é para cláusula where
-jasperserver email error: {},jasperserver erro no email: {}
-jasperserver login error,jasperserver erro ao iniciar a sessão

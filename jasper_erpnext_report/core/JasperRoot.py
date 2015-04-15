@@ -40,11 +40,11 @@ class JasperRoot(Jb.JasperBase):
 	def config(self):
 		_logger.info("JasperServerSession update_cache self.doc {}".format(self.doc))
 		if not self.doc:
-			frappe.throw(_("Something was wrong, no doc!!!" ))
+			frappe.throw(_("Something was wrong, there is no document!!!" ))
 
 		from jasper_erpnext_report import pyjnius
 		if self.use_local() and not pyjnius:
-			frappe.throw(_("You don't have local server. Install pyjnius first.!!!" ))
+			frappe.throw(_("You don't have local server. Install python module pyjnius first." ))
 
 		if self.data["data"]:
 			self.update(force_cache=True, force_db=True)
@@ -144,7 +144,7 @@ class JasperRoot(Jb.JasperBase):
 
 	def get_reports_list(self, doctype, docnames, report):
 		if not doctype and not report:
-			frappe.throw(_("You need to provide the doctype name or report name!!!"))
+			frappe.throw(_("You need to provide the doctype name or the report name."))
 		if docnames:
 			docnames = json.loads(docnames)
 		else:
@@ -182,7 +182,7 @@ class JasperRoot(Jb.JasperBase):
 
 	def report_polling(self, data):
 		if not data:
-			frappe.throw(_("No data for to be polling!!!"))
+			frappe.throw(_("There is no report to poll"))
 		if isinstance(data, basestring):
 			data = json.loads(data)
 		self.validate_ticket(data)
@@ -208,11 +208,11 @@ class JasperRoot(Jb.JasperBase):
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
 			for docname in data.get('name_ids', []):
 				if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=("read", "print")):
-					raise frappe.PermissionError(_("No {0} permission for doc {1} in doctype {3}!").format("read or print", docname, rdoc.jasper_doctype))
+					raise frappe.PermissionError(_("No {0} permission for document {1} in doctype {3}.").format("read or print", docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports
 			#if not self.check_jasper_doc_perm(rdoc.jasper_roles):
 		if not utils.check_frappe_permission("Jasper Reports", data.get('report_name', ""), ptypes="read"):
-			raise frappe.PermissionError(_("You don't have print permission!"))
+			raise frappe.PermissionError(_("You don't have print permission."))
 
 		params = rdoc.jasper_parameters
 		origin = rdoc.jasper_report_origin.lower()
@@ -220,24 +220,25 @@ class JasperRoot(Jb.JasperBase):
 		pformat = data.get('pformat')
 		try:
 			ncopies = get_copies(rdoc, pformat)
+			print "number of copies {}".format(ncopies)
 			if origin == "localserver":
 				path = rdoc.jrxml_root_path
 				self.get_server("local")
 				if not path:
-					frappe.throw(_("%s: Import first a jrxml file!!!" % rdoc.name))
+					frappe.throw(_("%s: Import first a jrxml file." % rdoc.name))
 				for_all_sites = rdoc.jasper_all_sites_report
 				result = self.jpl.run_local_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
 			else:
 				path = rdoc.jasper_report_path
 				self.get_server("server")
 				if not self.jps.is_login:
-					frappe.msgprint(_("JasperServer login error"))
+					frappe.msgprint(_("Jasper Server, login error."))
 					return
 
 				result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies)
 			result[0]["pformat"] = pformat
 		except ValueError:
-			frappe.throw(_("Report number of copies error %s!!!" % rdoc.name))
+			frappe.throw(_("Report, number of copies error %s." % rdoc.name))
 
 		return result
 
@@ -247,7 +248,7 @@ class JasperRoot(Jb.JasperBase):
 		d = self.get_jasper_reqid_data(data.get('requestId'))
 		report_name = d['data'].get("report_name")
 		if not d:
-			frappe.throw(_("Report Not Found!!!"))
+			frappe.throw(_("Report Not Found."))
 		"""
 		reqids represent the ids of documents.
 		Example:
@@ -277,7 +278,7 @@ class JasperRoot(Jb.JasperBase):
 						eid_len = len(expId)
 						self.get_server("server")
 						if not self.jps.is_login:
-							frappe.msgprint(_("JasperServer login error"))
+							frappe.msgprint(_("Jasper Server, login error."))
 							return
 						#if lens not equal then process only the first
 						if rid_len == eid_len:
@@ -366,5 +367,7 @@ def get_copies(rdoc, pformat):
 	"""
 	make copies (Single, Duplicated or Triplicated) only for pdf format
 	"""
-	copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+	#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+	copies = ["Original", "Duplicated", "Triplicate"]
+	#return copies.index(_(rdoc.jasper_report_number_copies)) + 1 if pformat == "pdf" else 1
 	return copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1

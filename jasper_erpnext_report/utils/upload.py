@@ -51,7 +51,7 @@ def file_upload():
 	filename = frappe.form_dict.filename
 
 	if not filename:
-		frappe.msgprint(_("Please select a file"),
+		frappe.msgprint(_("Please select a file."),
 			raise_exception=True)
 
 	filedata = save_uploaded(dt, dn, parent)

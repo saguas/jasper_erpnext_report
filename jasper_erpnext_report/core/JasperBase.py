@@ -142,15 +142,15 @@ class JasperBase(object):
 		pram = []
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		if res is None:
-			frappe.throw(_("Error in report %s, there is no value for param in hook on_jasper_params!!!" % (doc.jasper_report_name)))
+			frappe.throw(_("Error in report %s, there is no value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 		for param in res:
 			param.pop("attrs", None)
 			param_type = param.pop("param_type", None)
-			if param_type and param_type.lower() == _("is for where clause"):
+			if param_type and param_type.lower() == "is for where clause": #_("is for where clause"):
 				param.setdefault("param_expression", "In")
 				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
 				if not value:
-					frappe.throw(_("Error in report %s, there is no value for parameter %s in hook on_jasper_params!!!" % (doc.jasper_report_name, param.get("name", ""))))
+					frappe.throw(_("Error in report %s, there is no value for parameter %s in server hook: on_jasper_params." % (doc.jasper_report_name, param.get("name", ""))))
 
 				param["value"] = [value]
 				param.pop("param_expression", None)
@@ -181,7 +181,7 @@ class JasperBase(object):
 			is_copy = param.is_copy.lower()
 			p = param.jasper_param_name
 			value = ""
-			if is_copy == _("is for where clause"):
+			if is_copy == "is for where clause":#_("is for where clause"):
 				#value = data.get('name_ids')
 				value = self.get_where_clause_value(data.get('ids', []), param)
 				if not value:
@@ -190,15 +190,15 @@ class JasperBase(object):
 					"""
 					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
 				used_ids = True
-			elif is_copy == _("is for copies") and pformat=="pdf":
+			elif is_copy == "is for copies" and pformat=="pdf":#_("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
 				copies["pram_copy_index"] = len(pram) - 1 if len(pram) > 0 else 0
 
-			elif is_copy == _("is for page number") and pformat=="pdf":
+			elif is_copy == "is for page number" and pformat=="pdf":#_("is for page number") and pformat=="pdf":
 				copies["pram_copy_page_index"] = len(pram) - 1 if len(pram) > 0 else 0
 
-			elif is_copy == _("is for server hook"):
+			elif is_copy == "is for server hook":#_("is for server hook"):
 				#don't do server hook here. Get first all defaults values
 				#value = data.get('ids') if not used_ids else None
 				#if not value:
@@ -360,7 +360,7 @@ class JasperBase(object):
 				if doc.jasper_report_type != "Server Hooks":
 					res = self.check_ids_in_hooks(doc, data, params)
 				if not res:
-					frappe.throw(_("Report {} input params error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
+					frappe.throw(_("Report {} input parameters error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
 					return
 		#In General type you may change to Form or List and give ids and change some initial data
 		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form" :
@@ -401,7 +401,7 @@ class JasperBase(object):
 				req = [{"requestId": reqId, "reqtime": frappe.utils.now(), "status": "ready"}]
 		else:
 			print "Report Not Found."
-			frappe.throw(_("Report Not Found!!!"))
+			frappe.throw(_("Report Not Found."))
 		return req
 
 	def get_html_path(self, report_name, localsite=None, content=None):

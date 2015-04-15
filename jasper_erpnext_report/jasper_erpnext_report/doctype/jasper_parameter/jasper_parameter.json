@@ -81,7 +81,7 @@
   }, 
   {
    "default": "Other", 
-   "description": "Is this param indication of Single, Duplicated or Triplicate for the number of copies or is for where clause.\nIf you select \"Other\" you must give the value or it will be ignored.", 
+   "description": "This parameter is  Original (one), Duplicated (two) or Triplicate (three) for the number of copies or is for where clause.\nIf you select \"Other\" you must give the value or it will be ignored.", 
    "fieldname": "is_copy", 
    "fieldtype": "Select", 
    "in_list_view": 1, 
@@ -106,7 +106,7 @@
   }, 
   {
    "default": "", 
-   "description": "Choose the expression to use: \nIn - to include all the selected ids.\nNot in - to exclude the selected ids.", 
+   "description": "Choose the expression to use: \n'In' - to include all the selected ids.\n'Not in' - to exclude the selected ids.", 
    "fieldname": "param_expression", 
    "fieldtype": "Select", 
    "label": "Parameter Expression", 
@@ -127,7 +127,7 @@
    "precision": ""
   }, 
   {
-   "description": "Set the default value for the parameter. This value will be used if no other value is given. If the parameter is for where clause and you need to pass multiple values then separate them with comma. Ex. Administrator, Guest. Note: Do not put quotation marks or apostrophe in the names.\nFor the other cases pass them as needed by Jasper Report.", 
+   "description": "Set the default value for the parameter. This value will be used if no other value is given. If the parameter is for where clause and you need to pass multiple values then separate them with comma. Ex. Administrator, Guest. Note: Do not put quotation marks or apostrophe in the names.\nFor the other cases pass them as needed by the report.", 
    "fieldname": "jasper_param_value", 
    "fieldtype": "Small Text", 
    "label": "Parameter Value", 
@@ -142,7 +142,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2015-03-19 23:11:43.256080", 
+ "modified": "2015-04-14 22:15:22.219199", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Parameter", 

@@ -12,7 +12,7 @@
   {
    "allow_on_submit": 0, 
    "default": "JasperServer only", 
-   "description": "Reports are stored in JasperServer?", 
+   "description": "Choose where the reports are stored. Choose JasperServer only if you only want reports from Jasper Server. Choose Local jrxml only if you only want reports from python local module and don't want reports from Jasper Server.", 
    "fieldname": "use_jasper_server", 
    "fieldtype": "Select", 
    "hidden": 0, 
@@ -34,7 +34,7 @@
   {
    "allow_on_submit": 0, 
    "default": "http://localhost:8080/jasperserver", 
-   "description": "Enter the url where is located the JasperServer, port included.", 
+   "description": "Enter the url where is located the Jasper Server, port included.", 
    "fieldname": "jasper_server_url", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -55,7 +55,7 @@
   {
    "allow_on_submit": 0, 
    "default": "/reports/erpnext", 
-   "description": "Enter the root path to where are the reports located in JasperServer.", 
+   "description": "Enter the root path to where are the reports located in Jasper Server.", 
    "fieldname": "jasper_report_root_path", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -75,7 +75,7 @@
   }, 
   {
    "default": "jasperadmin", 
-   "description": "Enter the username of the user with permissions to run reports on the JasperSerever.", 
+   "description": "Enter the username of the user with permissions to run reports on the Jasper Server.", 
    "fieldname": "jasper_username", 
    "fieldtype": "Data", 
    "label": "Jasper User Name", 
@@ -84,7 +84,7 @@
   }, 
   {
    "default": "jasperadmin", 
-   "description": "Enter the JasperServer Password.", 
+   "description": "Enter the Jasper Server Password.", 
    "fieldname": "jasper_server_password", 
    "fieldtype": "Data", 
    "label": "Password", 
@@ -102,7 +102,7 @@
   }, 
   {
    "default": "0", 
-   "description": "Check if you want to set permission at document level. Uncheck this if you don't want to set permission at doctype level.", 
+   "description": "Check if you want to set permission at document level. Uncheck if you don't want to set permission at doctype level.", 
    "fieldname": "jasper_ignore_perm_roles", 
    "fieldtype": "Check", 
    "label": "Ignore Jasper Permission Roles", 
@@ -117,7 +117,7 @@
    "precision": ""
   }, 
   {
-   "description": "Import all reports from Jasper Report Root Path given.", 
+   "description": "Import all reports from root path given above.", 
    "fieldname": "import_all_reports", 
    "fieldtype": "Check", 
    "label": "Import All Reports", 
@@ -125,7 +125,7 @@
    "precision": ""
   }, 
   {
-   "description": "Import only new reports in server repository.", 
+   "description": "Import only the new reports in server repository.", 
    "fieldname": "import_only_new", 
    "fieldtype": "Check", 
    "label": "Import Only New Reports", 
@@ -228,7 +228,7 @@
    "description": "", 
    "fieldname": "jasper_session_timeout", 
    "fieldtype": "Section Break", 
-   "label": "Jasper Session Timeout", 
+   "label": "Jasper Session Timeout Value", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -280,7 +280,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2015-03-26 18:56:47.605658", 
+ "modified": "2015-04-14 22:06:24.717337", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 

@@ -244,7 +244,7 @@ jasper.CommunicationComposer = Class.extend({
 
 		if(form_values.send_email) {
 			if(cur_frm && !frappe.model.can_email(me.doc.doctype, cur_frm)) {
-				msgprint(__("You are not allowed to send emails related to this document"));
+				msgprint(__("You are not allowed to send emails related to this document."));
 				return;
 			}
 
@@ -276,7 +276,7 @@ jasper.CommunicationComposer = Class.extend({
 			callback: function(r) {
 				if(!r.exc) {
 					if(form_values.send_email)
-						msgprint(__("Email sent to {0}", [form_values.recipients]));
+						msgprint(__("Email sent to {0}.", [form_values.recipients]));
 					me.dialog.hide();
 
 					if (cur_frm) {
@@ -314,7 +314,7 @@ jasper.CommunicationComposer = Class.extend({
 			fields.content.set_input(reply
 				+ "<p></p>"
 				+"-----"+__("In response to")+"-----"
-				+"<p style='font-size: 11px; color: #888'>"+__("Please reply above this line or remove it if you are replying below it")+"</p><br><br>"
+				+"<p style='font-size: 11px; color: #888'>"+__("Please reply above this line or remove it if you are replying below it.")+"</p><br><br>"
 				+ comm_list[0].content);
 		} else {
 			fields.content.set_input(reply);

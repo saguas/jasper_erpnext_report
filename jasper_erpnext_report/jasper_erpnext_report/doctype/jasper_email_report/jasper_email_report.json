@@ -10,6 +10,7 @@
  "document_type": "Master", 
  "fields": [
   {
+   "description": "The name of the report.", 
    "fieldname": "jasper_email_report_name", 
    "fieldtype": "Link", 
    "in_list_view": 1, 
@@ -21,7 +22,7 @@
   }, 
   {
    "allow_on_submit": 0, 
-   "description": "Who the email was sent.", 
+   "description": "To whom the email was sent.", 
    "fieldname": "jasper_email_sent_to", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -80,7 +81,7 @@
    "set_only_once": 0
   }, 
   {
-   "description": "File path of report.", 
+   "description": "Path of report.", 
    "fieldname": "jasper_report_path", 
    "fieldtype": "Data", 
    "hidden": 1, 
@@ -156,7 +157,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-02-18 19:45:58.097050", 
+ "modified": "2015-04-14 19:10:12.464917", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Email Report", 

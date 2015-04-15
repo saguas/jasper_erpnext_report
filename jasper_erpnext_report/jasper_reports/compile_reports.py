@@ -10,4 +10,4 @@ def jasper_compile(jrxml, destFileName):
 		compiler = jr.ReportCompiler()
 		compiler.compile(jrxml,destFileName)
 	except Exception as e:
-		frappe.throw(_("Error while compiling report %s, error is: %s!!!" % (jrxml, e)))
+		frappe.throw(_("Error while compiling report %s, error is: %s." % (jrxml, e)))

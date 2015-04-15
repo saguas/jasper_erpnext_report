@@ -53,9 +53,10 @@ class JasperLocal(Jb.JasperBase):
 			for p in pram:
 				hashmap.put(p.get("name"), p.get("value")[0])
 		except:
-			frappe.throw(_("Error in report %s, there is  a problem with value for param in hook on_jasper_params!!!" % (doc.jasper_report_name)))
+			frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 
-		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+		#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		copies = ["Original", "Duplicated", "Triplicate"]
 
 		conn = ""
 		if doc.query:
@@ -105,7 +106,7 @@ class JasperLocal(Jb.JasperBase):
 				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), ) )
 
 			except Exception as e:
-				frappe.throw(_("Error in report %s, error is: %s!!!" % (doc.jasper_report_name, e)))
+				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
 	def _export_report(self, mparams, report_name, localsite, grid_data):
@@ -156,7 +157,7 @@ class JasperLocal(Jb.JasperBase):
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
-			frappe.throw(_("No report for this reqid %s !!" % reqId[13:]))
+			frappe.throw(_("No report for this requestid %s." % reqId[13:]))
 		output_path = data['data']['result'].get("uri")
 		if os.path.exists(output_path):
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
@@ -168,7 +169,7 @@ class JasperLocal(Jb.JasperBase):
 	def getLocalReport(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
-			frappe.throw(_("No report for this reqid %s !!" % reqId))
+			frappe.throw(_("No report for this requestid %s." % reqId))
 		output_path = data['data']['result'].get("uri")
 		content = get_file(output_path, "rb")
 		return content

@@ -72,7 +72,7 @@ jasper.run_jasper_report = function(method, data, doc){
                        //console.log("reqdata ", reqdata)
                        //jasper.get_jasper_report("get_report", reqdata, null, null);
                        //df.resolve(msg);
-                       $banner = frappe.ui.toolbar.show_banner(__("Please wait while i'm processing your report. I will notify you when is ready!"))
+                       $banner = frappe.ui.toolbar.show_banner(__("Please wait. System is processing your report. It will notify you when is ready."))
                        timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.pending_reports.push(msg);
                        console.log("setting timeout!!!");
@@ -81,7 +81,7 @@ jasper.run_jasper_report = function(method, data, doc){
                        //jasper.print("get_report", reqdata);
                    }else{
                        console.log("polling_report!!!");
-                       $banner = frappe.ui.toolbar.show_banner(__("Please wait while i'm processing your report. I will notify you when is ready!"))
+                       $banner = frappe.ui.toolbar.show_banner(__("Please wait. System is processing your report. It will notify you when is ready."))
                        timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.polling_report(msg, $banner, timeout);
                    }
@@ -125,7 +125,7 @@ jasper.polling_report = function(data, $banner, timeout){
 					   };
                        jasper.poll_count = 0;
                        jasper.close_banner($banner);
-                       var banner_msg = __("Timeout before report is ready to download! Click to ") + '<a class="try_again_report">Try Again</a>' 
+                       var banner_msg = __("Timeout before report is ready to download. Click to ") + '<a class="try_again_report">'+__("Try Again")+'</a>'
                        + "  " +'<a class="cancel_report">Cancel</a>';
                        show_banner_message(banner_msg, ".try_again_report", ".cancel_report", "#FFFF99", function($banner, what){
                            jasper.close_banner($banner);
@@ -140,7 +140,7 @@ jasper.polling_report = function(data, $banner, timeout){
                        //jasper.polling_report(data, $banner, timeout);
                    }else{
 					   jasper.poll_count = 0;
-                       msgprint(msg[0].value, __("Report error "));
+                       msgprint(msg[0].value, __("Report error."));
                    }
                }
 		   }
@@ -155,7 +155,7 @@ jasper.jasper_report_ready = function(msg, $old_banner, timeout){
     //$old_banner = $('header .navbar').find(".toolbar-banner");
     $old_banner.find(".close").click();
     clearTimeout(timeout);
-    var banner_msg = __("Your report is ready to download! Click to ") + '<a class="download_report">download</a>';
+    var banner_msg = __("Your report is ready to download. Click to ") + '<a class="download_report">'+__("download")+'</a>';
     show_banner_message(banner_msg, ".download_report", null, "lightGreen", function($banner){
         jasper.getReport(msg);
 		jasper.close_banner($banner);
@@ -206,7 +206,7 @@ jasper.getReport = function(msg){
                //console.log("colorbox ", c)
                //$.colorbox({href: encodeURIComponent(c), opacity: 0.8, width: "90%", height: "90%"});
            	   if(!w) {
-           		   msgprint(__("Please enable pop-ups"));
+           		   msgprint(__("Please enable pop-ups."));
                    //return;
            	   }
                /*w.document.open();
@@ -225,7 +225,7 @@ jasper.getReport = function(msg){
         console.log("request ", request)
         w = window.open(request);
     	if(!w) {
-    		msgprint(__("Please enable pop-ups"));
+    		msgprint(__("Please enable pop-ups."));
     	}
     }
     
@@ -540,7 +540,7 @@ jasper.getOrphanReport = function(data, ev){
         //rtype = route[0];
 		if (docids.length === 0)
 		{
-			msgprint(__("Please, select at list one name"), __("Jasper Report"));
+			msgprint(__("Please, select at least one name."), __("Jasper Report"));
 			return;
 		};
 	}else if(len > 2 && route[0] === "Form"){
@@ -549,7 +549,7 @@ jasper.getOrphanReport = function(data, ev){
             docname = route[0];
             //rtype = route[0];
 		}else{
-			msgprint(__("To print this doc you must be in a form."), __("Jasper Report"));
+			msgprint(__("To print this document you must be in a form."), __("Jasper Report"));
 			return;
 		}
 	}else if((len > 1 && (route[0] === "query-report" || route[0] === "Report")) || (len === 1 && route[0] !== "")){
@@ -666,7 +666,7 @@ jasper.make_dialog = function(doc, title, callback){
 	if(doc.jasper_report_origin === "LocalServer"){
 		var lang_default = frappe.defaults.get_user_default("language");
 		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",
-	 		description: __("Select the report language"), options: jasper.make_country_list(), default:[lang_default]});
+	 		description: __("Select the report language."), options: jasper.make_country_list(), default:[lang_default]});
 	};
 	var d = jasper.ask_dialog(title, doc.message, fields, ifyes, ifno);
 	return d;
@@ -853,7 +853,7 @@ jasper.dialog_upload = frappe.ui.form.ControlData.extend({
 	show: function(){
 		if(!this.dialog) {
 			this.dialog = new frappe.ui.Dialog({
-				title: __(this.df.label || __("Upload")),
+				title: __(this.df.label || "Upload"),
 			});
 		}
 
@@ -1045,7 +1045,7 @@ jasper.dialog_upload_tree =	frappe.ui.form.Control.extend({
 		//$('#jasper_upload_tree').jstree("select_node", "1");
 		if(!this.dialog) {
 			this.dialog = new frappe.ui.Dialog({
-				title: __(me.df.label || __("Upload")),
+				title: __(me.df.label || "Upload"),
 			});
 		}
 
@@ -1283,7 +1283,7 @@ jasper.upload = {
 	},
 	upload_file: function(fileobj, args, opts) {
 		if(!fileobj && !args.file_url) {
-			msgprint(__("Please attach a file"));
+			msgprint(__("Please attach a file."));
 			return;
 		}
 

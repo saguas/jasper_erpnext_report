@@ -82,7 +82,7 @@ class JasperServer(Jb.JasperBase):
 	def login(self):
 		self.connect()
 		if not self.in_jasper_session() and self.user == "Administrator":
-			self.send_email(_("Jasper Server is down. Please check jasperserver or change to local report only (you will need pyjnius)."), _("jasperserver login error"))
+			self.send_email(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."), _("Jasper Server, login error"))
 
 	def in_jasper_session(self):
 		try:
@@ -115,7 +115,7 @@ class JasperServer(Jb.JasperBase):
 		except Exception as e:
 			self.is_login = False
 			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
-			self.send_email(_("JasperServer login error, reason: {}".format(e)), _("jasperserver login error"), user=cur_user)
+			self.send_email(_("Jasper Server, login error. Reason: {}".format(e)), _("Jasper Server, login error"), user=cur_user)
 
 	def logout(self):
 		if self.session:
@@ -205,7 +205,8 @@ class JasperServer(Jb.JasperBase):
 		resp = []
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
-		copies = [_("Single"), _("Duplicated"), _("Triplicate")]
+		#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		copies = ["Original", "Duplicated", "Triplicate"]
 
 		for m in range(ncopies):
 			if pram_copy_index >= 0:
@@ -219,7 +220,7 @@ class JasperServer(Jb.JasperBase):
 				self.insert_jasper_reqid_record(requestId, reqDbObj)
 				resp.append({"requestId":requestId, "report_name": data.get("report_name"), "status": result.get('status')})
 			else:
-				frappe.msgprint(_("There was an error in report request "),raise_exception=True)
+				frappe.msgprint(_("There was an error in report request."),raise_exception=True)
 		#TODO get reqId for check report state
 		return resp
 
@@ -245,7 +246,7 @@ class JasperServer(Jb.JasperBase):
 
 				raise Unauthorized
 			else:
-				frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, e)))
+				frappe.throw(_("Error in report %s, server error is: %s." % (self.doc.jasper_report_name, e)))
 
 	@_jasperserver
 	def polling(self, reqId):
@@ -263,11 +264,11 @@ class JasperServer(Jb.JasperBase):
 				else:
 					res["status"] = "ready"
 			elif status.get("value") == "failed":
-				frappe.throw(_("Error in report %s, server error is: %s!!!" % (self.doc.jasper_report_name, status['errorDescriptor'].get('message'))))
+				frappe.throw(_("Error in report %s, server error is: %s." % (self.doc.jasper_report_name, status['errorDescriptor'].get('message'))))
 			else:
 				res = self.prepareResponse({}, reqId)
 		except NotFound:
-			frappe.throw(_("Not Found!!!"))
+			frappe.throw(_("Not Found."))
 		return res
 
 	#rexecreq : ReportExecutionRequestBuilder instance
@@ -301,4 +302,4 @@ class JasperServer(Jb.JasperBase):
 		try:
 			frappe.utils.email_lib.sendmail_to_system_managers(subject, body)
 		except Exception as e:
-			_logger.info(_("jasperserver email error: {}".format(e)))
+			_logger.info(_("Jasper Server, email error: {}".format(e)))
