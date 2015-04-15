@@ -205,12 +205,17 @@ class JasperServer(Jb.JasperBase):
 		resp = []
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
-		#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
-		copies = ["Original", "Duplicated", "Triplicate"]
+		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		#copies = ["Original", "Duplicated", "Triplicate"]
 
 		for m in range(ncopies):
 			if pram_copy_index >= 0:
-				pram[pram_copy_index]['value'] = [copies[m]]
+				values = pram[pram_copy_index].get("value","")[0]
+				if not values:
+					pram[pram_copy_index]['value'] = [copies[m]]
+				else:
+					pram[pram_copy_index]['value'] = frappe.utils.strip(values[m], ' \t\n\r')
+
 			if pram_copy_page_index >= 0:
 				pram[pram_copy_page_index]['value'] = [str(m) + _(" of ") + str(ncopies)]
 			result = self.run_async(path, pram, data.get("report_name"), pformat=pformat)

@@ -218,27 +218,26 @@ class JasperRoot(Jb.JasperBase):
 		origin = rdoc.jasper_report_origin.lower()
 		result = [{}]
 		pformat = data.get('pformat')
-		try:
-			ncopies = get_copies(rdoc, pformat)
-			print "number of copies {}".format(ncopies)
-			if origin == "localserver":
-				path = rdoc.jrxml_root_path
-				self.get_server("local")
-				if not path:
-					frappe.throw(_("%s: Import first a jrxml file." % rdoc.name))
-				for_all_sites = rdoc.jasper_all_sites_report
-				result = self.jpl.run_local_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
-			else:
-				path = rdoc.jasper_report_path
-				self.get_server("server")
-				if not self.jps.is_login:
-					frappe.msgprint(_("Jasper Server, login error."))
-					return
+		#try:
+		ncopies = get_copies(rdoc, pformat)
+		if origin == "localserver":
+			path = rdoc.jrxml_root_path
+			self.get_server("local")
+			if not path:
+				frappe.throw(_("%s: Import first a jrxml file." % rdoc.name))
+			for_all_sites = rdoc.jasper_all_sites_report
+			result = self.jpl.run_local_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
+		else:
+			path = rdoc.jasper_report_path
+			self.get_server("server")
+			if not self.jps.is_login:
+				frappe.msgprint(_("Jasper Server, login error."))
+				return
 
-				result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies)
-			result[0]["pformat"] = pformat
-		except ValueError:
-			frappe.throw(_("Report, number of copies error %s." % rdoc.name))
+			result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies)
+		result[0]["pformat"] = pformat
+		#except ValueError:
+		#	frappe.throw(_("Report, number of copies error %s." % rdoc.name))
 
 		return result
 

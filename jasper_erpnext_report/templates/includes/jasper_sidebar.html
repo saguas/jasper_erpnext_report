@@ -1,6 +1,8 @@
 <div class="sidebar-exists"></div>
 {% if children -%}
+<div class="well well-sm"><b>{{_("Document sent by email")}}</b></div>
 <div class="sidebar-items">
+
 {%- for child in children -%}
 <div class="sidebar-item">
 	<a href="{{ child.jasper_report_path }}" class="no-decoration {% if (pathname or "")==(child.jasper_report_path or "") %}active{% endif %}">

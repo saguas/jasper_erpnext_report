@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe
-import os
+import os, json
 from frappe import _
 from frappe.model.document import Document
 from jasper_erpnext_report.utils.file import delete_jrxml_images, get_image_name, JasperXmlReport,\
@@ -166,9 +166,15 @@ def check_for_report_images(xmldoc, doc):
 	parent = xmldoc.getProperty("jasperId")
 	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,\
 						"attached_to_report_name":parent})
-	found = False
+
 	for image in images:
-		report_image_name = get_image_name(image.text)
+		found = False
+		try:
+			fimage = json.loads(image.text)
+		except:
+			fimage = image.text
+
+		report_image_name = get_image_name(fimage)
 		for img in docs:
 			if report_image_name == img.file_url.split("compiled/",1)[1]:
 				found = True
@@ -177,7 +183,7 @@ def check_for_report_images(xmldoc, doc):
 		if not found:
 			image_names_not_found.append(report_image_name)
 	if not report_images_count == len(images):
-		frappe.throw(_("Import %s image(s) for report %s first." % (",".join(image_names_not_found),doc.jasper_report_name)))
+		frappe.throw(_("Import %s image for report %s first." % (",".join(image_names_not_found),doc.jasper_report_name)))
 
 """
 Called from db_query.py method: def get_permission_query_conditions()

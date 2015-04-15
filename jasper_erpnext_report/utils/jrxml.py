@@ -197,10 +197,11 @@ class JasperXmlReport():
 			if len (s) > 1:
 				if s[1] == image_name:
 					image_path = fimage
+					break
 			else:
 				if fimage == image_name:
 					image_path = fimage
-			break
+					break
 
 		return image_path
 

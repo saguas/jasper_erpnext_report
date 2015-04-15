@@ -175,7 +175,7 @@ class JasperBase(object):
 		pram = []
 		copies = {}
 		pram_server = []
-		used_ids = False
+		#used_ids = False
 
 		for param in params:
 			is_copy = param.is_copy.lower()
@@ -189,14 +189,20 @@ class JasperBase(object):
 					Check if the ids was sended by asked parameters
 					"""
 					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
-				used_ids = True
+				value = [value]
+				#used_ids = True
 			elif is_copy == "is for copies" and pformat=="pdf":#_("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
-				copies["pram_copy_index"] = len(pram) - 1 if len(pram) > 0 else 0
+				copies["pram_copy_index"] = len(pram) if len(pram) > 0 else 0
+				values = utils.get_default_param_value(param, error=False) or ""
+				if values and isinstance(values, basestring):
+					value = [values.split(",")]
+				else:
+					value = [values]
 
 			elif is_copy == "is for page number" and pformat=="pdf":#_("is for page number") and pformat=="pdf":
-				copies["pram_copy_page_index"] = len(pram) - 1 if len(pram) > 0 else 0
+				copies["pram_copy_page_index"] = len(pram) if len(pram) > 0 else 0
 
 			elif is_copy == "is for server hook":#_("is for server hook"):
 				#don't do server hook here. Get first all defaults values
@@ -209,8 +215,14 @@ class JasperBase(object):
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
 				value = data.get("params", {}).get(p) or param.jasper_param_value
+				if isinstance(value, basestring):
+					value = value.split(",")
+				else:
+					value = [value]
 
-			pram.append({"name":p, 'value':[value]})
+				print "valores para List {} {}".format(value, params)
+
+			pram.append({"name":p, 'value':value})
 
 		return (pram, pram_server, copies)
 

@@ -27,7 +27,8 @@ class JasperLocal(Jb.JasperBase):
 	def run_local_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1, for_all_sites=1):
 		resps = []
 		data = self.run_report_async(doc, data=data, params=params)
-		if doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form":
+		print "doc.get is_doctype_id {}".format(data.get("is_doctype_id", None))
+		if (doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form") and not data.get("is_doctype_id", None):
 			ids = data.get('ids')
 			for id in ids:
 				data['ids'] = [id]
@@ -49,20 +50,21 @@ class JasperLocal(Jb.JasperBase):
 
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
-		try:
-			for p in pram:
-				hashmap.put(p.get("name"), p.get("value")[0])
-		except:
-			frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
+		self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
+		#try:
+		#	for p in pram:
+		#		hashmap.put(p.get("name"), p.get("value")[0])
+		#except:
+		#	frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 
-		#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
-		copies = ["Original", "Duplicated", "Triplicate"]
-
+		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		#copies = ["Original", "Duplicated", "Triplicate"]
 		conn = ""
 		if doc.query:
-			conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":3306/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
+			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
-
+			#conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
+				#"&password=" + frappe.conf.db_password
 		reportName = self.getFileName(path)
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
@@ -76,8 +78,12 @@ class JasperLocal(Jb.JasperBase):
 
 		for m in range(ncopies):
 			if pram_copy_index != -1:
+				values = pram[pram_copy_index].get("value","")[0]
 				pram_copy_name = pram[pram_copy_index].get("name","")
-				hashmap.put(pram_copy_name, copies[m])
+				if not values:
+					hashmap.put(pram_copy_name, copies[m])
+				else:
+					hashmap.put(pram_copy_name, frappe.utils.strip(values[m], ' \t\n\r'))
 			if pram_copy_page_index != -1:
 				pram_copy_page_name = pram[pram_copy_page_index].get("name","")
 				hashmap.put(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
@@ -104,6 +110,9 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("virtua", jr.Integer(virtua))
 
 				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), ) )
+				if pram_copy_index != -1:
+					hashmap = jr.HashMap()
+					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 
 			except Exception as e:
 				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
@@ -178,3 +187,11 @@ class JasperLocal(Jb.JasperBase):
 		index = file.rfind(os.sep) + 1
 		name_ext = file[index:]
 		return name_ext.split(".")[0]
+
+
+	def populate_hashmap(self, pram, hashmap, report_name):
+		try:
+			for p in pram:
+				hashmap.put(p.get("name"), p.get("value")[0])
+		except:
+			frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (report_name)))

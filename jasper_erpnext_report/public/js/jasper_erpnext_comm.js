@@ -270,7 +270,6 @@ jasper.CommunicationComposer = Class.extend({
 				attachments: selected_attachments,
                 jasper_doc: me.jasper_doc,
                 docdata: me.docdata
-                //rtype: me.rtype
 			},
 			btn: btn,
 			callback: function(r) {
