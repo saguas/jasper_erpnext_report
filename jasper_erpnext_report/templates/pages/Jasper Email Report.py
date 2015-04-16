@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
-import frappe, os, jasper_erpnext_report, re
+import frappe
 from frappe import _
-from jasper_erpnext_report.utils.file import get_file, get_extension
 no_cache = True
 
 def get_context(context):

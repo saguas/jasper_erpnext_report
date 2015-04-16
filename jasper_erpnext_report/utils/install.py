@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'saguas'
 
 import frappe
+import frappe.utils
 from frappe.website import render, statics
 
 

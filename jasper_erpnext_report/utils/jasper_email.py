@@ -2,6 +2,9 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 import frappe
+import frappe.utils
+import frappe.website
+import frappe.website.utils
 from frappe import _
 import json, os
 from email.utils import formataddr

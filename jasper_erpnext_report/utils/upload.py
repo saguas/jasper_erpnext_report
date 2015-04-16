@@ -45,6 +45,7 @@ Function called to upload files from client
 """
 def file_upload():
 	#only administrator can upload reports!!
+	comment = ""
 	dt = frappe.form_dict.doctype
 	dn = frappe.form_dict.docname
 	parent = frappe.form_dict.parent_report

@@ -40,7 +40,7 @@ frappe.ui.form.on("Jasper Parameter", "jasper_param_action", function(frm, docty
 	var row = locals[doctype][name];
 	if (row.is_copy === "Is for server hook" || row.is_copy === "Is for page number" || row.is_copy === "Is for copies"){
 		row.jasper_param_action = "Automatic";
-	}else if (row.is_copy === "Other"){
+	}else if (row.is_copy === "Other" || row.is_copy === "Is doctype id"){
 		row.jasper_param_action = "Ask";
 	}else if (row.is_copy === "Is for where clause" && frm.doc.jasper_report_type !== "General"){
 		row.jasper_param_action = "Automatic";

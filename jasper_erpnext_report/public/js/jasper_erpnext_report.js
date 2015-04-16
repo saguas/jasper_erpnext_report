@@ -493,10 +493,13 @@ jasper.make_dialog = function(doc, title, callback){
     var fields = [];
 	var params = doc.params;
 	var docids = null;
+	//Only one doctype_id field. Means, this parameters has the name (id) of open document (Form) or the ids of the selected documents in List view
+	var is_doctype_id = false;
 
 	for (var i=0; i < params.length; i++){
 		var param = doc.params[i];
 		if (param.is_copy === "Is doctype id"){
+			is_doctype_id = true;
 			docids = jasper.getIdsFromList();
 			if(!docids)
 				docids = cur_frm && cur_frm.doc.name;
@@ -512,7 +515,7 @@ jasper.make_dialog = function(doc, title, callback){
 
 	function ifyes(d){
         if (callback){
-            callback({values: d.get_values(), abort: false, is_doctype_id: docids === null?false:true});
+            callback({values: d.get_values(), abort: false, is_doctype_id: is_doctype_id});
         }
 	};
 	function ifno(){

@@ -4,6 +4,7 @@ from frappe.model.document import Document
 
 from frappe import _
 import frappe
+import frappe.utils
 
 import logging
 from io import BytesIO
@@ -17,7 +18,8 @@ _logger = logging.getLogger(frappe.__name__)
 jasper_fields_not_supported = ["parent", "owner", "modified_by", "parenttype", "parentfield", "docstatus", "doctype", "name", "idx"]
 
 class JasperBase(object):
-	def __init__(self, doc={}):
+	def __init__(self, doc=None):
+		doc = doc or {}
 		if isinstance(doc, Document):
 			self.doc = frappe._dict(doc.as_dict())
 		else:
@@ -170,6 +172,22 @@ class JasperBase(object):
 
 		return pram
 
+	def get_param_values(self, values):
+
+		if values and isinstance(values, basestring):
+			val = values.replace("\"","").replace("'","").split(",")
+			if len(val)>1:
+				value = val
+			else:
+				value = [values]
+		else:
+			if len(values)>1:
+				value = values
+			else:
+				value = [values]
+
+		return value
+
 	def do_params(self, data, params, pformat):
 		pram = []
 		copies = {}
@@ -193,15 +211,27 @@ class JasperBase(object):
 			elif is_copy == "is for copies" and pformat=="pdf":#_("is for copies") and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
-				copies["pram_copy_index"] = len(pram) if len(pram) > 0 else 0
+				copies["pram_copy_index"] = len(pram) #if len(pram) > 0 else 0
 				values = utils.get_default_param_value(param, error=False) or ""
+				value = self.get_param_values(values)
+				"""
 				if values and isinstance(values, basestring):
-					value = [values.split(",")]
+					val = values.split(",")
+					#value = [val]
+					if len(val)>1:
+						value = val
+					else:
+						value = [values]
 				else:
-					value = [values]
+					if len(values)>1:
+						value = values
+					else:
+						value = [values]
+				"""
+				print "is of base string {} value {} len(pram) {}".format(isinstance(values, basestring), value, len(pram))
 
 			elif is_copy == "is for page number" and pformat=="pdf":#_("is for page number") and pformat=="pdf":
-				copies["pram_copy_page_index"] = len(pram) if len(pram) > 0 else 0
+				copies["pram_copy_page_index"] = len(pram) #if len(pram) > 0 else 0
 
 			elif is_copy == "is for server hook":#_("is for server hook"):
 				#don't do server hook here. Get first all defaults values
@@ -213,19 +243,30 @@ class JasperBase(object):
 				continue
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
-				value = data.get("params", {}).get(p) or param.jasper_param_value
-				if isinstance(value, basestring):
-					value = value.split(",")
+				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
+				print "valor other e: {}".format(value)
+				value = self.get_param_values(values)
+				"""
+				if values and isinstance(values, basestring):
+					val = values.replace("\"","").replace("'","").split(",")
+					if len(val)>1:
+						value = val
+					else:
+						value = [values]
 				else:
-					value = [value]
+					if len(values)>1:
+						value = values
+					else:
+						value = [values]
+				"""
 
-				print "valores para List {} {}".format(value, params)
+				print "valores para List 2 {} {}".format(value, params)
 
 			pram.append({"name":p, 'value':value})
 
 		return (pram, pram_server, copies)
 
-	def get_reports_list_from_db(self, filters_report={}, filters_param={}):
+	def get_reports_list_from_db(self, filters_report=None, filters_param=None):
 		return utils.jasper_report_names_from_db(origin=self.get_report_origin(), filters_report=filters_report, filters_param=filters_param)
 
 	def get_query_jrxmlFile_from_server(self, file_content):
@@ -312,6 +353,27 @@ class JasperBase(object):
 			from {0}""".format(tab))
 		return rec
 
+	def prepare_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		resps = []
+		data = self.run_report_async(doc, data=data, params=params)
+		print "doc.get is_doctype_id 3 {}".format(data.get("is_doctype_id", None))
+		"""
+		Run one report at a time for Form type report and many ids
+		"""
+		if (doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form") and not data.get("is_doctype_id", None):
+			ids = data.get('ids')
+			for id in ids:
+				data['ids'] = [id]
+				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+		else:
+			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+		cresp = self.prepareCollectResponse(resps)
+		return cresp
+
+	#Override by descendents: JasperServer and JasperLocal
+	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		pass
+
 	def prepareResponse(self, detail, reqId):
 		uri = detail.get("reportURI")
 		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
@@ -360,7 +422,8 @@ class JasperBase(object):
 		res = {"requestId": intern_reqId, "reqtime": reqtime, "status": status}
 		return res
 
-	def run_report_async(self, doc, data={}, params=[]):
+	def run_report_async(self, doc, data=None, params=None):
+		data = data or {}
 		if doc.jasper_report_type == "Server Hooks":
 			self.check_ids_in_hooks(doc, data, params)
 		if not doc.jasper_report_type == "General":

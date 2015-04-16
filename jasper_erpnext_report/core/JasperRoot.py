@@ -20,7 +20,7 @@ import zipfile, hashlib
 _logger = logging.getLogger(frappe.__name__)
 
 class JasperRoot(Jb.JasperBase):
-	def __init__(self, doc={}):
+	def __init__(self, doc=None):
 		self.jps = None
 		self.jpl = None
 		frappe.local.jasper_session_obj = self
@@ -74,7 +74,7 @@ class JasperRoot(Jb.JasperBase):
 			return self.doc.jasper_server_name
 		return self.jps.get_server_info()
 
-	def _get_reports_list(self, filters_report={}, filters_param={}, force=False, cachename="report_list_all", tab="tabJasperReportListAll", update=False):
+	def _get_reports_list(self, filters_report=None, filters_param=None, force=False, cachename="report_list_all", tab="tabJasperReportListAll", update=False):
 		ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 		#check to see if there is any report by now. If there are reports don't check the server
 		#jasperserverlib sign if it was imported jasperserver, a library to connect to the jasperreport server

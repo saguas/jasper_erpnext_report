@@ -1,5 +1,7 @@
 __author__ = 'luissaguas'
 import frappe, logging
+import frappe.utils
+
 try:
 	version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
 	if version < 5:

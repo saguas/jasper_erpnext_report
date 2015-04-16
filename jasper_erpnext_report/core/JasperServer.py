@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 from jasper_erpnext_report import jasperserverlib
+import copy
 
 try:
 	import jasperserver.core as jasper
@@ -64,7 +65,7 @@ def _jasperserver(fn):
 
 
 class JasperServer(Jb.JasperBase):
-	def __init__(self, doc={}):
+	def __init__(self, doc=None):
 		self.is_login = False
 		self.session = frappe.local.jasper_session = frappe._dict({'session': frappe._dict({})})
 		super(JasperServer, self).__init__(doc)
@@ -179,12 +180,10 @@ class JasperServer(Jb.JasperBase):
 
 		return ret
 
-	def run_remote_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
+	def run_remote_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1):
+		"""
 		resps = []
 		data = self.run_report_async(doc, data=data, params=params)
-		"""
-		Run one report at a time for Form type report and many ids
-		"""
 		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form":
 			ids = data.get('ids')
 			for id in ids:
@@ -195,9 +194,14 @@ class JasperServer(Jb.JasperBase):
 		cresp = self.prepareCollectResponse(resps)
 		cresp["origin"] = "server"
 		return [cresp]
+		"""
+		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=0)
+		cresp["origin"] = "server"
+		return [cresp]
 
 	#run reports with http POST and run async and sync
-	def _run_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1):
+	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		data = data or {}
 		pram, pram_server, copies = self.do_params(data, params, pformat)
 		pram_copy_index = copies.get("pram_copy_index", -1)
 		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
@@ -205,19 +209,20 @@ class JasperServer(Jb.JasperBase):
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
 		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
-		#copies = ["Original", "Duplicated", "Triplicate"]
 
 		for m in range(ncopies):
-			if pram_copy_index >= 0:
-				values = pram[pram_copy_index].get("value","")[0]
-				if not values:
-					pram[pram_copy_index]['value'] = [copies[m]]
+			npram = copy.deepcopy(pram)
+			if pram_copy_index != -1:
+				values = pram[pram_copy_index].get("value","")
+				print "values in range 3 {}".format(values)
+				if not values or not values[0]:
+					npram[pram_copy_index]['value'] = [copies[m]]
 				else:
-					pram[pram_copy_index]['value'] = frappe.utils.strip(values[m], ' \t\n\r')
+					npram[pram_copy_index]['value'] = [frappe.utils.strip(values[m], ' \t\n\r')]
 
-			if pram_copy_page_index >= 0:
-				pram[pram_copy_page_index]['value'] = [str(m) + _(" of ") + str(ncopies)]
-			result = self.run_async(path, pram, data.get("report_name"), pformat=pformat)
+			if pram_copy_page_index != -1:
+				npram[pram_copy_page_index]['value'] = [str(m) + _(" of ") + str(ncopies)]
+			result = self.run_async(path, npram, data.get("report_name"), pformat=pformat)
 			if result:
 				requestId = result.get('requestId')
 				reqDbObj = {"data":{"result": result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}}

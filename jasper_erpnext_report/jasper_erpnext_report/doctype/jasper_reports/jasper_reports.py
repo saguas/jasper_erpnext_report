@@ -80,7 +80,7 @@ class JasperReports(Document):
 	def on_trash(self, method=None):
 		pass
 
-	def on_jasper_params_ids(self, data=[], params=[]):
+	def on_jasper_params_ids(self, data=None, params=None):
 		print "new params hooks {} name {}".format(data, self.name)
 		"""
 		for param in params:
@@ -103,7 +103,7 @@ class JasperReports(Document):
 
 		return ret
 
-	def on_jasper_params(self, data=[], params=[]):
+	def on_jasper_params(self, data=None, params=None):
 		a = []
 		#for param in params:
 			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
@@ -115,6 +115,7 @@ class JasperReports(Document):
 
 	@property
 	def jrxml_root_path(self):
+		root_path = None
 		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,\
 				"attached_to_report_name":"root"})
 		try:

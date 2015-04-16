@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 import frappe
+import frappe.utils
 from frappe import _
 from lxml import etree
 import json

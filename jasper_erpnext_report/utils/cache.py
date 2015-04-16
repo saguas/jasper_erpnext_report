@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 import frappe
+import frappe.defaults
 from frappe import _
 from frappe.utils import cint
 
 
-jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},\
+jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},
 					{"mcache":'report_list_doctype', "db": None}]
 
 

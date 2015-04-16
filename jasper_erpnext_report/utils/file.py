@@ -2,10 +2,12 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 import os, logging
 import frappe
+import frappe.model
+import frappe.model.naming
 from frappe import _
 from jasper_erpnext_report.jasper_reports.compile_reports import jasper_compile
 from frappe.utils import get_site_path
-from frappe.utils.file_manager import save_file_on_filesystem, delete_file_from_filesystem, get_uploaded_content, check_max_file_size, get_content_hash
+from frappe.utils.file_manager import save_file_on_filesystem, delete_file_from_filesystem, get_content_hash
 from lxml import etree
 import jasper_erpnext_report, json
 from io import BytesIO
@@ -86,6 +88,7 @@ def get_extension(fname):
 
 def write_file_jrxml(fname, content, content_type=None, parent=None):
 	path_join = os.path.join
+	file_path = None
 	dt = frappe.form_dict.doctype
 	if dt == "Jasper Reports":
 		autofilename = None
@@ -213,7 +216,7 @@ def delete_file_jrxml_old(doc):
 			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
 			frappe.db.set_value(dt, dn, 'query', "")
 		else:
-			delete_jrxml_child_file(dt, dn, doc.file_url, jasper_all_sites_report)
+			delete_jrxml_child_file(dt, jasper_all_sites_report)
 	else:
 		delete_file_from_filesystem(doc)
 
@@ -229,7 +232,7 @@ def delete_jrxml_images(dt, dn, jasper_all_sites = False):
 		file_path = image.get('file_url')
 		ext = check_extension(file_path)
 		if ext != "jrxml":
-			delete_jrxml_child_file(dt, dn, file_path, jasper_all_sites)
+			delete_jrxml_child_file(dt, jasper_all_sites)
 
 def remove_from_doc(dt, dn, field, where_field = "name"):
 	frappe.db.sql("""update `tab%s` set %s=NULL where %s=%s""" % (dt, field, where_field, '%s'),(dn))

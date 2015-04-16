@@ -81,7 +81,7 @@
   }, 
   {
    "default": "Other", 
-   "description": "This parameter is  Original (one), Duplicated (two) or Triplicate (three) for the number of copies or is for where clause.\nIf you select \"Other\" you must give the value or it will be ignored.", 
+   "description": "1) Is for copies: To set Original, Duplicated or Triplicate in the document.\n2) Is for where clause: Is for SQL selects of type:\"select x,y from $P!{param}\". The System will create the where clause for the document.\n3) Is doctype id: The value(s) of this parameter will be used in SQL select, but the system will not create a where clause. The where clause already exist in Jasper Report.\n4) Is for server hook: The system will ask for the value(s) of the parameter on the server side. This could be the whole sql if in \"queryString tag\" of Jasper Reports only is $P!{param}.\n5) If you select \"Other\" you must give the value or it will be ignored.", 
    "fieldname": "is_copy", 
    "fieldtype": "Select", 
    "in_list_view": 1, 
@@ -127,7 +127,7 @@
    "precision": ""
   }, 
   {
-   "description": "Set the default value for the parameter. This value will be used if no other value is given. If the parameter is for where clause and you need to pass multiple values then separate them with comma. Ex. Administrator, Guest. Note: Do not put quotation marks or apostrophe in the names.\nFor the other cases pass them as needed by the report. Note: You can also pass the values with an array/List, like this: [\"Administrator\", \"Guest\"] and in this case you must put quotation marks or apostrophe in the names.", 
+   "description": "Set the default value for the parameter. This value will be used if no other value is given. If  you need to pass multiple values then separate them with comma. Ex. Administrator, Guest or pass the values as an array/List.  Ex. [\"Administrator\", \"Guest\"].", 
    "fieldname": "jasper_param_value", 
    "fieldtype": "Small Text", 
    "label": "Parameter Value", 
@@ -142,7 +142,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2015-04-15 22:08:43.996661", 
+ "modified": "2015-04-16 20:54:34.818345", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Parameter", 

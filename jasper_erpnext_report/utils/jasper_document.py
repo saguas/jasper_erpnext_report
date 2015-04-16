@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 import frappe
+import frappe.utils
 from frappe import _
 
-import jasper_erpnext_report.utils
+import jasper_erpnext_report.utils.utils
 
-jasper_report_types = ['jasper_print_pdf', 'jasper_print_rtf', 'jasper_print_docx', 'jasper_print_ods',\
+jasper_report_types = ['jasper_print_pdf', 'jasper_print_rtf', 'jasper_print_docx', 'jasper_print_ods',
 						'jasper_print_odt', 'jasper_print_xls', 'jasper_print_all']
 
 
@@ -95,8 +96,8 @@ def do_doctype_from_jasper(data, reports, force=False):
 
 	#new docs must invalidate cache and db
 	if docs:
-		jasper_erpnext_report.utils.jaspersession_set_value("report_list_dirt_all", True)
-		jasper_erpnext_report.utils.jaspersession_set_value("report_list_dirt_doc", True)
+		jasper_erpnext_report.utils.utils.jaspersession_set_value("report_list_dirt_all", True)
+		jasper_erpnext_report.utils.utils.jaspersession_set_value("report_list_dirt_doc", True)
 
 
 	return docs
@@ -113,7 +114,7 @@ def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"
 	doc.idx = c_idx
 	doc.jasper_param_type = param_type
 
-	if jasper_erpnext_report.utils.check_queryString_with_param(mydict.get("queryString"), param_name):
+	if jasper_erpnext_report.utils.utils.check_queryString_with_param(mydict.get("queryString"), param_name):
 		is_copy = "Is for where clause"
 		action_type = "Automatic"
 		param_expression = "In"

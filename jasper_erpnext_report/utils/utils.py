@@ -16,17 +16,18 @@ _logger = logging.getLogger(frappe.__name__)
 jasper_formats = ["pdf", "docx", "xls","ods","odt", "rtf"]
 
 
-def jasper_report_names_from_db(origin="both", filters_report={}, filters_param={}, filters_permrole={}):
+def jasper_report_names_from_db(origin="both", filters_report=None, filters_param=None, filters_permrole=None):
 	ret = None
-	filters_param = filters_param.update({"parenttype":"Jasper Reports"})
+	if filters_param:
+		filters_param = filters_param.update({"parenttype":"Jasper Reports"})
 	report_from = {"both":["jasperserver", "localserver"], "local jrxml only":["localserver"], "jasperserver only":["jasperserver"]}
 	#get all report names
-	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",\
-													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",\
+	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",
+													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",
 													"jasper_param_message", "jasper_report_type", "jasper_email", "jasper_locale"])
-	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",\
-													"`tabJasper Parameter`.jasper_param_name as name", "`tabJasper Parameter`.jasper_param_action",\
-													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description",\
+	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",
+													"`tabJasper Parameter`.jasper_param_name as name", "`tabJasper Parameter`.jasper_param_action",
+													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description",
 													"`tabJasper Parameter`.is_copy"])
 	with_perm_role = frappe.get_all("Jasper PermRole", filters=filters_permrole, fields=["`tabJasper PermRole`.parent as parent", "`tabJasper PermRole`.name as p_name" ,"`tabJasper PermRole`.jasper_role", "`tabJasper PermRole`.jasper_can_read"])
 	if rnames:
@@ -34,7 +35,7 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 		for r in rnames:
 			jasper_report_origin = r.jasper_report_origin.lower()
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
-				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
+				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}
 				for report in with_param:
 						name = report.parent
@@ -111,7 +112,10 @@ def get_default_param_value(param, error=True):
 	else:
 		#this is the case when user enter "Administrator" and get translated to "'Administrator'"
 		#then we need to convert to "Administrator" or 'Administrator'
-		value = default_value
+		if isinstance(default_value, basestring):
+			value = default_value.replace("\"","").replace("'","")
+		else:
+			value = default_value
 	return value
 
 #call hooks for params set as "Is for server hook"

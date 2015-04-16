@@ -254,10 +254,12 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
 
 def prepare_polling(data):
-	reqids = []
-	for d in data:
-		reqids.append(d.get("requestId"))
-	poll_data = {"reqIds": reqids, "reqtime": d.get("reqtime"), "pformat": d.get("pformat"), "origin": d.get("origin")}
+	#reqids = []
+	#for d in data:
+	#print "data in prepare email {}".format(data)
+	d = data[0]
+	#reqids.append(d.get("requestId"))
+	poll_data = {"reqIds": [d.get("requestId")], "reqtime": d.get("reqtime"), "pformat": d.get("pformat"), "origin": d.get("origin")}
 	return poll_data
 
 def get_pages(ncopies, total_pages):

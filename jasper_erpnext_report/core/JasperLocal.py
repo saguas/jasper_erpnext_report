@@ -21,10 +21,11 @@ _logger = logging.getLogger(frappe.__name__)
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 
 class JasperLocal(Jb.JasperBase):
-	def __init__(self, doc={}):
+	def __init__(self, doc=None):
 		super(JasperLocal, self).__init__(doc)
 
-	def run_local_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1, for_all_sites=1):
+	def run_local_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		"""
 		resps = []
 		data = self.run_report_async(doc, data=data, params=params)
 		print "doc.get is_doctype_id {}".format(data.get("is_doctype_id", None))
@@ -38,8 +39,13 @@ class JasperLocal(Jb.JasperBase):
 		cresp = self.prepareCollectResponse(resps)
 		cresp["origin"] = "local"
 		return [cresp]
+		"""
+		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
+		cresp["origin"] = "local"
+		return [cresp]
 
-	def _run_report_async(self, path, doc, data={}, params=[], pformat="pdf", ncopies=1, for_all_sites=1):
+	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		data = data or {}
 		hashmap = jr.HashMap()
 		pram, pram_server, copies = self.do_params(data, params, pformat)
 		pram_copy_index = copies.get("pram_copy_index", -1)
@@ -58,7 +64,6 @@ class JasperLocal(Jb.JasperBase):
 		#	frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 
 		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
-		#copies = ["Original", "Duplicated", "Triplicate"]
 		conn = ""
 		if doc.query:
 			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
@@ -78,9 +83,9 @@ class JasperLocal(Jb.JasperBase):
 
 		for m in range(ncopies):
 			if pram_copy_index != -1:
-				values = pram[pram_copy_index].get("value","")[0]
+				values = pram[pram_copy_index].get("value","")
 				pram_copy_name = pram[pram_copy_index].get("name","")
-				if not values:
+				if not values or not values[0]:
 					hashmap.put(pram_copy_name, copies[m])
 				else:
 					hashmap.put(pram_copy_name, frappe.utils.strip(values[m], ' \t\n\r'))
