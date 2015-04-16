@@ -55,7 +55,6 @@ class JasperBase(object):
 
 	def get_jasperconfig_from_db(self):
 		self.doc = frappe.db.get_value('JasperServerConfig', None, "*", ignore=True, as_dict=True) or frappe._dict({})
-		print "get_jasperconfig_from_db {}".format(self.doc)
 		self.createJasperSession()
 
 	def resume(self):

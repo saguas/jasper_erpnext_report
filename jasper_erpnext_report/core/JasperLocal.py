@@ -61,7 +61,7 @@ class JasperLocal(Jb.JasperBase):
 		#copies = ["Original", "Duplicated", "Triplicate"]
 		conn = ""
 		if doc.query:
-			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
+			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
 			#conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
 				#"&password=" + frappe.conf.db_password

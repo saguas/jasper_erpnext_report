@@ -14,7 +14,6 @@ try:
 	jasperserverlib = True
 except:
 	jasperserverlib = False
-	pass
 
 from frappe.utils import pprint_dict
 

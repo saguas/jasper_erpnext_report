@@ -43,6 +43,7 @@ class JasperRoot(Jb.JasperBase):
 			frappe.throw(_("Something was wrong, there is no document!!!" ))
 
 		from jasper_erpnext_report import pyjnius
+		print "use local and pyjnius local? {} pyjnius {}".format(self.use_local(), pyjnius)
 		if self.use_local() and not pyjnius:
 			frappe.throw(_("You don't have local server. Install python module pyjnius first." ))
 
