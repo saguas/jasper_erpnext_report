@@ -33,6 +33,11 @@ class JasperReports(Document):
 		if not self.jasper_param_message:
 			self.jasper_param_message = frappe.db.get_values_from_single(["jasper_param_message"], None, "JasperServerConfig")[0][0].format(report=self.jasper_report_name, user=frappe.local.session['user'])
 
+		#check if Jasper is configurated
+		use_jasper_server = frappe.db.get_values_from_single(["use_jasper_server"], None, "JasperServerConfig")[0][0]
+		if use_jasper_server == "None":
+			frappe.throw(_("You need to configure Jasper first."))
+			return
 		if check_root_exists(self.doctype, self.name):
 			rootquery = ''
 			self.query = ''

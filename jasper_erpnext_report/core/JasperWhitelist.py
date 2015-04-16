@@ -232,7 +232,6 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			output = output.getvalue()
 			#remove name from filepath
 			filepath = filepath.rsplit("/",1)[0]
-			print "other format email filepath 2 {} file_name {}".format(filepath, file_name)
 
 	else:
 		frappe.throw(_("Error generating %s format, try again later.") % (pformat,))

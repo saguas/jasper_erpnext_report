@@ -29,12 +29,10 @@ def jasper_report_names_from_db(origin="both", filters_report={}, filters_param=
 													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description",\
 													"`tabJasper Parameter`.is_copy"])
 	with_perm_role = frappe.get_all("Jasper PermRole", filters=filters_permrole, fields=["`tabJasper PermRole`.parent as parent", "`tabJasper PermRole`.name as p_name" ,"`tabJasper PermRole`.jasper_role", "`tabJasper PermRole`.jasper_can_read"])
-	print "names in get from db 2 {} rnames {}".format(filters_report, rnames)
 	if rnames:
 		ret = {}
 		for r in rnames:
 			jasper_report_origin = r.jasper_report_origin.lower()
-			print "newdata {} origin {} origin {}".format(jasper_report_origin, report_from.get(origin), origin)
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,\
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}

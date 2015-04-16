@@ -176,7 +176,6 @@ class JasperRoot(Jb.JasperBase):
 			new_data = self.doc_filter_perm_roles(doctype, data, docnames)
 
 		if not self.check_server_status():
-			print "a remover 2 {}".format(new_data)
 			self.remove_server_docs(new_data)
 		new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
 		return new_data

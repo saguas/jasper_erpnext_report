@@ -4,7 +4,6 @@
 *.pyo
 *.egg-info
 *.swp
-*.java
 *.com
 *.class
 *.dll
@@ -42,7 +41,6 @@ reports/
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 *.zip

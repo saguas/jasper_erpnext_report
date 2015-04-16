@@ -7,7 +7,6 @@ _logger = logging.getLogger(frappe.__name__)
 def jasper_compile(jrxml, destFileName):
 	_logger.info("jasper_compile jrxml dir {0} destFileName {1}".format(jrxml, destFileName))
 	try:
-		print "pyjnius {}".format(jr.pyjnius)
 		compiler = jr.ReportCompiler()
 		compiler.compile(jrxml,destFileName)
 	except Exception as e:

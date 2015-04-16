@@ -11,7 +11,7 @@
  "fields": [
   {
    "allow_on_submit": 0, 
-   "default": "JasperServer only", 
+   "default": "None", 
    "description": "Choose where the reports are stored. Choose JasperServer only if you only want reports from Jasper Server. Choose Local jrxml only if you only want reports from python local module and don't want reports from Jasper Server.", 
    "fieldname": "use_jasper_server", 
    "fieldtype": "Select", 
@@ -280,7 +280,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2015-04-14 22:06:24.717337", 
+ "modified": "2015-04-16 16:10:22.236403", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 
