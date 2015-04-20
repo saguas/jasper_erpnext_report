@@ -206,6 +206,7 @@ class JasperServer(Jb.JasperBase):
 		pram_copy_index = copies.get("pram_copy_index", -1)
 		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
 		resp = []
+
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
 		copies = [_("Original"), _("Duplicated"), _("Triplicate")]

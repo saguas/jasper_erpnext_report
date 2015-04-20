@@ -1,7 +1,6 @@
 
 import java.io.File;
 
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -21,6 +20,7 @@ import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 
 
+import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
@@ -38,6 +38,8 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import java.util.Locale;
 
 public class ExportReport
 {
@@ -58,6 +60,9 @@ public class ExportReport
 	private JRDataSource dataSource;
 	private DefaultTableModel tableModel;
 	private JRQuery query;
+	private String queryType;
+	private String sqlQueryPath;
+	private String xmlName;
 	
 	
 	
@@ -80,20 +85,51 @@ public class ExportReport
 	  this.outputPathName = this.outputPath + this.reportName;
 	  this.jasper_path = this.path_jasper_file + this.reportName + ".jasper";
 	  
+	  
+  }
+  
+  public void setQueryType(){
+	  
+      if ( this.query == null ){
+      		this.queryType = "";
+      }else{
+      		this.queryType = this.query.getLanguage();
+			if (!this.queryType.equalsIgnoreCase("XPATH"))
+				this.queryType = "SQL";
+      }
+          
   }
 
   public void export()
   {
 	  
 	  this.setParams();
+	  this.setQueryType();
 	  
-	  if(this.tables == null && this.query != null){
+	  if(this.tables == null && this.queryType == "SQL"){
 	  	this.connect();
 		this.getJasperPrint(this.connection);
 		
-	  }else if(this.tables == null){
+	  }else if(this.tables == null && !this.queryType.equalsIgnoreCase("XPATH")){
 	  	this.dataSource = new JREmptyDataSource();
 		this.getJasperPrint(this.dataSource);
+	  }else if(this.tables == null && this.queryType.equalsIgnoreCase("XPATH")){
+		this.sqlQueryPath = this.query.getText();
+		String xmlfile = this.path_jasper_file + this.xmlName + ".xml";
+		File file = new File(xmlfile);
+		try{
+			Locale locale;
+			JRXmlDataSource dataSource = new JRXmlDataSource(xmlfile, this.sqlQueryPath );
+            dataSource.setDatePattern( "yyyy-MM-dd HH:mm:ss" );
+            dataSource.setNumberPattern( "#######0.##" );
+            //dataSource.setLocale( Locale.ENGLISH );
+			dataSource.setLocale(new java.util.Locale(this.lang));
+			this.getJasperPrint(dataSource);
+		} catch (JRException e)
+      	{
+        	e.printStackTrace();
+      	}
+	  	
 	  }else{
 		this.tableModel = new DefaultTableModel(this.tables, this.columns);
 	  	this.dataSource = new JRTableModelDataSource(tableModel);
@@ -116,6 +152,9 @@ public class ExportReport
 	  
 		  report = (JasperReport) JRLoader.loadObjectFromFile(this.jasper_path);
 		  
+		  //if datasource is xml then the name of the xml file without extension (.xml)
+		  this.xmlName = report.getProperty("XMLNAME");
+		  
 		  this.params.put(JRParameter.REPORT_LOCALE, new java.util.Locale(this.lang));
 		  this.query = report.getQuery();
 		  
@@ -127,6 +166,7 @@ public class ExportReport
 			      Object param = this.params.get( jparam.getName());
 			      this.params.put(jparam.getName(), new BigDecimal( (Double) this.params.get(jparam.getName())));
 			  };
+			  
 		  };
 	  }
       catch (JRException e)

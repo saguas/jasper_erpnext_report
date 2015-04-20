@@ -105,12 +105,18 @@ class JasperReports(Document):
 
 	def on_jasper_params(self, data=None, params=None):
 		a = []
-		#for param in params:
+		for param in params:
+			if param.get("name") == "idade":
+				a.append({"name": param.get("name"), "value":35.6})
+			else:
+				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com', 'Guest'], "param_type": "is for where clause"})
 			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
 		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
 		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": _("is for where clause")})
-		a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
+		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
+		#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
 		#a.append({"name": params[0].get("name"), "value":345})
+		#a.append({"name": params[0].get("name"), "value":35})
 		return a
 
 	@property

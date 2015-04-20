@@ -1,5 +1,37 @@
 frappe.provide("jasper");
 
+
+// jasper_doc
+jasper.email_doc = function(message, curfrm, jasper_doc, list, route0) {
+
+    if (curfrm){
+    	new jasper.CommunicationComposer({
+    		doc: curfrm.doc,
+    		subject: __(curfrm.meta.name) + ': ' + curfrm.docname,
+    		recipients: curfrm.doc.email || curfrm.doc.email_id || curfrm.doc.contact_email,
+    		attach_document_print: true,
+    		message: message,
+    		real_name: curfrm.doc.real_name || curfrm.doc.contact_display || curfrm.doc.contact_name,
+            jasper_doc: jasper_doc,
+	        docdata: route0,
+            list: list
+    	});
+    }else{
+    	new jasper.CommunicationComposer({
+    		doc: {doctype: jasper_doc.doctype, name: jasper_doc.report_name},
+    		subject: jasper_doc.doctype + ': ' + jasper_doc.report_name,
+    		recipients: undefined,
+    		attach_document_print: false,
+    		message: message,
+    		real_name: "",
+            jasper_doc: jasper_doc,
+	        docdata: route0,
+            list: list
+    	});
+    }
+};
+
+
 jasper.CommunicationComposer = Class.extend({
 	init: function(opts) {
 		$.extend(this, opts);

@@ -57,11 +57,6 @@ class JasperLocal(Jb.JasperBase):
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
 		self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
-		#try:
-		#	for p in pram:
-		#		hashmap.put(p.get("name"), p.get("value")[0])
-		#except:
-		#	frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 
 		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
 		conn = ""
@@ -99,7 +94,7 @@ class JasperLocal(Jb.JasperBase):
 			res = self.prepareResponse({"reportURI": os.path.relpath(outputPath, jasper_path) + os.sep + reportName + "." + pformat}, sessionId)
 			res["status"] = None
 			res["report_name"] = data.get("report_name")
-			resp.append(res)#{"requestId":sessionId, "status": None}
+			resp.append(res)
 			try:
 				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
 				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
@@ -113,9 +108,10 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("type", jr.Integer(outtype))
 				mparams.put("lang", lang)
 				mparams.put("virtua", jr.Integer(virtua))
+				#used for xml datasource
 
 				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), ) )
-				if pram_copy_index != -1:
+				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 

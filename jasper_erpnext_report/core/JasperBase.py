@@ -143,11 +143,12 @@ class JasperBase(object):
 		pram = []
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		if res is None:
+			#if hook on_jasper_params return None
 			frappe.throw(_("Error in report %s, there is no value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 		for param in res:
 			param.pop("attrs", None)
 			param_type = param.pop("param_type", None)
-			if param_type and param_type.lower() == "is for where clause": #_("is for where clause"):
+			if param_type and param_type.lower() == "is for where clause":
 				param.setdefault("param_expression", "In")
 				value = self.get_where_clause_value(param.get("value", None), frappe._dict(param))
 				if not value:
@@ -161,12 +162,15 @@ class JasperBase(object):
 				value = [value]
 			try:
 				"""
-				Convert number to string
+				If number returned then convert number to string.
 				"""
 				number = value[0]
 				int(number)
 				param["value"] = [str(value[0])]
 			except ValueError:
+				"""
+				If not number returned.
+				"""
 				param["value"] = value
 			pram.append(param)
 
@@ -437,7 +441,7 @@ class JasperBase(object):
 					frappe.throw(_("Report {} input parameters error. This report is of type {} and needs at least one name.".format(doc.get('name'),doc.jasper_report_type)))
 					return
 		#In General type you may change to Form or List and give ids and change some initial data
-		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form" :
+		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form":
 			if not data.get('ids', None):
 				data['ids'] = []
 			for elem in data.get('name_ids', []):

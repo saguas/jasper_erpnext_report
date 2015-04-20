@@ -4,9 +4,6 @@ jasper.pending_reports = [];
 
 jasper.poll_count = 0;
 
-jasper.pages = {};
-jasper.report = {};
-
 jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "icon-file-word", xls:"icon-file-excel", xlsx:"icon-file-excel", 
 						/*ppt:"icon-file-powerpoint", pptx:"icon-file-powerpoint",*/ odt: "icon-file-openoffice", ods: "icon-libreoffice",
 	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
@@ -127,9 +124,6 @@ jasper.polling_report = function(data, $banner, timeout){
      });
 };
 
-jasper.close_banner = function($banner){
-    $banner.find(".close").click();
-};
 
 jasper.jasper_report_ready = function(msg, $old_banner, timeout){
     $old_banner.find(".close").click();
@@ -141,22 +135,7 @@ jasper.jasper_report_ready = function(msg, $old_banner, timeout){
     });
 };
 
-show_banner_message = function(msg, where_ok, where_cancel, bckcolor, callback){
-    $banner = frappe.ui.toolbar.show_banner(msg);
-    if (bckcolor != null)
-        $banner.css({background: bckcolor, opacity: 0.9});
-    if (where_ok != null){
-	    $banner.find(where_ok).click(function(){
-            callback($banner, "ok");
-        });
-    };
-    
-    if(where_cancel != null){
-    	$banner.find(where_cancel).click(function(){
-            callback($banner, "cancel");
-        }); 
-    };
-}
+
 
 jasper.getReport = function(msg){
  
@@ -257,13 +236,6 @@ $(window).on('hashchange', function() {
 	
 });
 
-jasper.get_page = function(){
-    var route = frappe.get_route();
-	var doctype = route[1];
-	var page = [route[0], doctype].join("/");
-    return page;
-};
-
 jasper.get_doc = function(doctype, docname){
     var df = new $.Deferred();
     var doctype = doctype || "Jasper Reports"
@@ -291,11 +263,11 @@ setJasperDropDown = function(list, callback){
 
 			var flen;
 			var icon_file;
-		    list = sortObject(list);
+		    list = jasper.sortObject(list);
 			for(var key in list){
 				if(list[key] !== null && typeof list[key] === "object"){
 					flen = list[key].formats.length;
-					var skey = shorten(key, 35);
+					var skey = jasper.shorten(key, 35);
 					html = html + jasper.make_menu(list, key, skey);
 				};
 			};
@@ -314,67 +286,6 @@ setJasperDropDown = function(list, callback){
 			$(".nav.navbar-nav.navbar-right .jrreports").on("click", clicked);
 	};
 		
-};
-
-jasper.get_jasperdoc_from_name = function(rname, rpage){
-    var robj = frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list[rname];
-    if (robj === undefined || robj === null){
-		var page = rpage;
-		if (!page){
-			page = jasper.get_page();
-		}
-        robj = jasper.pages[page];
-		if (robj){
-			robj = jasper.pages[page][rname];
-		};
-    }
-    if (robj === undefined || robj === null){
-        var route = frappe.get_route();
-        var len = route.length;
-        var r;
-        if (len > 1)
-            r = route[1];
-        else
-            r = route[0];
-        if(jasper.report[r])
-			robj = jasper.report[r][rname];
-    }
-    
-    if (robj === undefined || robj === null)
-        return
-	
-	return robj;
-}
-
-jasper.check_for_ask_param = function(rname, callback){
-    var robj = jasper.get_jasperdoc_from_name(rname);
-    console.log("Is doctype id? ", robj);
-    var ret;
-    if (robj.locale === "Ask" || robj.params && robj.params.length > 0){
-        ret = jasper.make_dialog(robj, rname + " parameters", callback);
-    }else{
-        callback({abort: false});
-    }
-};
-
-jasper.make_menu = function(list, key, skey){
-	var f = list[key].formats;
-    var email = list[key].email;
-	var mail_enabled = list.mail_enabled;
-	var icon_file = [];
-	var html = "";
-	for(var i=0; i < f.length; i++){
-		var type = f[i];
-		icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="jasper-%(type)s"></i>', {title:key + " - " + type, mykey:key, f:f[i], type: jasper_report_formats[type]}));
-	};
-    if (email === 1 && mail_enabled === 1){
-        icon_file.push(repl('<i title="%(title)s" data-jr_format="%(f)s" data-jr_name="%(mykey)s" class="%(type)s"></i>', {title: "send by email", mykey:key, f:"email", type: jasper_report_formats["email"]}));
-    }
-	html = html + '<li>'
-       + repl('<a class="jrreports" href="#" data-jr_format="%(f)s" data-jr_name="%(mykey)s"',{mykey:key, f:"html"}) +' title="'+ key +' - html" >'+ icon_file.join(" ") + " " + skey  + '</a>' 
- 	   +'</li>';
-	 
-	return html;
 };
 
 jasper.getOrphanReport = function(data, ev){
@@ -448,33 +359,6 @@ jasper.getOrphanReport = function(data, ev){
     });
 };
 
-
-function shorten(text, maxLength) {
-    var ret = text;
-    if (ret.length > maxLength) {
-        ret = ret.substr(0,maxLength-3) + "...";
-    }
-    return ret;
-}
-
-function sortObject(o) {
-    var sorted = {},
-    key, a = [];
-
-    for (key in o) {
-    	if (o.hasOwnProperty(key)) {
-    		a.push(key);
-    	}
-    }
-
-    a.sort();
-
-    for (key = 0; key < a.length; key++) {
-    	sorted[a[key]] = o[a[key]];
-    }
-    return sorted;
-};
-
 jasper.jasper_make_request = function(method, data, callback){
 
     frappe.call({
@@ -488,188 +372,4 @@ $(document).on( 'app_ready', function(){
 	$(window).trigger('hashchange');
 });
 
-jasper.make_dialog = function(doc, title, callback){
-	
-    var fields = [];
-	var params = doc.params;
-	var docids = null;
-	//Only one doctype_id field. Means, this parameters has the name (id) of open document (Form) or the ids of the selected documents in List view
-	var is_doctype_id = false;
 
-	for (var i=0; i < params.length; i++){
-		var param = doc.params[i];
-		if (param.is_copy === "Is doctype id"){
-			is_doctype_id = true;
-			docids = jasper.getIdsFromList();
-			if(!docids)
-				docids = cur_frm && cur_frm.doc.name;
-		};
-		fields.push({label:param.name, fieldname:param.name, fieldtype:param.jasper_param_type==="String"? "Data": param.jasper_param_type,
-		 	description:param.jasper_param_description || "", default:param.jasper_param_value || docids});
-	};
-	if(doc.jasper_report_origin === "LocalServer"){
-		var lang_default = frappe.defaults.get_user_default("language");
-		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",
-	 		description: __("Select the report language."), options: jasper.make_country_list(), default:[lang_default]});
-	};
-
-	function ifyes(d){
-        if (callback){
-            callback({values: d.get_values(), abort: false, is_doctype_id: is_doctype_id});
-        }
-	};
-	function ifno(){
-        if (callback){
-            callback({abort: true});
-        }
-	};
-
-	var d = jasper.ask_dialog(title, doc.message, fields, ifyes, ifno);
-	return d;
-}
-
-jasper.getIdsFromList = function(){
-	var docids = null;
-	var route = frappe.get_route();
-	var len = route.length;
-	if (len > 1 && route[0] === "List"){
-		var doctype = route[1];
-		var page = [route[0], doctype].join("/");
-		docids = jasper.getCheckedNames(page);
-	}
-
-	return docids;
-};
-
-jasper.getIdsFromForm = function(){
-	var docids = null;
-	var route = frappe.get_route();
-	var len = route.length;
-	if(len > 2 && route[0] === "Form"){
-		docids = cur_frm && cur_frm.doc.name;
-	}
-
-	return docids;
-}
-
-jasper.getCountryCode = function(){
-	jasper.CountryCode = frappe.boot.langinfo;
-};
-
-jasper.make_country_list = function(){
-	if (jasper.CountryList && jasper.CountryList.length > 0){
-		return jasper.CountryList;
-	};
-	if (!jasper.CountryCode || jasper.CountryCode.length == 0){
-		jasper.getCountryCode();
-	};
-		
-	jasper.CountryList = [];
-	for (var i=0; i<jasper.CountryCode.length;i++){
-		jasper.CountryList.push(jasper.CountryCode[i].name);
-	};
-	
-	return jasper.CountryList;
-};
-
-jasper.get_alpha3 = function(locale){
-	if (!jasper.CountryCode || jasper.CountryCode.length === 0)
-		return;
-	
-	var alpha3;
-	
-	for (var i=0; i<jasper.CountryCode.length;i++){
-		if (jasper.CountryCode[i].name === locale){
-			alpha3 = jasper.CountryCode[i].code;
-			break;
-		};
-	};
-	
-	return alpha3;
-};
-
-jasper.ask_dialog = function(title, message, fields, ifyes, ifno) {
-	var html = {fieldtype:"HTML", options:"<p class='frappe-confirm-message'>" + message + "</p>"};
-	fields.splice(0,0,html);
-	var d = new frappe.ui.Dialog({
-		title: __(title),
-		fields: fields,
-		primary_action: function() { d.hide(); ifyes(d); }
-	});
-	d.show();
-	if(ifno) {
-		d.$wrapper.find(".modal-footer .btn-default").click(ifno);
-	}
-	return d;
-}
-
-jasper.getChecked = function(name){
-	return $(frappe.pages[name]).find("input:checked");
-}
-
-jasper.getCheckedNames = function(page){
-	var names = [];
-	var checked = jasper.getChecked(page);
-	var elems_a = checked.siblings("a");
-	elems_a.each(function(i,el){
-		var t = unescape($(el).attr("href")).slice(1);
-		var s = t.split("/");
-		names.push(s[s.length - 1]);
-	});
-	
-	return names;
-}
-
-// jasper_doc
-jasper.email_doc = function(message, curfrm, jasper_doc, list, route0) {
-    
-    if (curfrm){
-    	new jasper.CommunicationComposer({
-    		doc: curfrm.doc,
-    		subject: __(curfrm.meta.name) + ': ' + curfrm.docname,
-    		recipients: curfrm.doc.email || curfrm.doc.email_id || curfrm.doc.contact_email,
-    		attach_document_print: true,
-    		message: message,
-    		real_name: curfrm.doc.real_name || curfrm.doc.contact_display || curfrm.doc.contact_name,
-            jasper_doc: jasper_doc,
-	        docdata: route0,
-            list: list
-    	});
-    }else{
-    	new jasper.CommunicationComposer({
-    		doc: {doctype: jasper_doc.doctype, name: jasper_doc.report_name},
-    		subject: jasper_doc.doctype + ': ' + jasper_doc.report_name,
-    		recipients: undefined,
-    		attach_document_print: false,
-    		message: message,
-    		real_name: "",
-            jasper_doc: jasper_doc,
-	        docdata: route0,
-            list: list
-    	});
-    }
-}
-
-jasper.query_report_columns = function(){
-    var columns = [];
-    var cols = frappe.query_report.grid.getColumns();
-    var len = cols.length;
-    for(var i=0; i<len; i++){
-        columns.push({name: cols[i].name, field: cols[i].field});
-    }
-    
-    return columns;
-}
-
-jasper.query_report_data = function(){
-    var items = [];
-    var sg = frappe.query_report.grid;
-    if (sg){
-        var dl = sg.getDataLength();
-        for (var i=0; i<dl;i++){
-            items.push(sg.getDataItem(i))
-        }
-    }
-    
-    return items;
-}

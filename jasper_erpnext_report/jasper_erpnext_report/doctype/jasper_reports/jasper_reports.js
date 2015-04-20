@@ -72,7 +72,7 @@ cur_frm.cscript.refresh = function(doc){
 	locals.push.apply(locals, jasper.make_country_list());
 	if (doc.jasper_report_origin === "LocalServer"){
 		cur_frm.set_df_property("jasper_locale", "options", locals);
-		unhide_field(["jasper_locale"]);
+		unhide_field(["jasper_locale","report"]);
     }else{
 		hide_field(["jasper_locale"]);
     }
@@ -93,7 +93,7 @@ cur_frm.cscript["jasper_locale"] = function(doc){
 cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
     var origin = doc.jasper_report_origin;
     if (origin === "JasperServer"){
-        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report", "jasper_locale"]);
+        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report", "jasper_locale","report"]);
         if (doc.__islocal){
             cur_frm.set_value("jasper_report_path", "");
         }
@@ -101,11 +101,12 @@ cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
     }else if(doc.__islocal){//never saved
         hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path"]);
         cur_frm.set_value("jasper_report_path", "/");
+        unhide_field(["report"]);
     }else{
     	var locals = ["Ask"];
 		locals.push.apply(locals, jasper.make_country_list());
 		cur_frm.set_df_property("jasper_locale", "options", locals);
-        unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report", "jasper_locale"]);
+        unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report", "jasper_locale","report"]);
         hide_field(["jasper_report_path"]);
     }
 }
@@ -113,7 +114,7 @@ cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
 cur_frm.cscript.show_fields = function(doc){
     var origin = doc.jasper_report_origin;
     if (origin === "JasperServer"){
-        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report"]);
+        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report","report"]);
     }else if(doc.__islocal){//never saved
         hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path"]);
         cur_frm.set_value("jasper_report_path", "/");
