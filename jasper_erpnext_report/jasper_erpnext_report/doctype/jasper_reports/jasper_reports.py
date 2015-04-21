@@ -38,11 +38,17 @@ class JasperReports(Document):
 		if use_jasper_server == "None":
 			frappe.throw(_("You need to configure Jasper first."))
 			return
+
 		if check_root_exists(self.doctype, self.name):
 			rootquery = ''
 			self.query = ''
 			jrxml_path = _get_jrxml_root_path(self)
+			print "jrxml_path {}".format(jrxml_path)
 			xmldoc = JasperXmlReport(jrxml_path)
+			xmlname = check_if_xPath_exists(xmldoc)
+			if xmlname and not check_for_report_xPath(xmldoc, xmlname, self):
+				frappe.throw(_("Import %s for report %s first." % (xmlname + ".xml",self.jasper_report_name)))
+
 			subreportquerys = getSubReportsQuery(xmldoc, self)
 			subquery = ''
 			for subreportquery in subreportquerys:
@@ -66,7 +72,7 @@ class JasperReports(Document):
 				if check_queryString_param(xmldoc.queryString, pname[0]):
 					is_copy = "Is for where clause"
 					action_type = "Automatic"
-				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),\
+				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
 						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name":pname[0] + ":" + str(idx)})
 				idx = idx + 1
 			self.query = rootquery + self.query
@@ -74,11 +80,8 @@ class JasperReports(Document):
 		#if jrxml file was removed then prepare to remove all associated images and params given feedback to the user
 		if self.jasper_report_origin.lower() == "localserver":
 			self.jasper_parameters = []
-			self.jasper_report_images = []
+			#self.jasper_report_images = []
 		return
-
-	def on_trash(self, method=None):
-		pass
 
 	def on_jasper_params_ids(self, data=None, params=None):
 		print "new params hooks {} name {}".format(data, self.name)
@@ -122,7 +125,7 @@ class JasperReports(Document):
 	@property
 	def jrxml_root_path(self):
 		root_path = None
-		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,\
+		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,
 				"attached_to_report_name":"root"})
 		try:
 			root_path = docs[0].file_url
@@ -176,7 +179,7 @@ def check_for_report_images(xmldoc, doc):
 	if not images:
 		return
 	parent = xmldoc.getProperty("jasperId")
-	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,\
+	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
 						"attached_to_report_name":parent})
 
 	for image in images:
@@ -196,6 +199,17 @@ def check_for_report_images(xmldoc, doc):
 			image_names_not_found.append(report_image_name)
 	if not report_images_count == len(images):
 		frappe.throw(_("Import %s image for report %s first." % (",".join(image_names_not_found),doc.jasper_report_name)))
+
+
+def check_for_report_xPath(xmldoc, xmlname, doc):
+
+	xmlname = xmlname + ".xml"
+	parent = xmldoc.getProperty("jasperId")
+	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
+						"attached_to_report_name":parent})
+	for f in docs:
+		if xmlname == f.file_url.split("compiled/",1)[1]:
+			return True
 
 """
 Called from db_query.py method: def get_permission_query_conditions()
@@ -253,4 +267,8 @@ def check_param_exists(doc, pname):
 			exist = True
 			break
 	return exist
+
+def check_if_xPath_exists(xmldoc):
+	return xmldoc.getProperty("XMLNAME")
+
 

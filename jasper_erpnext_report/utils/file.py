@@ -16,7 +16,7 @@ from jasper_erpnext_report.utils.jrxml import *
 
 import mimetypes, re
 
-jasper_ext_supported = ["jrxml", "jpg", "gif", "png", "bmp", "properties"]
+jasper_ext_supported = ["jrxml", "jpg", "gif", "png", "bmp", "properties", "xml"]
 _logger = logging.getLogger(frappe.__name__)
 
 dataSourceExpressionRegExp = re.compile( r"""\$P\{(\w+)\}""" )
@@ -73,7 +73,7 @@ def write_file(content, file_path, modes="w+"):
 def check_extension(fname):
 	ext = get_extension(fname)
 	if ext and ext.lower() not in jasper_ext_supported:
-		frappe.msgprint(_("Please select a file with extension jrxml."),
+		frappe.msgprint(_("Please select a file with a supported extension."),
 			raise_exception=True)
 	return ext.lower()
 
@@ -106,9 +106,15 @@ def write_file_jrxml(fname, content, content_type=None, parent=None):
 				if jrxml_ext == "jrxml":
 					jrxml_os_path = path_join(jasper_path, doc.file_url[1:])
 					xmldoc = JasperXmlReport(jrxml_os_path)
-					if (ext!="properties"):
+					if (ext!="properties" and ext != "xml"):
 						image_path = xmldoc.get_image_path_from_jrxml(fname)
 						file_path= path_join(compiled_path, os.path.normpath(image_path))
+					elif (ext == "xml"):
+						xmlname = xmldoc.getProperty("XMLNAME")
+						xname = xmlname + ".xml"
+						if xname != fname:
+							frappe.msgprint(_("This report does't have %s as file source." % (fname,)),raise_exception=True)
+						file_path= path_join(compiled_path, os.path.normpath(fname))
 					else:
 						value = xmldoc.get_attrib("resourceBundle")
 						if not value or value not in fname:

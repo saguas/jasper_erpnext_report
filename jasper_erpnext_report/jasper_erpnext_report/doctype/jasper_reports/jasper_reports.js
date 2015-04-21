@@ -99,14 +99,14 @@ cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
         }
         unhide_field(["jasper_report_path"]);
     }else if(doc.__islocal){//never saved
-        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path"]);
+        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path", "jasper_all_sites_report"]);
         cur_frm.set_value("jasper_report_path", "/");
         unhide_field(["report"]);
     }else{
     	var locals = ["Ask"];
 		locals.push.apply(locals, jasper.make_country_list());
 		cur_frm.set_df_property("jasper_locale", "options", locals);
-        unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report", "jasper_locale","report"]);
+        unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_locale","report"]);
         hide_field(["jasper_report_path"]);
     }
 }
@@ -116,10 +116,10 @@ cur_frm.cscript.show_fields = function(doc){
     if (origin === "JasperServer"){
         hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_all_sites_report","report"]);
     }else if(doc.__islocal){//never saved
-        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path"]);
+        hide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_report_path", "jasper_all_sites_report"]);
         cur_frm.set_value("jasper_report_path", "/");
     }else{
-        hide_field(["jasper_report_path"]);
+        hide_field(["jasper_report_path", "jasper_all_sites_report"]);
     }
     
 };
@@ -128,9 +128,7 @@ $(document).on("save", function(ev, doc){
 	var cs = cur_frm.cscript;
 	if(doc.__islocal === 1){
 		if (doc.jasper_report_origin === "LocalServer")
-			unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "report_images:", "jasper_all_sites_report"]);
-		else
-			unhide_field(["jasper_all_sites_report"]);
+			unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "report_images:"]);
     }
 });
 
