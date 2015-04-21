@@ -63,6 +63,8 @@ public class ExportReport
 	private String queryType;
 	private String sqlQueryPath;
 	private String xmlName;
+	private String numberPattern;
+	private String datePattern;
 	
 	
 	
@@ -74,6 +76,8 @@ public class ExportReport
 	  this.conn = (String) args.get("conn");
 	  this.type = (Integer) args.get("type");
 	  this.lang = (String) args.get("lang");
+	  this.numberPattern = (String) args.get("numberPattern");
+	  this.datePattern = (String) args.get("datePattern");
 	  this.virtua = (Integer) args.get("virtua");
 	  
 	  if(args.get("tables") != null){
@@ -116,13 +120,11 @@ public class ExportReport
 	  }else if(this.tables == null && this.queryType.equalsIgnoreCase("XPATH")){
 		this.sqlQueryPath = this.query.getText();
 		String xmlfile = this.path_jasper_file + this.xmlName + ".xml";
-		File file = new File(xmlfile);
 		try{
 			Locale locale;
 			JRXmlDataSource dataSource = new JRXmlDataSource(xmlfile, this.sqlQueryPath );
-            dataSource.setDatePattern( "yyyy-MM-dd HH:mm:ss" );
-            dataSource.setNumberPattern( "#######0.##" );
-            //dataSource.setLocale( Locale.ENGLISH );
+            dataSource.setDatePattern( this.datePattern );
+            dataSource.setNumberPattern( this.numberPattern );
 			dataSource.setLocale(new java.util.Locale(this.lang));
 			this.getJasperPrint(dataSource);
 		} catch (JRException e)
@@ -260,8 +262,6 @@ public class ExportReport
 	    try
 	    {
 			Class.forName("org.mariadb.jdbc.Driver");
-			//Class.forName("com.mysql.jdbc.Driver");
-			//connection = DriverManager.getConnection(conn);
 			this.connection = DriverManager.getConnection(this.conn);
 		}
 	    catch (ClassNotFoundException e){
@@ -273,7 +273,6 @@ public class ExportReport
   }
   
 	public void getJasperPrint(Connection connection){
-     //JasperPrint jasperPrint = null;
 	 try{
 		this.jasperPrint = JasperFillManager.fillReport(this.jasper_path, this.params, connection);
 	  }

@@ -109,6 +109,8 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("lang", lang)
 				mparams.put("virtua", jr.Integer(virtua))
 				#used for xml datasource
+				mparams.put("numberPattern", frappe.db.get_default("number_format"))
+				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
 				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), ) )
 				if pram_copy_index != -1 and ncopies > 1:
