@@ -1,8 +1,8 @@
 __author__ = 'luissaguas'
 import frappe
 from frappe import _
-from jasper_erpnext_report.utils.utils import jasper_cache_data, delete_jasper_session, jaspersession_get_value,\
-	get_expiry_in_seconds, get_jasper_session_expiry_seconds, get_expiry_period
+from jasper_erpnext_report.utils.utils import jaspersession_get_value,\
+	get_expiry_in_seconds, get_jasper_data, get_expiry_period
 from jasper_erpnext_report.utils.file import remove_directory
 
 
@@ -18,8 +18,13 @@ def list_all_memcached_keys_v4(value=None):
 	else:
 		print (memc.keys())
 
+
+def list_all_redis_keys(key):
+	redis = frappe.cache()
+	return redis.get_keys(key)
+
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_all_jasper_cache_v4 to force clear cache
-def clear_all_jasper_cache_v4(force=True):
+def clear_all_jasper_from_cache_v4():
 	from memcache_stats import MemcachedStats
 	#use memcache_stats for delete any cache that remains
 	memc = MemcachedStats()
@@ -27,6 +32,29 @@ def clear_all_jasper_cache_v4(force=True):
 		if "jasper" in m:
 			value = m.split(":", 1)
 			frappe.cache().delete_value(value[1])
+
+def clear_all_jasper_from_redis_cache(key="jasper"):
+	redis = frappe.cache()
+	redis.delete_keys(key)
+	print _("Was removed keys with pattern {0}* from redis cache".format(key))
+
+def clear_all_jasper_user_redis_cache(force=True):
+	removed = 0
+	if force:
+		clear_all_jasper_from_redis_cache("jasper:user")
+		print _("Was removed by force jasper:user* pattern from redis cache")
+		return 1
+	else:
+		redis = frappe.cache()
+		keys = redis.get_keys("jasper:user")
+		for key in keys:
+			if check_if_expire(key):
+				redis.delete_value(key)
+				removed += 1
+
+	print _("Was removed {0} user(s) from redis cache".format(removed))
+
+	return removed
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_all_jasper_user_cache_v4 to force clear cache
 def clear_all_jasper_user_cache_v4(force=True):
@@ -45,26 +73,42 @@ def clear_all_jasper_user_cache_v4(force=True):
 				#remove jasper from key
 				value = m.split(":", 1)
 				v = value[1].split(":", 1)
-				deleted = _f(v[1])
+				deleted = check_if_expire(v[1])
 				if deleted:
 					frappe.cache().delete_value(value[1])
 					removed += 1
 	if removed == 0:
 		print _("No user cache was removed.")
 	else:
-		print _("was removed {0} user cache(s)".format(removed))
+		print _("Was removed {0} user cache(s)".format(removed))
 	return removed
 
 
-def clear_all_jasper_sessions():
-	"""This effectively logs out all users"""
-	for session in jasper_cache_data:
-		delete_jasper_session(session.get("mcache"), tab=session.get("db"))
+def check_if_expire(reqId):
+	req = jaspersession_get_value(reqId) or frappe.utils.now()
+	expire = get_expiry_period(reqId)
+	time_diff = frappe.utils.time_diff_in_seconds(req, expire)
+	if time_diff >= 0:
+		return True
 
+	return False
 
-def clear_jasper_list():
-	frappe.cache().delete_value("jasper:report_list_all")
-	frappe.cache().delete_value("jasper:report_list_doctype")
+def clear_jasper_list(force=True):
+	removed = 0
+	if force:
+		frappe.cache().delete_value("jasper:report_list_all")
+		frappe.cache().delete_value("jasper:report_list_doctype")
+		return 2
+
+	if check_if_expire("report_list_all"):
+		frappe.cache().delete_value("jasper:report_list_all")
+		removed += 1
+
+	if check_if_expire("report_list_doctype"):
+		frappe.cache().delete_value("jasper:report_list_doctype")
+		removed += 1
+
+	return removed
 
 
 #remove the files in compiled directory
@@ -83,8 +127,9 @@ def clear_all_jasper_reports(force=True):
 		d = m.get('data')
 		req = ast.literal_eval(d)
 		reqId = req.get("reqids")[0][0]
+		data = jaspersession_get_value(reqId)
 		if not force:
-			deleted = _f(reqId)
+			deleted = _f(data)
 
 		if deleted:
 			try:
@@ -92,7 +137,9 @@ def clear_all_jasper_reports(force=True):
 					continue
 
 				intern_reqid = m.get("reqid")
-				data = jaspersession_get_value(reqId)
+				if not data:
+					data = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
+					print "go to db data {}".format(data)
 				file_path = data['data'].get('result').get("uri").rsplit("/",1)
 				compiled_path = file_path[0]
 				#file_name = file_path[1]
@@ -121,12 +168,10 @@ def clear_all_jasper_reports(force=True):
 	else:
 		print _("No file was removed.")
 
-def _f(sessionId):
-	data = jaspersession_get_value(sessionId)
-	print "ssid {} data {} is string {}".format(sessionId, data, isinstance(data, basestring))
+def _f(data):
 	deleted = False
 
-	if isinstance(data, basestring):
+	if data is None or isinstance(data, basestring):
 		return True
 
 	d = data.get('data') if data else {}
@@ -139,31 +184,58 @@ def _f(sessionId):
 			deleted = True
 	return deleted
 
-def clear_expired_jasper_sessions():
+def clear_all_jasper_cache(force=True):
 	"""This function is meant to be called from scheduler"""
 	removed = 0
-	for sessionId in jasper_cache_data:
-		sid = sessionId.get("mcache")
-		deleted = _f(sid)
-		if deleted:
-			frappe.cache().delete_value("jasper:" + sid)
-			removed += 1
-			db = sessionId.get("db")
-			if db:
-				frappe.db.sql("""delete from `%s` where reqid='%s'"""%(db, sid,))
 
-	clear_all_jasper_reports(force=False)
 	version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
-	if version < 5:
-		r = clear_all_jasper_user_cache_v4(force=False)
+	if version > 4:
+		r = clear_all_jasper_user_redis_cache(force=force)
+		removed += r
+	else:
+		r = clear_all_jasper_user_cache_v4(force=force)
 		removed += r
 
+	clear_jasper_list(force=force)
+	removed += clear_jasper_sessions(force=force)
 	frappe.db.commit()
 
 	if removed == 0:
 		print _("No goblal jasper cache was removed.")
 	else:
-		print _("was removed {0} global jasper cache(s)".format(removed))
+		print _("Was removed {0} global jasper cache(s)".format(removed))
+
+	return removed
+
+def clear_expired_jasper_reports(force=False):
+	clear_all_jasper_reports(force=force)
+
+def clear_expired_jasper_sessions(force=False):
+	clear_all_jasper_cache(force=force)
+
+
+def clear_jasper_sessions(force=True):
+	removed = 0
+	sid = "jaspersession"
+	deleted = force
+	data = get_jasper_data(sid)
+	if not data:
+		return removed
+
+	if not force:
+		deleted = _f(data)
+	if deleted:
+		frappe.cache().delete_value("jasper:" + sid)
+		removed += 1
+		frappe.db.sql("""delete from `tabJasperSessions` """)
+		if force:
+			version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+			if version > 4:
+				clear_all_jasper_from_redis_cache()
+			else:
+				clear_all_jasper_from_cache_v4()
+
+		print _("was removed {0} jaspersession(s)".format(removed))
 
 	return removed
 
@@ -190,6 +262,11 @@ def clear_expired_jasper_html():
 						remove_directory(dirName)
 """
 
+
+def clear_expired(force=False):
+	clear_expired_jasper_reports(force=force)
+	clear_expired_jasper_sessions(force=force)
+
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
 	#local_session_data = frappe.local.session
@@ -199,9 +276,13 @@ def clear_cache():
 	"""hook: called from terminal bench frappe --clear_cache, only clear session if past 24 hours"""
 	local_session_data = frappe.local.session
 	if local_session_data.sid == "Administrator":
-		clear_all_jasper_sessions()
-		clear_all_jasper_cache_v4()
 		clear_all_jasper_reports()
+		clear_all_jasper_cache()
+		version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+		if version > 4:
+			clear_all_jasper_from_redis_cache()
+		else:
+			clear_all_jasper_from_cache_v4()
 
 
 #version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])

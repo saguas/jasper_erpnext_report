@@ -107,7 +107,7 @@ fixtures = [
 # ---------------
 scheduler_events = {
 	"daily": [
-		"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_sessions"
+		"jasper_erpnext_report.utils.scheduler.clear_expired"
 	],
 	"hourly": [
 		"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_html"
