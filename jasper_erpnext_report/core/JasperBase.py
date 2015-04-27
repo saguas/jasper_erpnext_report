@@ -5,15 +5,12 @@ from frappe.model.document import Document
 from frappe import _
 import frappe
 import frappe.utils
-
-import logging
 from io import BytesIO
 import uuid
 
 import jasper_erpnext_report.utils.utils as utils
 from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
 
-_logger = logging.getLogger(frappe.__name__)
 
 jasper_fields_not_supported = ["parent", "owner", "modified_by", "parenttype", "parentfield", "docstatus", "doctype", "name", "idx"]
 
@@ -360,7 +357,6 @@ class JasperBase(object):
 	def prepare_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 		resps = []
 		data = self.run_report_async(doc, data=data, params=params)
-		print "doc.get is_doctype_id 3 {}".format(data.get("is_doctype_id", None))
 		"""
 		Run one report at a time for Form type report and many ids
 		"""
@@ -421,7 +417,7 @@ class JasperBase(object):
 	def make_internal_reqId(self, reqids, status, report_name):
 		intern_reqId = "intern_reqid_" + uuid.uuid4().hex
 		reqtime = frappe.utils.now()
-		reqDbObj = {"data":{"reqids": reqids, "report_name": report_name, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId)}}
+		reqDbObj = {"data":{"reqids": reqids, "report_name": report_name, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId), "db": frappe.conf.db_name}}
 		self.insert_jasper_reqid_record(intern_reqId, reqDbObj)
 		res = {"requestId": intern_reqId, "reqtime": reqtime, "status": status}
 		return res

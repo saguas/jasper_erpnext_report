@@ -6,19 +6,27 @@ import frappe
 import os, json
 from frappe import _
 from frappe.model.document import Document
-from jasper_erpnext_report.utils.file import delete_jrxml_images, get_image_name, JasperXmlReport,\
-		get_jasper_path, check_root_exists, get_jrxml_root
+from jasper_erpnext_report.utils.file import get_image_name, JasperXmlReport,\
+		get_jasper_path
+from jasper_erpnext_report.utils.jasper_file_jrxml import check_root_exists, get_jrxml_root
 from jasper_erpnext_report.utils.utils import check_queryString_param, jaspersession_set_value, jaspersession_get_value, check_jasper_perm
-import logging
 from frappe.utils import cint
 
-_logger = logging.getLogger(frappe.__name__)
+
+"""
+
+HOOKS:
+		on_jasper_params_ids(data=None, params=None);
+		on_jasper_params(data=None, params=None);
+		jasper_before_run_report(data=None, docdata=None);
+"""
 
 
 class JasperReports(Document):
 	def on_update(self, method=None):
-		jaspersession_set_value("report_list_dirt_all", True)
-		jaspersession_set_value("report_list_dirt_doc", True)
+		#TODO: this has a race condition but not harmeful. Will be fix in version 5 with redis
+		jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+		jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 
 		if check_root_exists(self.doctype, self.name):
 			return
@@ -107,10 +115,11 @@ class JasperReports(Document):
 		return ret
 
 	def on_jasper_params(self, data=None, params=None):
+		print "doc on_jasper_params: {} params {}".format(data, params)
 		a = []
 		for param in params:
 			if param.get("name") == "idade":
-				a.append({"name": param.get("name"), "value":35.6})
+				a.append({"name": param.get("name"), "value": 35.6})
 			else:
 				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com', 'Guest'], "param_type": "is for where clause"})
 			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
@@ -121,6 +130,9 @@ class JasperReports(Document):
 		#a.append({"name": params[0].get("name"), "value":345})
 		#a.append({"name": params[0].get("name"), "value":35})
 		return a
+
+	#def jasper_before_run_report(self, data=None, docdata=None):
+	#	print "in report doc teste hooks {}".format(data)
 
 	@property
 	def jrxml_root_path(self):

@@ -3,15 +3,13 @@ __author__ = 'luissaguas'
 import frappe
 import re
 from frappe import _
-from frappe.utils import cint, cstr
-import logging
 from frappe.modules.import_file import import_doc
 from ast import literal_eval
 from . cache import *
 from . jasper_document import *
 from . jasper_email import set_jasper_email_doctype
 
-_logger = logging.getLogger(frappe.__name__)
+from jasper_erpnext_report.utils.jasper_iter_hooks import JasperHooks
 
 jasper_formats = ["pdf", "docx", "xls","ods","odt", "rtf"]
 
@@ -34,6 +32,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 		ret = {}
 		for r in rnames:
 			jasper_report_origin = r.jasper_report_origin.lower()
+			print "origin {} other origin {} is in {}".format(origin, jasper_report_origin, jasper_report_origin in report_from.get(origin))
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}
@@ -123,6 +122,10 @@ def call_hook_for_param(doc, method, *args):
 	ret = doc.run_method(method, *args)
 	return ret
 
+def jasper_run_method(hook_name, *args, **kargs):
+	for method in JasperHooks(hook_name):
+		method(hook_name, *args, **kargs)
+
 
 def check_jasper_perm(perms, ptypes=("read",), user=None):
 		found = False
@@ -165,5 +168,28 @@ def check_frappe_permission(doctype, docname, ptypes=("read", )):
 			break
 	return perm
 
+def jasper_users_login(user):
 
-#select name, email from tabUser
+	s = jaspersession_get_value("jasper_list_user") or ";"
+	if user not in s:
+		s += user + ";"
+		jaspersession_set_value("jasper_list_user", s)
+
+def jasper_params(method, t, data=None, params=None):
+	print "utils jasper_params: method {} t {} data {} params {}".format(method, t, data, params)
+	a = []
+	for param in params:
+		if param.get("name") == "idade":
+			a.append({"name": param.get("name"), "value":39.6})
+	return a
+
+
+def jasper_params_teste(method, t, data=None, docdata=None):
+	print "teste hooks {}".format(data)
+
+
+def jasper_before_list_all(method):
+	print "teste list for all hooks {}".format(method)
+
+def jasper_after_list_all(method, lista):
+	print "teste list after for all hooks {} lista {}".format(method, lista)

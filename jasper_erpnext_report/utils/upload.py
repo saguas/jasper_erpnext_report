@@ -5,7 +5,7 @@ __author__ = 'luissaguas'
 import frappe
 from frappe import _
 from frappe.utils.file_manager import get_uploaded_content, check_max_file_size, get_content_hash
-from jasper_erpnext_report.utils.file import write_file_jrxml
+from jasper_erpnext_report.utils.jasper_file_jrxml import write_file_jrxml
 import mimetypes
 
 

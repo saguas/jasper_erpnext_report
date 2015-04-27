@@ -68,6 +68,7 @@ cur_frm.cscript.refresh = function(doc){
     if(doc.__islocal !== 1){
         cs.update_upload(doc);
 	}
+
 	var locals = ["Ask"];
 	locals.push.apply(locals, jasper.make_country_list());
 	if (doc.jasper_report_origin === "LocalServer"){
@@ -138,12 +139,14 @@ cur_frm.cscript.onload = function(doc){
 	    var opts = cur_frm.get_field("jasper_upload_jrxml_file");
 	    opts["docname"] = cur_frm.docname;
 	    cs.upload = new jasper.dialog_upload_tree(opts);
+	}else{
+		$('#jasper_upload_tree').jstree("destroy").empty();
+		$('#jasper_upload_tree').remove();
 	}
 }
 
 cur_frm.cscript.jasper_upload_btn = function(doc){
 	var cs = cur_frm.cscript;
-	console.log("upload btn ", doc, cs);
     cs.upload.show();
 }
 

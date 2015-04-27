@@ -1,7 +1,7 @@
-import os, logging, frappe
+import os, frappe
 import jasper_erpnext_report as jr
 
-_logger = logging.getLogger(frappe.__name__)
+_logger = frappe.get_logger(__name__)
 
 try:
 	import jnius_config as jc
@@ -10,7 +10,7 @@ try:
 	if not jc.vm_running:
 		jc.add_options('-Djava.awt.headless=true')
 	else:
-		_logger.info("jasper_reports __init__ vm_running {}".format(jc.vm_running))
+		_logger.info("vm_running: {}".format(jc.vm_running))
 except:
 	print "jnius_config not found"
 	jr.pyjnius = False
@@ -41,7 +41,7 @@ try:
 
 	ExportReport = getJavaClass('ExportReport')
 	jr.pyjnius = True
-	print "pyjnius is ok 4: {}".format(jr.pyjnius)
+	print "pyjnius is ok: {}".format(jr.pyjnius)
 except Exception, e:
-	print "pyjnius is not ok {}".format(e)
+	print "pyjnius is not ok: {}".format(e)
 	jr.pyjnius = False

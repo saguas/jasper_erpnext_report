@@ -247,7 +247,7 @@
    "precision": ""
   }, 
   {
-   "default": "1000", 
+   "default": "1500", 
    "description": "Polling time in milliseconds.", 
    "fieldname": "jasper_polling_time", 
    "fieldtype": "Int", 
@@ -280,7 +280,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2015-04-16 16:10:22.236403", 
+ "modified": "2015-04-23 09:29:52.547067", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 

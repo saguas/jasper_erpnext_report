@@ -10,17 +10,19 @@ app_version = "0.0.1"
 
 
 
-#on_login = "jasper_erpnext_report.core.jaspersession.on_user_login"
+#on_login = "jasper_erpnext_report.utils.utils.login"
 #before_install = "jasper_erpnext_report.core.jaspersession.before_install"
 before_install = "jasper_erpnext_report.utils.install.before_install"
 after_install = "jasper_erpnext_report.utils.install.after_install"
-#on_session_creation = "jasper_erpnext_report.core.jaspersession.on_session_creation"
+#on_session_creation = "jasper_erpnext_report.utils.utils.login"
 #on_logout = "jasper_erpnext_report.core.jaspersession.on_logout"
 boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 #clear_cache = "jasper_erpnext_report.utils.scheduler.clear_cache"
 #write_file = "jasper_erpnext_report.utils.file.write_file_jrxml"
-delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
+#delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
 #website_clear_cache = "jasper_erpnext_report.core.jaspersession.website_clear_cache"
+jasper_before_list_for_all = "jasper_erpnext_report.utils.utils.jasper_before_list_all"
+jasper_after_list_for_all = "jasper_erpnext_report.utils.utils.jasper_after_list_all"
 # Includes in <head>
 # ------------------
 
@@ -89,8 +91,12 @@ doc_events = {
 #		"on_update": "jasper_erpnext_report.utils.update_doc.update",
 #		"before_save": "jasper_erpnext_report.utils.update_doc.before_save"
 #		"on_trash": "method"
-		#"on_jasper_params": "jasper_erpnext_report.utils.utils.jasper_params"
-	}
+		"jasper_before_run_report": "jasper_erpnext_report.utils.utils.jasper_params_teste",
+		"on_jasper_params": "jasper_erpnext_report.utils.utils.jasper_params"
+	},
+    "File Data":{
+		"on_trash": "jasper_erpnext_report.utils.jasper_file_jrxml.delete_file_jrxml"
+    }
 }
 
 fixtures = [

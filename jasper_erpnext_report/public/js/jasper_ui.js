@@ -73,6 +73,7 @@ jasper.make_dialog = function(doc, title, callback){
 		fields.push({label:param.name, fieldname:param.name, fieldtype:param.jasper_param_type==="String"? "Data": param.jasper_param_type,
 		 	description:param.jasper_param_description || "", default:param.jasper_param_value || docids});
 	};
+
 	if(doc.jasper_report_origin === "LocalServer"){
 		var lang_default = frappe.defaults.get_user_default("language");
 		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",

@@ -10,25 +10,25 @@ from frappe.utils import cint
 jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},
 					{"mcache":'report_list_doctype', "db": None}]
 
+#jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"}]
 
-def insert_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
+def insert_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def insert_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
+def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	for k,v in fields.iteritems():
 		data[k] = v
 	try:
-		insert_jasper_list_all({"data":data}, cachename, tab)
+		insert_jasper_list_all({"data":data}, cachename)
 	except:
 		pass
 
-def update_jasper_list_all(data, cachename="report_list_all", tab="tabJasperReportListAll"):
-		# also add to memcache
+def update_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJasperReportListAll", fields={}):
+def update_list_all_memcache_db(data, cachename="report_list_all", fields={}):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	old_data = frappe._dict(jaspersession_get_value(cachename) or {})
@@ -36,7 +36,7 @@ def update_list_all_memcache_db(data, cachename="report_list_all", tab="tabJaspe
 	new_data.update(data)
 	for k,v in fields.iteritems():
 		new_data[k] = v
-	update_jasper_list_all({"data":new_data}, cachename, tab)
+	update_jasper_list_all({"data":new_data}, cachename)
 
 
 def get_jasper_data(cachename, get_from_db=None, *args, **kargs):
@@ -113,11 +113,10 @@ def delete_jasper_session(sessionId, tab="tabJasperSessions", where=None):
 	frappe.cache().delete_value("jasper:" + sessionId)
 	if tab and where:
 		frappe.db.sql("""delete from {} where {}""".format(tab, where))
-	elif tab:
+	else:
 		frappe.db.sql("""delete from {}""".format(tab))
 
-	if tab:
-		frappe.db.commit()
+	frappe.db.commit()
 
 def get_expiry_in_seconds(expiry):
 		if not expiry: return 3600
@@ -125,8 +124,8 @@ def get_expiry_in_seconds(expiry):
 		return (cint(parts[0]) * 3600) + (cint(parts[1]) * 60) + cint(parts[2])
 
 def get_expiry_period(sessionId="jaspersession"):
-	reports_names = ["report_list_doctype", "report_list_all"]
-	if sessionId in reports_names:
+	reports_names = ("report_list_doctype", "report_list_all")
+	if sessionId.endswith(reports_names):
 		exp_sec = "24:00:00"
 	elif "intern_reqid_" in sessionId or "local_report_" in sessionId:
 		exp_sec = "8:00:00"

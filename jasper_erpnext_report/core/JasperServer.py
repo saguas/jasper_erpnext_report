@@ -22,7 +22,7 @@ from frappe.utils import pprint_dict
 from frappe import _
 import frappe
 
-import logging, json
+import json
 from io import BytesIO
 import inspect
 
@@ -31,7 +31,7 @@ import jasper_erpnext_report.utils.utils as utils
 
 import JasperBase as Jb
 
-_logger = logging.getLogger(frappe.__name__)
+_logger = frappe.get_logger(__name__)
 
 
 

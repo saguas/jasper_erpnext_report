@@ -6,17 +6,15 @@ import frappe
 
 from frappe.utils import cint
 
-from jasper_erpnext_report.utils.file import get_jasper_path, get_compiled_path, get_file, get_html_reports_images_path
+from jasper_erpnext_report.utils.file import get_jasper_path, get_file, get_html_reports_images_path
+from jasper_erpnext_report.utils.jasper_file_jrxml import get_compiled_path
 import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
-import logging
 import uuid
 import thread
 import os
-
-_logger = logging.getLogger(frappe.__name__)
 
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 

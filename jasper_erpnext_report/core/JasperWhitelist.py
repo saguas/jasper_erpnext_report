@@ -4,22 +4,18 @@ from frappe import _
 import frappe
 import json
 from urllib2 import unquote
-import logging, time
+import time
 from frappe.utils import cint
-from jasper_erpnext_report.utils.file import get_html_reports_path, write_file
 
 import jasper_erpnext_report, os
 
 import JasperRoot as Jr
 from jasper_erpnext_report import jasper_session_obj
-from jasper_erpnext_report.utils.jasper_email import sendmail
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
-from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission
-from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path
-from jasper_erpnext_report.utils.file import get_file
-
-_logger = logging.getLogger(frappe.__name__)
+from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission, jasper_run_method, jasper_users_login
+from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail
+from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, write_file
 
 
 def boot_session(bootinfo):
@@ -57,13 +53,21 @@ def getLangInfo():
 
 @frappe.whitelist()
 def get_reports_list_for_all():
+	jasper_run_method("jasper_before_list_for_all")
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	return jsr.get_reports_list_for_all()
+	jasper_users_login(jsr.user)
+	lall = jsr.get_reports_list_for_all()
+	jasper_run_method("jasper_after_list_for_all", lall)
+	return lall
 
 @frappe.whitelist()
 def get_reports_list(doctype, docnames, report):
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	return jsr.get_reports_list(doctype, docnames, report)
+	jasper_run_method("jasper_before_list_for_doctype", doctype, docnames, report)
+	jasper_users_login(jsr.user)
+	l = jsr.get_reports_list(doctype, docnames, report)
+	jasper_run_method("jasper_after_list_for_doctype", doctype, docnames, report, l)
+	return l
 
 @frappe.whitelist()
 def report_polling(data):
@@ -72,7 +76,6 @@ def report_polling(data):
 
 @frappe.whitelist()
 def get_report(data):
-
 	if not data:
 		frappe.throw(_("There is no data for this Report."))
 	if isinstance(data, basestring):
@@ -82,6 +85,7 @@ def get_report(data):
 	return make_pdf(fileName, content, pformat, report_name, reqId=data.get("requestId"))
 
 def _get_report(data):
+	jasper_run_method("jasper_before_get_report", data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	fileName, content, report_name = jsr.get_report_server(data)
 	pformat = data.get("pformat")
@@ -110,6 +114,7 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
 	#if not email:
+
 	if pformat == "html":
 		#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
 		#html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
@@ -120,6 +125,7 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 		g = "jasper_erpnext_report/reports/" + frappe.local.site
 		path = os.path.normpath(os.path.relpath(filepath, g))
 		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+		jasper_run_method("jasper_after_get_report", file_name, output.getvalue(), url, filepath)
 		if not email:
 			return url
 		return url, filepath
@@ -129,12 +135,14 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 		filepath = get_email_pdf_path(report_name, reqId)
 		path = getPdfFilePath(file_name, filepath)
 		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
+		jasper_run_method("jasper_after_get_report", file_name, output.getvalue(), url, filepath)
 		if not email:
 			file_path = os.path.join(filepath, file_name)
 			jasper_save_email(file_path, output.getvalue())
 			return url
 		return file_name, filepath, output, url
 
+	jasper_run_method("jasper_after_get_report", file_name, output.getvalue(), None, None)
 	if not email:
 		jsr.prepare_file_to_client(file_name, output.getvalue())
 		return
@@ -177,7 +185,9 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	jasper_polling_time = frappe.db.get_value('JasperServerConfig', fieldname="jasper_polling_time")
 	data = json.loads(jasper_doc)
 	result = run_report(data, docdata)
+	#print "result for email {}".format(result)
 	if result[0].get("status", "not ready") != "ready":
+		#intern_reqid = result[0].get("requestId")
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
@@ -238,20 +248,25 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		frappe.errprint(frappe.get_traceback())
 		return
 
-	#TODO: must check for frappe permissions : jsr.check_frappe_permission(doctype, docname, ptypes=("email", )) and
 	if not check_frappe_permission(data.get("doctype"), data.get('report_name'), ptypes=("read", )):
 		raise frappe.PermissionError((_("You are not allowed to send emails related to") + ": {doctype} {name}").format(
 			doctype=data.get("doctype"), name=data.get('report_name')))
+
+	jasper_run_method("jasper_before_sendmail", data, file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
+		send_me_a_copy=send_me_a_copy)
 
 	sendmail(file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
 
+	file_path = None
 	if pformat != "html":
 		file_path = os.path.join(filepath, file_name)
 		jasper_save_email(file_path, output)
 
 	set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
+	jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
 
 def prepare_polling(data):
 	#reqids = []

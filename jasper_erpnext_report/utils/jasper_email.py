@@ -70,9 +70,9 @@ def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, co
 	send_comm_email(d, file_name, output, fileid, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
 
-def get_email_pdf_path(report_name, reqId):
+def get_email_pdf_path(report_name, reqId, site=None):
 
-	site = frappe.local.site
+	site = site or frappe.local.site
 
 	file_path = get_html_reports_path(report_name, where="reports", hash=reqId, localsite=site)
 

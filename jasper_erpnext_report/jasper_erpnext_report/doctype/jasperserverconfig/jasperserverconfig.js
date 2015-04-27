@@ -58,6 +58,7 @@ cur_frm.cscript.refresh = function(doc){
 
         cur_frm.fields_dict.jasper_server_timeout_html.$wrapper.html(code);
         cur_frm.cscript.serverInfo(doc);
+        cur_frm.cscript.show_fields(doc);
 }
 
 cur_frm.cscript.serverInfo = function(doc){
@@ -92,6 +93,11 @@ cur_frm.cscript.serverInfo = function(doc){
 }
 
 cur_frm.cscript.use_jasper_server = function(doc, val){
+	cur_frm.cscript.show_fields(doc);
+};
+
+
+cur_frm.cscript.show_fields = function(doc){
 	if (doc.use_jasper_server === "Local jrxml only" || doc.use_jasper_server === "None"){
 		hide_field(["jasper_server_url","jasper_report_root_path", "jasper_username", "jasper_server_password",
 		 "jasper_connect_update_btn", "import_all_reports", "import_only_new", "server_info_html",
@@ -101,5 +107,4 @@ cur_frm.cscript.use_jasper_server = function(doc, val){
 		 "jasper_connect_update_btn", "import_all_reports", "import_only_new", "server_info_html",
 		 "jasper_session_timeout"]);
 	}
-};
-
+}
