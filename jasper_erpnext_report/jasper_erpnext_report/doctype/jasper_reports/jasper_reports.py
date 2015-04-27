@@ -9,9 +9,10 @@ from frappe.model.document import Document
 from jasper_erpnext_report.utils.file import get_image_name, JasperXmlReport,\
 		get_jasper_path
 from jasper_erpnext_report.utils.jasper_file_jrxml import check_root_exists, get_jrxml_root
-from jasper_erpnext_report.utils.utils import check_queryString_param, jaspersession_set_value, jaspersession_get_value, check_jasper_perm
+from jasper_erpnext_report.utils.utils import check_queryString_param, jaspersession_set_value, jaspersession_get_value,\
+	check_jasper_perm
 from frappe.utils import cint
-
+from jasper_erpnext_report.core.JasperRoot import JasperRoot
 
 """
 
@@ -27,6 +28,9 @@ class JasperReports(Document):
 		#TODO: this has a race condition but not harmeful. Will be fix in version 5 with redis
 		jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
 		jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+		r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+		jr = JasperRoot()
+		jr._get_reports_list(filters_report=r_filters)
 
 		if check_root_exists(self.doctype, self.name):
 			return

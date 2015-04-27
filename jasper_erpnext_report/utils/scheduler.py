@@ -52,7 +52,7 @@ def clear_all_jasper_user_cache_v4(force=True):
 	if removed == 0:
 		print _("No user cache was removed.")
 	else:
-		print _("was removed %s user cache(s)".format(removed))
+		print _("was removed {0} user cache(s)".format(removed))
 	return removed
 
 
@@ -123,7 +123,12 @@ def clear_all_jasper_reports(force=True):
 
 def _f(sessionId):
 	data = jaspersession_get_value(sessionId)
+	print "ssid {} data {} is string {}".format(sessionId, data, isinstance(data, basestring))
 	deleted = False
+
+	if isinstance(data, basestring):
+		return True
+
 	d = data.get('data') if data else {}
 	if d:
 		now = frappe.utils.now()
@@ -158,7 +163,7 @@ def clear_expired_jasper_sessions():
 	if removed == 0:
 		print _("No goblal jasper cache was removed.")
 	else:
-		print _("was removed %s global jasper cache(s)".format(removed))
+		print _("was removed {0} global jasper cache(s)".format(removed))
 
 	return removed
 

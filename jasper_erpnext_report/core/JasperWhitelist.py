@@ -13,7 +13,8 @@ import JasperRoot as Jr
 from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
-from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission, jasper_run_method, jasper_users_login
+from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission, jasper_run_method,\
+	jasper_users_login, jaspersession_set_value
 from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail
 from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, write_file
 
@@ -166,7 +167,13 @@ def get_server_info():
 @frappe.whitelist()
 def jasper_server_login():
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	return jsr.login()
+	login = jsr.login()
+	#get the list of reports on the server
+	jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+	jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+	r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+	jsr._get_reports_list(filters_report=r_filters)
+	return login
 
 @frappe.whitelist()
 def get_doc(doctype, docname):
