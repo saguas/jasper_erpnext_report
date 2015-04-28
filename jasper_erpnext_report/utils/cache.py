@@ -17,8 +17,10 @@ jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mca
 
 
 def redis_transation(data, watch):
-	if not data:
-		return True#version frappe 4
+	#if not data:
+	#	return True#version frappe 4
+	if frappe.utils.cint(frappe.__version__.split(".", 1)[0]) < 5:
+		return True
 
 	ret = False
 	r = frappe.cache()
@@ -56,7 +58,7 @@ def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}, in
 		except:
 			pass
 
-		return
+		#return
 
 	return {"data":data}
 
@@ -73,7 +75,7 @@ def update_list_all_memcache_db(data, cachename="report_list_all", fields={}, in
 		new_data[k] = v
 	if not in_transation:
 		update_jasper_list_all({"data":new_data}, cachename)
-		return
+		#return
 
 	return {"data":new_data}
 

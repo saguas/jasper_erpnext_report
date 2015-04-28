@@ -106,7 +106,8 @@ class JasperRoot(Jb.JasperBase):
 		#dirt = utils.jaspersession_get_value("report_list_dirt_all")
 		#dirt = self.is_dirt("report_list_dirt_all")
 		#dirt = self.is_cache_dirt("report_list_dirt_all", "user:" + self.user + "_report_list_all")
-		dirt = utils.jaspersession_get_value("report_list_dirt_all")
+		dirt = utils.jaspersession_get_value("report_list_dirt_all") or False
+
 		#dirt if redis not cache
 		if not dirt:
 			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_all")
@@ -130,6 +131,7 @@ class JasperRoot(Jb.JasperBase):
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			data = self._get_reports_list(filters_report=r_filters)
 			cached = redis_transation(data, "report_list_all")
+			print "dirt {} data {} cached {}".format(dirt, data, cached)
 			if cached and data:
 				utils.jaspersession_set_value("report_list_dirt_all", False)
 				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
