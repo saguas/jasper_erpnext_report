@@ -5,30 +5,65 @@ import frappe
 import frappe.defaults
 from frappe import _
 from frappe.utils import cint
+from redis import WatchError
+import pickle, time
 
+redis_cache_retry = 10 #10s
 
 jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},
 					{"mcache":'report_list_doctype', "db": None}]
 
 #jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"}]
 
+
+def redis_transation(data, watch):
+	if not data:
+		return True#version frappe 4
+
+	ret = False
+	r = frappe.cache()
+
+	with r.pipeline() as pipe:
+		end_time = time.time() + redis_cache_retry
+		while time.time() < end_time:
+			try:
+				key = r.make_key(watch)
+				pipe.watch(key)
+				frappe.local.cache[key] = data
+				pipe.multi()
+				pipe.set(key, pickle.dumps(data))
+				pipe.execute()
+				ret = True
+				break
+			except WatchError:
+				continue
+
+	return ret
+
+
 def insert_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}):
+def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}, in_transation=True):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	for k,v in fields.iteritems():
 		data[k] = v
-	try:
-		insert_jasper_list_all({"data":data}, cachename)
-	except:
-		pass
+
+	if not in_transation:
+		try:
+			insert_jasper_list_all({"data":data}, cachename)
+		except:
+			pass
+
+		return
+
+	return {"data":data}
 
 def update_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def update_list_all_memcache_db(data, cachename="report_list_all", fields={}):
+def update_list_all_memcache_db(data, cachename="report_list_all", fields={}, in_transation=True):
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	old_data = frappe._dict(jaspersession_get_value(cachename) or {})
@@ -36,7 +71,11 @@ def update_list_all_memcache_db(data, cachename="report_list_all", fields={}):
 	new_data.update(data)
 	for k,v in fields.iteritems():
 		new_data[k] = v
-	update_jasper_list_all({"data":new_data}, cachename)
+	if not in_transation:
+		update_jasper_list_all({"data":new_data}, cachename)
+		return
+
+	return {"data":new_data}
 
 
 def get_jasper_data(cachename, get_from_db=None, *args, **kargs):

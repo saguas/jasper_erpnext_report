@@ -175,8 +175,9 @@ def jasper_users_login(user):
 		s += user + ";"
 		jaspersession_set_value("jasper_list_user", s)
 
-def jasper_params(method, t, data=None, params=None):
-	print "utils jasper_params: method {} t {} data {} params {}".format(method, t, data, params)
+
+def jasper_params(method, hook_name, data=None, params=None):
+	print "utils jasper_params: method {} hook_name {} data {} params {}".format(method, hook_name, data, params)
 	a = []
 	for param in params:
 		if param.get("name") == "idade":
@@ -185,11 +186,13 @@ def jasper_params(method, t, data=None, params=None):
 
 
 def jasper_params_teste(method, t, data=None, docdata=None):
-	print "teste hooks {}".format(data)
+	print "jasper_before_run_report teste hooks method {} t {} data {}".format(method, t, data)
 
 
 def jasper_before_list_all(method):
-	print "teste list for all hooks {}".format(method)
+	#print "teste list for all hooks {}".format(method)
+	pass
 
 def jasper_after_list_all(method, lista):
-	print "teste list after for all hooks {} lista {}".format(method, lista)
+	#print "teste list after for all hooks {} lista {}".format(method, lista)
+	pass

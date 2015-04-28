@@ -13,6 +13,7 @@ from jasper_erpnext_report.utils.utils import check_queryString_param, jasperses
 	check_jasper_perm
 from frappe.utils import cint
 from jasper_erpnext_report.core.JasperRoot import JasperRoot
+from jasper_erpnext_report.utils.cache import redis_transation
 
 """
 
@@ -25,12 +26,17 @@ HOOKS:
 
 class JasperReports(Document):
 	def on_update(self, method=None):
-		#TODO: this has a race condition but not harmeful. Will be fix in version 5 with redis
-		jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-		jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 		r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 		jr = JasperRoot()
-		jr._get_reports_list(filters_report=r_filters)
+		data = jr._get_reports_list(filters_report=r_filters)
+		#report_list_dirt_doc is not called from here
+		cached = redis_transation(data, "report_list_all")
+		if cached and data:
+			#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+			jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+		elif data:
+			#redis not cache
+			jaspersession_set_value("report_list_dirt_all", True)
 
 		if check_root_exists(self.doctype, self.name):
 			return
@@ -96,7 +102,7 @@ class JasperReports(Document):
 		return
 
 	def on_jasper_params_ids(self, data=None, params=None):
-		print "new params hooks {} name {}".format(data, self.name)
+		print "new params hooks {} name {}".format(data.get("fortype", None), self.name)
 		"""
 		for param in params:
 			if param.get('name') != "name_ids":
@@ -115,7 +121,7 @@ class JasperReports(Document):
 				param['value'].append('Administrator')
 		"""
 		ret = {"ids": ["Administrator", "luisfmfernandes@gmail.com"], "report_type": "List"}
-
+		#ret = None
 		return ret
 
 	def on_jasper_params(self, data=None, params=None):
@@ -125,7 +131,8 @@ class JasperReports(Document):
 			if param.get("name") == "idade":
 				a.append({"name": param.get("name"), "value": 35.6})
 			else:
-				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com', 'Guest'], "param_type": "is for where clause"})
+				#a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
+				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})
 			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
 		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
 		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": _("is for where clause")})

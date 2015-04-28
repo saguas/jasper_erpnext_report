@@ -9,7 +9,7 @@ from frappe.utils import cint
 from jasper_erpnext_report.utils.file import write_file, get_extension
 import jasper_erpnext_report.utils.utils as utils
 import JasperServer as Js, JasperLocal as Jl, JasperBase as Jb
-
+from jasper_erpnext_report.utils.cache import redis_transation
 from jasper_erpnext_report import jasperserverlib
 
 from io import BytesIO
@@ -40,7 +40,7 @@ class JasperRoot(Jb.JasperBase):
 	def config(self):
 		_logger.info("JasperServerSession update_cache self.doc {}".format(self.doc))
 		if not self.doc:
-			frappe.throw(_("Something was wrong, there is no document!!!" ))
+			frappe.throw(_("Something was wrong, there is no document." ))
 
 		from jasper_erpnext_report import pyjnius
 		print "use local and pyjnius local? {} pyjnius {}".format(self.use_local(), pyjnius)
@@ -88,27 +88,31 @@ class JasperRoot(Jb.JasperBase):
 			#could be recursive but there is no need for resume again because decorator
 			ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 
+		in_transation = frappe.utils.cint(frappe.__version__.split(".", 1)[0]) > 4
+		data = None
 		if ret:
 			ptime = self.data['data'].get('jasper_polling_time')
 			ret['jasper_polling_time'] = ptime
 		if ret and not update:
-			utils.insert_list_all_memcache_db(ret, cachename=cachename)
+			data = utils.insert_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
 		elif ret:
-			utils.update_list_all_memcache_db(ret, cachename=cachename)
-		return ret
+			data = utils.update_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
+		return data
 
 	def get_reports_list_for_all(self):
 		if self.sid == 'Guest':
 			return None
-		#data = {}
+		data = {}
 		#dirt = utils.jaspersession_get_value("report_list_dirt_all")
 		#dirt = self.is_dirt("report_list_dirt_all")
 		#dirt = self.is_cache_dirt("report_list_dirt_all", "user:" + self.user + "_report_list_all")
-		#if not dirt:
+		dirt = utils.jaspersession_get_value("report_list_dirt_all")
+		#dirt if redis not cache
+		if not dirt:
 			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_all")
 			#if not data:
-		#TODO: this has a race condition but not harmeful. Will be fix in version 5 with redis
-		data = utils.get_jasper_session_data_from_cache("report_list_all")
+
+			data = utils.get_jasper_session_data_from_cache("report_list_all")
 			#if data:
 			#	dirt = utils.jaspersession_get_value("report_list_dirt_all") or frappe.utils.now()
 			#	all_last_update = data.get('last_updated')
@@ -125,6 +129,11 @@ class JasperRoot(Jb.JasperBase):
 		#	frappe.cache().delete_value("jasper:user:" + self.user + "_report_list_all")
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			data = self._get_reports_list(filters_report=r_filters)
+			cached = redis_transation(data, "report_list_all")
+			if cached and data:
+				utils.jaspersession_set_value("report_list_dirt_all", False)
+				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+				utils.jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 
 		if data:
 			#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
@@ -148,12 +157,15 @@ class JasperRoot(Jb.JasperBase):
 		#data = utils.get_jasper_session_data_from_cache(what)
 		#if data:
 		is_dirt = False
-		user_last_update = utils.jaspersession_get_value(what) or frappe.utils.now()
-		dirt = utils.jaspersession_get_value(lstdirt) or frappe.utils.now()
+		user_last_update = utils.jaspersession_get_value(what)
+		dirt = utils.jaspersession_get_value(lstdirt)
+		if not user_last_update or not dirt:
+			utils.jaspersession_set_value(what, frappe.utils.now())
+			return False
 		#user_last_update = data.get('last_updated')
 		#user_last_update = data
 		time_diff = frappe.utils.time_diff_in_seconds(dirt, user_last_update)
-		print "what {} dirt {} last_update {} time_diff {}".format(what, dirt, user_last_update, time_diff)
+		#print "what {} dirt {} last_update {} time_diff {}".format(what, dirt, user_last_update, time_diff)
 		if time_diff >= 0:
 			is_dirt = True
 
@@ -197,26 +209,25 @@ class JasperRoot(Jb.JasperBase):
 		if not dirt:
 			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_doctype")
 			#if not data:
-			#TODO: this has a race condition but not harmeful. Will be fix in version 5 with redis
+
 			data = utils.get_jasper_session_data_from_cache("report_list_doctype")
 
 		if not data or not self.check_docname(data, doctype, report):
 			#frappe.cache().delete_value("jasper:report_list_doctype")
 			#frappe.cache().delete_value("jasper:user:" + self.user + "_report_list_doctype")
-			dirt = True
 			if doctype:
 				r_filters={"jasper_doctype": doctype}
 			else:
 				r_filters={"report": report}
 			update = False if not data else True
 			data = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", update=update)
-			if data:
-				utils.jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+			redis_transation(data, "report_list_all") #do not set dirt. Just get the new doctype or it is already dirt, don't set again
 
 		if data and self.check_docname(data, doctype, report):
 			data.pop('session_expiry',None)
 			data.pop('last_updated', None)
-			new_data = self.doc_filter_perm_roles(doctype, data, docnames)
+			new_data = self.doc_filter_perm_roles(doctype or report, data, docnames)
+			#print "report list dirt {} report {} docnames {} doctype {}".format(dirt, report, docnames, data)
 			#if the list was updated or inserted
 			if dirt:
 				utils.jaspersession_set_value("user:" + self.user + "_report_list_doctype", frappe.utils.now())
@@ -225,7 +236,6 @@ class JasperRoot(Jb.JasperBase):
 			self.remove_server_docs(new_data)
 
 		new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
-
 		#utils.insert_list_all_memcache_db(new_data, cachename="user:" + self.user + "_report_list_doctype")
 		return new_data
 

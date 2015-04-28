@@ -79,13 +79,7 @@ public class ExportReport
 	  this.numberPattern = (String) args.get("numberPattern");
 	  this.datePattern = (String) args.get("datePattern");
 	  this.virtua = (Integer) args.get("virtua");
-	  
-	  if(args.get("tables") != null){
-	  	  this.tables = (String[][]) args.get("tables");
-	  }
-	  if (args.get("columns") != null){
-	  	  this.columns = (String[]) args.get("columns");
-	  }
+
 	  this.outputPathName = this.outputPath + this.reportName;
 	  this.jasper_path = this.path_jasper_file + this.reportName + ".jasper";
 	  
@@ -103,9 +97,8 @@ public class ExportReport
       }
           
   }
-
-  public void export()
-  {
+  
+  private void make(){
 	  
 	  this.setParams();
 	  this.setQueryType();
@@ -140,10 +133,20 @@ public class ExportReport
 	  this.makeReport();
       
       System.out.println("Done!");
-
   }
 
-  	public void setParams(){
+  public void export()
+  {
+	 this.make();
+  }
+  
+  public void export(String[][] data, String[] cols){
+	  this.tables = data;
+	  this.columns = cols;
+	  this.make();
+  }
+  
+  public void setParams(){
 	  JasperReport report = null;
 	  
 	  try{

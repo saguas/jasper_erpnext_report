@@ -17,6 +17,7 @@ from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_fr
 	jasper_users_login, jaspersession_set_value
 from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail
 from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, write_file
+from jasper_erpnext_report.utils.cache import redis_transation
 
 
 def boot_session(bootinfo):
@@ -169,10 +170,15 @@ def jasper_server_login():
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	login = jsr.login()
 	#get the list of reports on the server
-	jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-	jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 	r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
-	jsr._get_reports_list(filters_report=r_filters)
+	data = jsr._get_reports_list(filters_report=r_filters)
+	cached = redis_transation(data, "report_list_all")
+	if cached and data:
+		#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+		jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+	elif data:
+		jaspersession_set_value("report_list_dirt_all", True)
+
 	return login
 
 @frappe.whitelist()

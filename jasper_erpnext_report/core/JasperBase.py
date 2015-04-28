@@ -361,7 +361,7 @@ class JasperBase(object):
 		Run one report at a time for Form type report and many ids
 		"""
 		if (doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form") and not data.get("is_doctype_id", None):
-			ids = data.get('ids')
+			ids = data.get('ids', [])
 			for id in ids:
 				data['ids'] = [id]
 				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
@@ -424,8 +424,14 @@ class JasperBase(object):
 
 	def run_report_async(self, doc, data=None, params=None):
 		data = data or {}
+
 		if doc.jasper_report_type == "Server Hooks":
 			self.check_ids_in_hooks(doc, data, params)
+
+		#if it is a report no need for ids
+		if data.get("fortype", None) == "query-report":
+			return data
+
 		if not doc.jasper_report_type == "General":
 
 			name_ids = data.get('name_ids', [])
@@ -461,7 +467,7 @@ class JasperBase(object):
 				for id in ids:
 					res = self.polling(id)
 					if not res:
-						frappe.msgprint(_("There was an error in report request "),raise_exception=True)
+						frappe.msgprint(_("There was an error in report request."),raise_exception=True)
 					if res.get('status') != "ready":
 						result = []
 						break
@@ -526,7 +532,7 @@ class JasperBase(object):
 		added = 0
 		for k,v in data.iteritems():
 			if isinstance(v, dict):
-				if v.get("Doctype name") == doctype:
+				if v.get("Doctype name") == doctype or v.get("report") == doctype:
 					if docnames and v.get('jasper_report_type') == "List":
 						continue
 					if frappe.local.session['user'] != "Administrator":
@@ -564,7 +570,7 @@ class JasperBase(object):
 		request_time = data.get("reqtime")
 		time_diff = frappe.utils.time_diff_in_seconds(request_time, last_timeout) if last_timeout else None
 		if time_diff and time_diff < 0:
-			frappe.throw("RequestID not Valid!!!")
+			frappe.throw(_("RequestID not Valid."))
 
 	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
 		return None

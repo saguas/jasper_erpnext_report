@@ -124,19 +124,22 @@ class JasperLocal(Jb.JasperBase):
 			outtype = mparams.get("type")
 			outputPath = mparams.get("outputPath")
 			fileName = mparams.get("reportName")
-			if grid_data and grid_data.get("data", None):
-				tables, cols = self._export_query_report(grid_data)
-				mparams.put("tables", tables)
-				mparams.put("columns", cols)
 
+			data = None
+			cols = None
+			if grid_data and grid_data.get("data", None):
+				data, cols = self._export_query_report(grid_data)
+				if not data or not cols:
+					print "Error in report {}. There is no data.".format(report_name)
+					return
 			export_report = jr.ExportReport(mparams)
-			export_report.export()
+			export_report.export(data, cols)
 			if outtype == 7:#html file
 				content = get_file(outputPath + fileName + ".html")
 				self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
+			print "Error in report %s, error is: %s" % (report_name, e)
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
-			print "Error in report 4 %s, error is: %s!!!" % (report_name, e)
 
 	def _export_query_report(self, grid_data):
 		tables = []
@@ -146,7 +149,10 @@ class JasperLocal(Jb.JasperBase):
 		for obj in data:
 			row = []
 			for k in columnNames:
-				row.append(str(obj.get(k.get("field"))))
+				value = str(obj.get(k.get("field")))
+				if isinstance(value, basestring) and value == 'None':
+					value = ''
+				row.append(value)
 			tables.append(row)
 
 		for k in columnNames:
@@ -195,4 +201,4 @@ class JasperLocal(Jb.JasperBase):
 			for p in pram:
 				hashmap.put(p.get("name"), p.get("value")[0])
 		except:
-			frappe.throw(_("Error in report %s, there is a problem with value for parameter in server hook: on_jasper_params." % (report_name)))
+			frappe.throw(_("Error in report %s, there is a problem with value for parameter." % (report_name)))

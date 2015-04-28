@@ -78,6 +78,7 @@ cur_frm.cscript.refresh = function(doc){
 		hide_field(["jasper_locale"]);
     }
 
+	cur_frm.cscript.report_fields(doc);
 }
 
 cur_frm.cscript["jasper_locale"] = function(doc){
@@ -124,6 +125,24 @@ cur_frm.cscript.show_fields = function(doc){
     }
     
 };
+
+cur_frm.cscript.report = function(doc){
+	cur_frm.cscript.report_fields(doc);
+}
+
+cur_frm.cscript.report_fields = function(doc){
+	if (doc.report && doc.report.trim() !== ""){
+		var jasper_report_type = doc.jasper_report_type;
+		cur_frm.set_df_property("jasper_report_type", "options", ["General", "Server Hooks"]);
+		if(jasper_report_type && (jasper_report_type.trim() !== "General" || jasper_report_type.trim() !== "Server Hooks")){
+			doc.jasper_report_type = "General";
+			cur_frm.refresh_field("jasper_report_type");
+		}
+
+	}else{
+		cur_frm.set_df_property("jasper_report_type", "options", ["Form", "List", "General", "Server Hooks"]);
+	}
+}
 
 $(document).on("save", function(ev, doc){
 	var cs = cur_frm.cscript;

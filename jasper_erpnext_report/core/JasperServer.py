@@ -58,7 +58,7 @@ def _jasperserver(fn):
 			utils.jaspersession_set_value("last_jasper_session_timeout", frappe.utils.now())
 			return fn_result
 		except Exception as e:
-			print "problems!!!! {}\n".format(e)
+			print "Problems: {}\n".format(e)
 
 	return innerfn
 
