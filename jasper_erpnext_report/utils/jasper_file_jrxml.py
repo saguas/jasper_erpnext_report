@@ -9,6 +9,7 @@ from jasper_erpnext_report.jasper_reports.compile_reports import jasper_compile
 from frappe.utils.file_manager import delete_file_from_filesystem
 from jasper_erpnext_report.utils.file import check_extension, get_jasper_path, get_extension, JasperXmlReport,\
 	write_file
+from frappe.utils.file_manager import check_max_file_size, get_content_hash
 
 
 class WriteFileJrxml(object):
@@ -28,22 +29,54 @@ class WriteFileJrxml(object):
 		self.scriptlet = None
 		self.save_path = None
 
+	def insert_report_doc(self, dn=None):
+		file_data = {}
+		file_size = check_max_file_size(self.content)
+		content_hash = get_content_hash(self.content)
 
-	def process(self):
+		file_data.update({
+			"doctype": "File Data",
+			"attached_to_report_name": self.parent,
+			"attached_to_doctype": self.dt,
+			"attached_to_name": dn,
+			"file_size": file_size,
+			"content_hash": content_hash,
+			'file_name': os.path.basename(self.rel_path),
+			'file_url': os.sep + self.rel_path.replace('\\','/'),
+		})
+
+		f = frappe.get_doc(file_data)
+		try:
+			f.insert(ignore_permissions=True)
+			if self.ext == "jrxml":
+				self.make_content_jrxml(f.name)
+
+		except frappe.DuplicateEntryError:
+			return frappe.get_doc("File Data", f.duplicate_entry)
+		return f
+
+	def process(self, dn=None):
 
 		if self.ext != "jrxml":
 			self.process_childs()
 		else:
 			self.process_jrxmls()
 
-		self.save()
+		self.rel_path = os.path.relpath(self.file_path, self.jasper_path)
 
-		if self.ext == "jrxml":
-			self.compile()
+		f = self.insert_report_doc(dn=dn)
 
-		self.rel_path = os.path.relpath(self.save_path, self.jasper_path)
+		try:
+			self.save()
 
-		return self.rel_path
+			if self.ext == "jrxml":
+				self.compile()
+		except:
+			#TODO remove this doc
+			print "Remove this doc: doctype {} docname {}".format(f.doctype, f.name)
+			pass
+
+		return f
 
 	def process_childs(self):
 		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.dn, "attached_to_doctype": self.dt, "name": self.parent})
@@ -99,6 +132,8 @@ class WriteFileJrxml(object):
 			if not xmldoc.subreports:
 				frappe.msgprint(_("The report %s is not a subreport of %s."  % (self.fname[:-6], docs[0].file_name[:-6])),raise_exception=True)
 
+	def make_content_jrxml(self, name):
+
 		xmldoc = JasperXmlReport(BytesIO(self.content))
 		xmldoc.change_subreport_expression_path()
 		self.scriptlet = xmldoc.get_attrib("scriptletClass")
@@ -108,10 +143,11 @@ class WriteFileJrxml(object):
 
 		xmldoc.change_path_images()
 		xmldoc.setProperty("parent", self.parent)
-		self.autofilename = frappe.model.naming.make_autoname("File.#####", doctype='')
-		xmldoc.setProperty("jasperId", self.autofilename)
+		#self.autofilename = frappe.model.naming.make_autoname("File.#####", doctype='')
+		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
+
 
 	def save(self):
 		self.save_path = write_file(self.content, self.file_path)
@@ -219,96 +255,19 @@ def get_next_hook_method(hook_name, last_method_name, fallback=None):
 			return fallback
 """
 
-def write_file_jrxml(fname, content, content_type=None, parent=None):
+def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
 	#path_join = os.path.join
 	#file_path = None
 	dt = frappe.form_dict.doctype
 	if dt == "Jasper Reports":
 		from . jasper_file_jrxml import WriteFileJrxml
 		wobj = WriteFileJrxml(dt, fname, content, parent)
-		"""
-		autofilename = None
-		ext = check_extension(fname)
-		dn = frappe.form_dict.docname
-		jasper_all_sites_report = frappe.db.get_value(dt, dn, 'jasper_all_sites_report')
-		jasper_path = get_jasper_path(jasper_all_sites_report)
-		compiled_path = get_compiled_path(jasper_path, dn)
-		if ext != "jrxml":
-			docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "name": parent})
-			if not docs:
-				frappe.msgprint(_("Add a report first."), raise_exception=True)
-			for doc in docs:
-				jrxml_ext = get_extension(doc.file_name)
-				if jrxml_ext == "jrxml":
-					jrxml_os_path = path_join(jasper_path, doc.file_url[1:])
-					xmldoc = JasperXmlReport(jrxml_os_path)
-					if (ext!="properties" and ext != "xml"):
-						image_path = xmldoc.get_image_path_from_jrxml(fname)
-						file_path= path_join(compiled_path, os.path.normpath(image_path))
-					elif (ext == "xml"):
-						xmlname = xmldoc.getProperty("XMLNAME")
-						if xmlname:
-							xname = xmlname + ".xml"
-							if xname != fname:
-								frappe.msgprint(_("This report does't have %s as file source." % (fname,)),raise_exception=True)
-							file_path = path_join(compiled_path, os.path.normpath(fname))
-						else:
-							frappe.msgprint(_("This report does't have %s as file source." % (fname,)),raise_exception=True)
-					else:
-						value = xmldoc.get_attrib("resourceBundle")
-						if not value or value not in fname:
-							frappe.msgprint(_("This report does't have %s as properties." % (fname,)),raise_exception=True)
-						file_path= path_join(compiled_path, os.path.normpath(fname))
-					break
-				else:
-					frappe.msgprint(_("Add a file for this report first."),raise_exception=True)
-		else:
-			rname = check_if_jrxml_exists_db(dt, dn, fname, parent)
-			if rname or check_root_exists(dt,dn):
-				frappe.msgprint(_("Remove first the file (%s) associated with this document or (%s) is a wrong parent." % (rname, rname)),
-					raise_exception=True)
-			jrxml_path = get_jrxml_path(jasper_path, dn)
-			file_path = path_join(jrxml_path, fname)
-
-			#check if the parent has this jrxml as child
-			docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "name": parent})
-			if docs:
-				xmldoc = JasperXmlReport(path_join(jrxml_path, docs[0].file_name))
-				for sub in xmldoc.subreports:
-					s = sub.rsplit("/",1)
-					if len(s) > 1:
-						if not (s[1][:-7] == fname[:-6]):
-							frappe.msgprint(_("The report %s is not a subreport of %s."  % (fname[:-6], docs[0].file_name[:-6])),raise_exception=True)
-					elif not (sub[:-7] == fname[:-6]):
-						frappe.msgprint(_("The report %s is not a subreport of %s."  % (fname[:-6], docs[0].file_name[:-6])),raise_exception=True)
-				else:
-					frappe.msgprint(_("The report %s is not a subreport of %s."  % (fname[:-6], docs[0].file_name[:-6])),raise_exception=True)
-
-			xmldoc = JasperXmlReport(BytesIO(content))
-			xmldoc.change_subreport_expression_path()
-			scriptlet = xmldoc.get_attrib("scriptletClass")
-			#TODO
-			if not scriptlet:
-				pass
-
-			xmldoc.change_path_images()
-			xmldoc.setProperty("parent", parent)
-			autofilename = frappe.model.naming.make_autoname("File.#####", doctype='')
-			xmldoc.setProperty("jasperId", autofilename)
-
-			content = xmldoc.toString()
-		"""
-		path = wobj.process()
+		f = wobj.process(dn=dn)
 		#fpath = write_file(wobj.content, wobj.file_path)
 		#path =  os.path.relpath(fpath, wobj.jasper_path)
 		#if wobj.ext == "jrxml":
 		#	jasper_compile_jrxml(wobj.fname, wobj.file_path, wobj.compiled_path)
 
-		return {
-			'name': wobj.autofilename or None,
-			'file_name': os.path.basename(path),
-			'file_url': os.sep + path.replace('\\','/'),
-			"content": wobj.content
-		}
+		return f
 	#else:
 	#	return save_file_on_filesystem(fname, content, content_type)

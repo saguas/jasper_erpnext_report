@@ -34,7 +34,7 @@ class JasperReports(Document):
 		if cached and data:
 			#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
 			#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
-			jaspersession_set_value("report_list_dirt_doc", False)
+			jaspersession_set_value("report_list_dirt_doc", True)
 		elif data:
 			#redis not cache
 			jaspersession_set_value("report_list_dirt_all", True)
