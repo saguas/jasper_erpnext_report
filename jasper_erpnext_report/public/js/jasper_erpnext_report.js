@@ -250,17 +250,17 @@ jasper.get_doc = function(doctype, docname){
 };
 
 setJasperDropDown = function(list, callback){
-	
-	$("#jasper_report_list").remove();
-
+	console.log("a remover before ", $("#jasper_report_list"));
+	$(".dropdown.jasper_report_list_menu").remove();
+	console.log("a remover after ", $("#jasper_report_list"));
 	if (list && !$.isEmptyObject(list) && list.size > 0){
 		var size = list.size;
 		
-		var html = '<li class="dropdown" id="jasper_report_list">'
+		var html = '<li class="dropdown jasper_report_list_menu">'
 			+ '<a class="dropdown-toggle" href="#" data-toggle="dropdown" title="Jasper Reports" onclick="return false;">'
 				+ '<span><img src="assets/jasper_erpnext_report/images/jasper_icon.png" style="max-width: 24px; max-height: 24px; margin: -2px 0px;">  </img></span>' 
 		 + '<span> <span class="badge" id="jrcount">' + size +'</span></span></span></a>'
-			+ '<ul class="dropdown-menu" id="jrmenu">';
+			+ '<ul class="dropdown-menu jrmenu">';
 
 			var flen;
 			var icon_file;
