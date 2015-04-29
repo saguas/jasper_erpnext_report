@@ -15,7 +15,7 @@ def before_install():
 		)""")
 
 	frappe.db.sql_ddl("""CREATE TABLE IF NOT EXISTS tabJasperReqids(
-		reqid varchar(255) DEFAULT NULL,
+		reqid varchar(150) DEFAULT NULL,
 		data longtext,
 		lastupdate datetime(6) DEFAULT NULL,
 		KEY reqid (reqid)
