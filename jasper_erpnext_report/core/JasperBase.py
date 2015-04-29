@@ -334,10 +334,11 @@ class JasperBase(object):
 			utils.delete_jasper_session(reqId, "tabJasperReqids where reqid='%s'" % reqId)
 		return frappe._dict({'data': data})
 
-	def get_jasper_reqid_data_from_db(self, reqId):
+	def get_jasper_reqid_data_from_db(self, *reqId):
+		#pos 0  must be request id
 		rec = frappe.db.sql("""select reqid, data
 			from tabJasperReqids where
-			TIMEDIFF(NOW(), lastupdate) < TIME(%s) and reqid=%s""", (utils.get_expiry_period(reqId),reqId))
+			TIMEDIFF(NOW(), lastupdate) < TIME(%s) and reqid=%s""", (utils.get_expiry_period(reqId[0]),reqId[0]))
 		return rec
 
 	def insert_jasper_reqid_record(self, reqId, data):
