@@ -34,7 +34,6 @@ show_banner_message = function(msg, where_ok, where_cancel, bckcolor, callback){
 
 jasper.check_for_ask_param = function(rname, callback){
     var robj = jasper.get_jasperdoc_from_name(rname);
-    console.log("Is doctype id? ", robj);
     var ret;
     if (robj.locale === "Ask" || robj.params && robj.params.length > 0){
         ret = jasper.make_dialog(robj, rname + " parameters", callback);
@@ -84,9 +83,11 @@ jasper.make_dialog = function(doc, title, callback){
 	};
 
 	if(doc.jasper_report_origin === "LocalServer"){
-		var lang_default = frappe.defaults.get_user_default("language");
+		var lang_default = frappe.defaults.get_user_default("lang");
+		var country = jasper.get_country_from_alpha3(lang_default);
+		console.log("lang ", lang_default + " country " + country);
 		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",
-	 		description: __("Select the report language."), options: jasper.make_country_list(), default:[lang_default]});
+	 		description: __("Select the report language."), options: jasper.make_country_list(), default:[country]});
 	};
 
 	function ifyes(d){

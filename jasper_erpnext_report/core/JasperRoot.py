@@ -281,7 +281,7 @@ class JasperRoot(Jb.JasperBase):
 
 		rtype = rdoc.get("jasper_report_type")
 		if data.get("fortype").lower() == "doctype" and rtype in ("List", "Form"):
-			for docname in data.get('name_ids', []):
+			for docname in data.get('name_ids', []) or []:
 				if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=("read", "print")):
 					raise frappe.PermissionError(_("No {0} permission for document {1} in doctype {3}.").format("read or print", docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports

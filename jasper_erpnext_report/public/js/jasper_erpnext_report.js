@@ -300,8 +300,6 @@ jasper.getOrphanReport = function(data, ev){
     var rtype = "General";
     
 
-
-
 	//if (len > 1 && route[0] === "List"){
 	//	var doctype = route[1];
 	//	var page = [route[0], doctype].join("/");

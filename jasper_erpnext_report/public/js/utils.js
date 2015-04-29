@@ -146,6 +146,23 @@ jasper.get_alpha3 = function(locale){
 	return alpha3;
 };
 
+jasper.get_country_from_alpha3 = function(lang){
+	if (!jasper.CountryCode || jasper.CountryCode.length === 0)
+		return;
+
+	var country;
+
+	for (var i=0; i<jasper.CountryCode.length;i++){
+		if (jasper.CountryCode[i].code === lang){
+			country = jasper.CountryCode[i].name;
+			break;
+		};
+	};
+
+	return country;
+};
+
+
 jasper.query_report_columns = function(){
     var columns = [];
     var cols = frappe.query_report.grid.getColumns();
