@@ -180,3 +180,10 @@ width: 16px;
 .bs-callout-info h4 {
     color: #5bc0de
 }
+
+.toolbar-banner {
+	text-align: center;
+	background-color: #fcf8e3;
+	padding: 7px;
+	z-index: 1;
+}
