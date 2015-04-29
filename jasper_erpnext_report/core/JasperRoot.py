@@ -131,7 +131,6 @@ class JasperRoot(Jb.JasperBase):
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			data = self._get_reports_list(filters_report=r_filters)
 			cached = redis_transation(data, "report_list_all")
-			print "dirt {} data {} cached {}".format(dirt, data, cached)
 			if cached and data:
 				utils.jaspersession_set_value("report_list_dirt_all", False)
 				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
@@ -207,7 +206,8 @@ class JasperRoot(Jb.JasperBase):
 
 		#dirt = utils.jaspersession_get_value("report_list_dirt_doc")
 		data = {}
-		dirt = self.is_cache_dirt("report_list_dirt_doc", "user:" + self.user + "_report_list_doctype")
+		#dirt = self.is_cache_dirt("report_list_dirt_doc", "user:" + self.user + "_report_list_doctype")
+		dirt = utils.jaspersession_get_value("report_list_dirt_doc")
 		if not dirt:
 			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_doctype")
 			#if not data:
@@ -223,7 +223,9 @@ class JasperRoot(Jb.JasperBase):
 				r_filters={"report": report}
 			update = False if not data else True
 			data = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", update=update)
-			redis_transation(data, "report_list_all") #do not set dirt. Just get the new doctype or it is already dirt, don't set again
+			cached = redis_transation(data, "report_list_all")
+			if cached and data and dirt:
+				utils.jaspersession_set_value("report_list_dirt_doc", False)
 
 		if data and self.check_docname(data, doctype, report):
 			data.pop('session_expiry',None)
@@ -231,8 +233,9 @@ class JasperRoot(Jb.JasperBase):
 			new_data = self.doc_filter_perm_roles(doctype or report, data, docnames)
 			#print "report list dirt {} report {} docnames {} doctype {}".format(dirt, report, docnames, data)
 			#if the list was updated or inserted
-			if dirt:
-				utils.jaspersession_set_value("user:" + self.user + "_report_list_doctype", frappe.utils.now())
+			#if dirt:
+			#	utils.jaspersession_set_value("report_list_dirt_doc", False)
+				#utils.jaspersession_set_value("user:" + self.user + "_report_list_doctype", frappe.utils.now())
 
 		if not self.check_server_status():
 			self.remove_server_docs(new_data)

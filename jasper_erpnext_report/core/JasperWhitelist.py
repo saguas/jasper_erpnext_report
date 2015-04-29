@@ -175,7 +175,8 @@ def jasper_server_login():
 	cached = redis_transation(data, "report_list_all")
 	if cached and data:
 		#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-		jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+		#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+		jaspersession_set_value("report_list_dirt_doc", True)
 	elif data:
 		jaspersession_set_value("report_list_dirt_all", True)
 
