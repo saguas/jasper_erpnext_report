@@ -1,13 +1,22 @@
 frappe.provide("jasper");
 
-
+jasper.show_banner = function(msg) {
+	$banner = $('<div class="toolbar-banner">'+msg+'<a class="close">&times;</a></div>')
+		.prependTo($('header .navbar'));
+		$("body").css({"padding-top": "70px"});
+	$banner.find(".close").click(function() {
+		$(".toolbar-banner").toggle(false);
+		$("body").css({"padding-top": "36px"});
+	});
+	return $banner;
+}
 
 jasper.close_banner = function($banner){
     $banner.find(".close").click();
 };
 
 show_banner_message = function(msg, where_ok, where_cancel, bckcolor, callback){
-    $banner = frappe.ui.toolbar.show_banner(msg);
+    $banner = jasper.show_banner(msg);
     if (bckcolor != null)
         $banner.css({background: bckcolor, opacity: 0.9});
     if (where_ok != null){
