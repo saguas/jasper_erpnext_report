@@ -3,6 +3,9 @@ import os
 
 version = '0.0.1'
 
+with open("requirements.txt", "r") as f:
+	install_requires = f.readlines()
+
 setup(
     name='jasper_erpnext_report',
     version=version,
@@ -12,5 +15,5 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
-    install_requires=("frappe",),
+    install_requires=install_requires
 )

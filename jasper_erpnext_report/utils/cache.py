@@ -24,21 +24,24 @@ def redis_transation(data, watch):
 
 	ret = False
 	r = frappe.cache()
-
-	with r.pipeline() as pipe:
-		end_time = time.time() + redis_cache_retry
-		while time.time() < end_time:
-			try:
-				key = r.make_key(watch)
-				pipe.watch(key)
-				frappe.local.cache[key] = data
-				pipe.multi()
-				pipe.set(key, pickle.dumps(data))
-				pipe.execute()
-				ret = True
-				break
-			except WatchError:
-				continue
+	try:
+		with r.pipeline() as pipe:
+			end_time = time.time() + redis_cache_retry
+			while time.time() < end_time:
+				try:
+					key = r.make_key(watch)
+					pipe.watch(key)
+					frappe.local.cache[key] = data
+					pipe.multi()
+					pipe.set(key, pickle.dumps(data))
+					pipe.execute()
+					ret = True
+					break
+				except WatchError:
+					continue
+	except:
+		#no redis started. bench serve was enter?
+		pass
 
 	return ret
 

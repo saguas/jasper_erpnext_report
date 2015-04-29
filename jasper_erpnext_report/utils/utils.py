@@ -20,7 +20,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 		filters_param = filters_param.update({"parenttype":"Jasper Reports"})
 	report_from = {"both":["jasperserver", "localserver"], "local jrxml only":["localserver"], "jasperserver only":["jasperserver"]}
 	#get all report names
-	rnames = frappe.get_all("Jasper Reports", debug=True, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",
+	rnames = frappe.get_all("Jasper Reports", debug=False, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",
 													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",
 													"jasper_param_message", "jasper_report_type", "jasper_email", "jasper_locale"])
 	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",
