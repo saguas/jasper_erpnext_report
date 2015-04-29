@@ -174,6 +174,7 @@ jasper.getList = function(page, doctype, docnames){
 		method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 		data = {doctype: doctype, docnames: docnames, report: null};
 		jasper.jasper_make_request(method, data,function(response_data){
+			console.log("jasper.getList response ", response_data);
 			jasper.pages[page] = response_data.message;
 			setJasperDropDown(response_data.message, jasper.getOrphanReport);
 		});
@@ -251,7 +252,7 @@ jasper.get_doc = function(doctype, docname){
 setJasperDropDown = function(list, callback){
 	
 	$("#jasper_report_list").remove();
-	
+
 	if (list && !$.isEmptyObject(list) && list.size > 0){
 		var size = list.size;
 		

@@ -30,12 +30,13 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 	with_perm_role = frappe.get_all("Jasper PermRole", filters=filters_permrole, fields=["`tabJasper PermRole`.parent as parent", "`tabJasper PermRole`.name as p_name" ,"`tabJasper PermRole`.jasper_role", "`tabJasper PermRole`.jasper_can_read"])
 	if rnames:
 		ret = {}
+		size = 0
 		for r in rnames:
 			jasper_report_origin = r.jasper_report_origin.lower()
-			print "origin {} other origin {} is in {}".format(origin, jasper_report_origin, jasper_report_origin in report_from.get(origin))
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}
+				size += 1
 				for report in with_param:
 						name = report.parent
 						if name == r.name:
@@ -51,7 +52,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 						if name == r.name:
 							perm.pop("parent")
 							ret[r.name]["perms"].append(perm)
-
+		ret["size"] = size
 	return ret
 
 def jasper_print_formats(doc):

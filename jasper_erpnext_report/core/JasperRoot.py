@@ -129,8 +129,10 @@ class JasperRoot(Jb.JasperBase):
 			#frappe.cache().delete_value("jasper:report_list_all")
 		#	frappe.cache().delete_value("jasper:user:" + self.user + "_report_list_all")
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
-			data = self._get_reports_list(filters_report=r_filters)
-			cached = redis_transation(data, "report_list_all")
+			ldata = self._get_reports_list(filters_report=r_filters)
+			cached = redis_transation(ldata, "report_list_all")
+			if ldata:
+				data = ldata.get("data", None)
 			if cached and data:
 				utils.jaspersession_set_value("report_list_dirt_all", False)
 				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
@@ -149,11 +151,13 @@ class JasperRoot(Jb.JasperBase):
 			except:
 				data['mail_enabled'] = "disabled"
 
+			print "data before pop data {}".format(data.get("size"))
 			#utils.insert_list_all_memcache_db(data, cachename="user:" + self.user + "_report_list_all")
 			#utils.jaspersession_set_value("user:" + self.user + "_report_list_all", frappe.utils.now())
 
 		return data
 
+	"""
 	def is_cache_dirt(self, lstdirt, what):
 		#data = utils.get_jasper_session_data_from_cache(what)
 		#if data:
@@ -171,6 +175,7 @@ class JasperRoot(Jb.JasperBase):
 			is_dirt = True
 
 		return is_dirt
+	"""
 
 	def remove_server_docs(self, data):
 		toremove = []
@@ -222,8 +227,10 @@ class JasperRoot(Jb.JasperBase):
 			else:
 				r_filters={"report": report}
 			update = False if not data else True
-			data = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", update=update)
-			cached = redis_transation(data, "report_list_all")
+			ldata = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", update=update)
+			cached = redis_transation(ldata, "report_list_all")
+			if ldata:
+				data = ldata.get("data", None)
 			if cached and data and dirt:
 				utils.jaspersession_set_value("report_list_dirt_doc", False)
 
