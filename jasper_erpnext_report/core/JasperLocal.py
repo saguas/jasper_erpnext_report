@@ -166,6 +166,10 @@ class JasperLocal(Jb.JasperBase):
 
 		src = fileName + "." + "html_files"
 		html_files = os.path.join(outputPath, src)
+		#this is a report without folder html_files
+		#print "copy images content 3 src {}".format(html_files)
+		if not os.path.exists(html_files):
+			return
 		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
 		dst = get_html_reports_images_path(report_path, where=src)
 		copy_tree(html_files, dst)

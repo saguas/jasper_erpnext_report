@@ -6,7 +6,6 @@ from frappe import _
 import os
 from io import BytesIO
 from jasper_erpnext_report.jasper_reports.compile_reports import jasper_compile
-from frappe.utils.file_manager import delete_file_from_filesystem
 from jasper_erpnext_report.utils.file import check_extension, get_jasper_path, get_extension, JasperXmlReport,\
 	write_file
 from frappe.utils.file_manager import check_max_file_size, get_content_hash
@@ -73,8 +72,8 @@ class WriteFileJrxml(object):
 				self.compile()
 		except:
 			#TODO remove this doc
+			frappe.delete_doc("File Data", f.name)
 			print "Remove this doc: doctype {} docname {}".format(f.doctype, f.name)
-			pass
 
 		return f
 
