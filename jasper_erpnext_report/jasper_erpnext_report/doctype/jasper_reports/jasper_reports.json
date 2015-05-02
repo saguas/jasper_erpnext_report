@@ -53,7 +53,7 @@
    "precision": ""
   }, 
   {
-   "default": "JasperServer", 
+   "default": "LocalServer", 
    "description": "Choose where to make this report. LocalServer means in the local machine without Jasper Server. You don't need Jasper Server to make this report.\nJasperServer means that you will need to install Jasper Server and get the report from there.", 
    "fieldname": "jasper_report_origin", 
    "fieldtype": "Select", 
@@ -311,7 +311,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-04-14 22:04:55.684578", 
+ "modified": "2015-05-02 21:38:45.902440", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 
