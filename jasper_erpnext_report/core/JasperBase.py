@@ -489,7 +489,8 @@ class JasperBase(object):
 		import hashlib
 		site = localsite or frappe.local.site
 		if not self.html_hash:
-			hash_obj = hashlib.md5(content.encode('utf-8'))
+			#hash_obj = hashlib.md5(content.encode('utf-8'))
+			hash_obj = hashlib.md5(frappe.utils.encode(content))
 			self.html_hash = hash_obj.hexdigest()
 		self.report_html_path = get_html_reports_path(report_name, localsite=site, hash=self.html_hash)
 		return self.report_html_path

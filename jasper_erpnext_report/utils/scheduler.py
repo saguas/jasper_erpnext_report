@@ -2,7 +2,7 @@ __author__ = 'luissaguas'
 import frappe
 from frappe import _
 from jasper_erpnext_report.utils.utils import jaspersession_get_value,\
-	get_expiry_in_seconds, get_jasper_data, get_expiry_period
+	get_expiry_in_seconds, get_jasper_data, get_expiry_period, get_jasper_session_expiry_seconds
 from jasper_erpnext_report.utils.file import remove_directory
 
 
@@ -85,10 +85,14 @@ def clear_all_jasper_user_cache_v4(force=True):
 
 
 def check_if_expire(reqId):
-	req = jaspersession_get_value(reqId) or frappe.utils.now()
-	expire = get_expiry_period(reqId)
-	time_diff = frappe.utils.time_diff_in_seconds(req, expire)
-	if time_diff >= 0:
+	req = jaspersession_get_value(reqId)
+	if not req:
+		return False
+	data = req.get("data", {})
+	last_updated = data.get("last_updated", frappe.utils.now())
+	session_expire = req.get("session_expiry", "00:00:00")
+	time_diff, expire = get_jasper_session_expiry_seconds(last_updated, session_expire)
+	if time_diff >= expire:
 		return True
 
 	return False
