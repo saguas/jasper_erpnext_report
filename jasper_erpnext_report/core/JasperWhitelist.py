@@ -14,7 +14,7 @@ from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
 from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission, jasper_run_method,\
-	jasper_users_login, jaspersession_set_value
+	jasper_users_login, jaspersession_set_value, pipInstall
 from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail
 from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, write_file
 from jasper_erpnext_report.utils.cache import redis_transation
@@ -168,6 +168,7 @@ def get_server_info():
 @frappe.whitelist()
 def jasper_server_login():
 	jsr = jasper_session_obj or Jr.JasperRoot()
+	checkJasperRestLib()
 	login = jsr.login()
 	#get the list of reports on the server
 	r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
@@ -182,6 +183,14 @@ def jasper_server_login():
 		jaspersession_set_value("report_list_dirt_all", True)
 
 	return login
+
+def checkJasperRestLib():
+	#from jasper_erpnext_report import jasperserverlib
+	import jasper_erpnext_report as jr
+	print "jasperserverlib {}".format(jr.jasperserverlib)
+	if not jr.jasperserverlib:
+		pipInstall()
+		jr.jasperserverlib = True
 
 @frappe.whitelist()
 def get_doc(doctype, docname):
@@ -314,3 +323,5 @@ def get_jasper_email_report(data):
 	except:
 		frappe.throw(_("There is no %s report." % file_name))
 
+def pipInstallServerLib():
+	lib = "jasperserverlib"

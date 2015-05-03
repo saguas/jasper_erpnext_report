@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
-from jasper_erpnext_report import jasperserverlib
+#from jasper_erpnext_report import jasperserverlib
+import jasper_erpnext_report as jr
 import copy
 
 try:
@@ -12,9 +13,9 @@ try:
 	from jasperserver.repo_search import Search
 	from jasperserver.resource_download import DownloadBinary
 	from jasperserver.core.exceptions import Unauthorized, NotFound
-	jasperserverlib = True
+	jr.jasperserverlib = True
 except:
-	jasperserverlib = False
+	jr.jasperserverlib = False
 
 from frappe.utils import pprint_dict
 
@@ -72,7 +73,7 @@ class JasperServer(Jb.JasperBase):
 		self.check_session()
 
 	def check_session(self):
-		if not jasperserverlib:
+		if not jr.jasperserverlib:
 			return
 		if self.data['data'] and self.data['data'].get('cookie', None):
 			self.resume_connection()
@@ -244,6 +245,7 @@ class JasperServer(Jb.JasperBase):
 		rr.setAsync(True)
 		if pformat == "html":
 			rr.setAttachmentsPrefix("./images/")
+			#rr.setIgnorePagination(True)
 		try:
 			req = rs.newReportExecutionRequest(rr)
 			res = req.run().getResult("content")

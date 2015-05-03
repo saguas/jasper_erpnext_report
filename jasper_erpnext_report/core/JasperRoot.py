@@ -342,6 +342,7 @@ class JasperRoot(Jb.JasperBase):
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")
 					fileName = expId[0].get("fileName", None)
+					print "_get_report id 2 {} fileName {}".format(id, frappe.utils.pprint_dict(report, level=3))
 					file_ext = get_extension(fileName)
 					#this is for another situation
 					rid_len = 1

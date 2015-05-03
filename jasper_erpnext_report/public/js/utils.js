@@ -186,3 +186,8 @@ jasper.query_report_data = function(){
 
     return items;
 };
+
+jasper.server_type = function(){
+	var list = frappe.boot.jasper_reports_list;
+	return list.origin;
+}

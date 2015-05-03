@@ -19,6 +19,8 @@ jasper.jasper_server_connect = function(){
 			if(data.message){
 				//return data.message
 				deferred.resolve(data.message);
+			}else{
+				deferred.reject();
 			}
 		
 		}
@@ -38,8 +40,11 @@ cur_frm.cscript.jasper_connect_update_btn = function(doc){
 		var infostr = info.join("\n");
 		doc.jasper_server_name = infostr;
 		cur_frm.cscript.serverInfo(doc);
-
-	});
+		msgprint(__("Connect/Update Done!"), __("Jasper Report Configuration"));
+	})
+	.fail(function() {
+		msgprint(__("Error to Connect/Update to Jasper Reports Server."), __("Jasper Report Configuration"));
+  });
 }
 
 cur_frm.cscript.refresh = function(doc){

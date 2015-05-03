@@ -35,17 +35,21 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 			jasper_report_origin = r.jasper_report_origin.lower()
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,
-							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale}
+							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale\
+								if jasper_report_origin=="localserver" else "not Ask"}
 				size += 1
 				for report in with_param:
 						name = report.parent
+						#print "report with params name {} r.name {} params {}".format(name, r.name, report)
 						if name == r.name:
-							report.pop("parent")
 							if report.jasper_param_action == "Automatic":
-								continue
+								#continue
+								break
+							report.pop("parent")
 							report.pop("p_name")
 							report.pop("jasper_param_action")
 							ret[r.name]["params"].append(report)
+							break
 
 				for perm in with_perm_role:
 						name = perm.parent
@@ -53,6 +57,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 							perm.pop("parent")
 							ret[r.name]["perms"].append(perm)
 		ret["size"] = size
+		ret["origin"] = origin
 	return ret
 
 def jasper_print_formats(doc):
@@ -197,3 +202,14 @@ def jasper_before_list_all(method):
 def jasper_after_list_all(method, lista):
 	#print "teste list after for all hooks {} lista {}".format(method, lista)
 	pass
+
+#install module to rest in jasperreports server
+def pipInstall(package=""):
+	import pip
+	package = package or "git+https://github.com/saguas/jasperserverlib.git"
+	try:
+		pip.main(['install', package])
+		jasperserverlib = True
+	except:
+		jasperserverlib = False
+		frappe.msgprint(_("Error when install package {}".format(package)))

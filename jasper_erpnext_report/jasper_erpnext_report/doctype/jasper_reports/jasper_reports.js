@@ -78,6 +78,7 @@ cur_frm.cscript.refresh = function(doc){
 		hide_field(["jasper_locale"]);
     }
 
+	cur_frm.cscript.setServerType(doc);
 	cur_frm.cscript.report_fields(doc);
 }
 
@@ -128,6 +129,19 @@ cur_frm.cscript.show_fields = function(doc){
 
 cur_frm.cscript.report = function(doc){
 	cur_frm.cscript.report_fields(doc);
+}
+
+cur_frm.cscript.setServerType = function(doc){
+	var server_type = jasper.server_type() || "";
+	if (server_type === "both"){
+		cur_frm.set_df_property("jasper_report_origin", "options", ["JasperServer", "LocalServer"]);
+	}else if(server_type === "jasperserver only"){
+		cur_frm.set_df_property("jasper_report_origin", "options", ["JasperServer"]);
+	}else if(server_type === "local jrxml only"){
+		cur_frm.set_df_property("jasper_report_origin", "options", ["LocalServer"]);
+	}else{
+		cur_frm.set_df_property("jasper_report_origin", "options", [""]);
+	}
 }
 
 cur_frm.cscript.report_fields = function(doc){

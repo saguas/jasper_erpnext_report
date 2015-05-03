@@ -380,6 +380,7 @@ class JasperBase(object):
 		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
 		if detail.get("status") == "ready":
 			ids = []
+			print "details in prepare {}".format(detail)
 			for i in detail.get("exports"):
 				if i.get("status") == "ready":
 					id = i.get("id")
@@ -388,12 +389,20 @@ class JasperBase(object):
 					if "html" in contentType:
 						options = i.get("options", {})
 						attachs = i.get("attachments", {})
-						ids.append({"id":id, "fileName": outr.get("fileName"), "attachmentsPrefix": options.get("attachmentsPrefix"),
+						fileName = outr.get("fileName", None)
+						if not fileName:
+							import re
+							fname = uri.rsplit("/",1)[1]
+							fname = re.sub('\t|\s', '', fname)
+							#fileName = fname.replace(" ","") + ".html"
+							fileName = fname + ".html"
+						ids.append({"id":id, "fileName": fileName, "attachmentsPrefix": options.get("attachmentsPrefix"),
 									"baseUrl": options.get("baseUrl"), "attachments": attachs, "contentType": contentType})
 					else:
 						ids.append({"id":id, "fileName": outr.get("fileName"), "contentType": contentType})
 				else:
 					res['status'] = "not ready"
+					del ids[:]
 					break
 			res["ids"] = ids
 		return res

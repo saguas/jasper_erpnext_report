@@ -133,12 +133,12 @@
    "precision": ""
   }, 
   {
-   "default": "Single", 
+   "default": "Original", 
    "description": "The default number of copies when print a report. This can be changed by report.", 
    "fieldname": "report_default_number_copies", 
    "fieldtype": "Select", 
    "label": "Report Default Number of Copies", 
-   "options": "Single\nDuplicated\nTriplicate", 
+   "options": "Original\nDuplicated\nTriplicate", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -280,7 +280,7 @@
  "is_submittable": 0, 
  "issingle": 1, 
  "istable": 0, 
- "modified": "2015-05-02 21:37:44.323874", 
+ "modified": "2015-05-03 14:33:48.028607", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "JasperServerConfig", 
