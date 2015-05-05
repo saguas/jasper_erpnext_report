@@ -97,6 +97,8 @@ class JasperRoot(Jb.JasperBase):
 			data = utils.insert_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
 		elif ret:
 			data = utils.update_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
+		else:
+			data = {"data":{"origin": self.get_report_origin()}}
 		return data
 
 	def get_reports_list_for_all(self):
@@ -140,7 +142,7 @@ class JasperRoot(Jb.JasperBase):
 
 		if data:
 			#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-			data.pop('session_expiry',None)
+			data.pop('session_expiry', None)
 			data.pop('last_updated', None)
 
 			self.filter_perm_roles(data)
