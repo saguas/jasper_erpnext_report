@@ -78,7 +78,6 @@ jasper.run_jasper_report = function(method, data, doc){
      return df;
 };
 
-//TODO: must be tested!!!
 jasper.polling_report = function(data, $banner, timeout){
     var reqids = [];
     for(var i=0; i<data.length; i++){

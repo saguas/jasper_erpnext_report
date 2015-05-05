@@ -1,5 +1,1 @@
-frappe
-lxml
-PyPDF2
-cython
--e git://github.com/kivy/pyjnius.git#egg=jnius
+-e git+https://github.com/kivy/pyjnius.git#egg=jnius
