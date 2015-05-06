@@ -109,9 +109,9 @@ scheduler_events = {
 	"daily": [
 		"jasper_erpnext_report.utils.scheduler.clear_expired"
 	],
-	"hourly": [
-		"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_html"
-	]
+	#"hourly": [
+		#"jasper_erpnext_report.utils.scheduler.clear_expired_jasper_html"
+	#]
 }
 # scheduler_events = {
 # 	"all": [
