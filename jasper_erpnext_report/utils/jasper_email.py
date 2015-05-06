@@ -61,14 +61,22 @@ def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None
 	send(mail)
 
 
-def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received = "Sent", print_html=None, print_format=None, attachments='[]',
-		 send_me_a_copy=False, recipients=None):
+def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received="Sent", print_html=None, print_format=None, attachments='[]',
+		send_me_a_copy=False, recipients=None):
 
 	sent_via = frappe.get_doc(doctype, name)
 	d = frappe._dict({"subject": subject, "content": content, "sent_or_received": sent_or_received, "sender": sender or frappe.db.get_value("User", frappe.session.user, "email"),
 	"recipients": recipients})
 	send_comm_email(d, file_name, output, fileid, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
+
+def sendmail_v5(doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received="Sent", print_html=None, print_format=None, attachments='[]',
+		recipients=None):
+
+	from frappe.core.doctype.communication.communication import make
+
+	make(doctype=doctype, name=name, sender=sender, content=content, subject=subject, sent_or_received=sent_or_received, print_html=print_html, print_format=print_format, attachments=attachments,
+		recipients=recipients)
 
 def get_email_pdf_path(report_name, reqId, site=None):
 
@@ -101,6 +109,12 @@ def jasper_save_email(file_path, output):
 
 
 def get_sender(sender):
+
+	from jasper_erpnext_report.utils.utils import getFrappeVersion
+	version = getFrappeVersion()
+	if version >= 5:
+		return frappe.utils.get_formatted_email(frappe.session.user)
+
 	try:
 		sender = json.loads(sender)
 	except ValueError:
@@ -129,3 +143,10 @@ def set_jasper_email_doctype(parent_name, sent_to, sender, when, filepath, filen
 	jer_doc.insert()
 
 	return jer_doc
+
+
+def is_email_enabled():
+	from frappe.email.smtp import _get_email_account
+	#acc = frappe.get_all("Email Account", fields=["default_outgoing"], filters={"enable_outgoing": 1, "default_outgoing": 1})
+	acc = _get_email_account({"enable_outgoing": 1, "default_outgoing": 1})
+	return acc != None

@@ -62,7 +62,6 @@ class JasperReports(Document):
 			rootquery = ''
 			self.query = ''
 			jrxml_path = _get_jrxml_root_path(self)
-			print "jrxml_path {}".format(jrxml_path)
 			xmldoc = JasperXmlReport(jrxml_path)
 			xmlname = check_if_xPath_exists(xmldoc)
 			if xmlname and not check_for_report_xPath(xmldoc, xmlname, self):
@@ -121,7 +120,7 @@ class JasperReports(Document):
 			else:
 				param['value'].append('Administrator')
 		"""
-		ret = {"ids": ["Administrator", "luisfmfernandes@gmail.com"], "report_type": "List"}
+		ret = {"ids": ["Administrator", "luisfmfernandes@gmail.com", "Guest"], "report_type": "List"}
 		#ret = None
 		return ret
 

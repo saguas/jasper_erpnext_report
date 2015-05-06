@@ -180,6 +180,11 @@ cur_frm.cscript.onload = function(doc){
 
 cur_frm.cscript.jasper_upload_btn = function(doc){
 	var cs = cur_frm.cscript;
+	if (!cs.upload){
+		var opts = cur_frm.get_field("jasper_upload_jrxml_file");
+		opts["docname"] = cur_frm.docname;
+		cs.upload = new jasper.dialog_upload_tree(opts);
+	}
     cs.upload.show();
 }
 

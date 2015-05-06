@@ -213,3 +213,6 @@ def pipInstall(package=""):
 	except:
 		jasperserverlib = False
 		frappe.msgprint(_("Error when install package {}".format(package)))
+
+def getFrappeVersion():
+	return cint(frappe.__version__.split(".", 1)[0])

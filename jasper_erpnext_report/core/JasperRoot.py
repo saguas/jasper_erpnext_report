@@ -138,7 +138,8 @@ class JasperRoot(Jb.JasperBase):
 			if cached and data:
 				utils.jaspersession_set_value("report_list_dirt_all", False)
 				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-				utils.jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+				#utils.jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+				#utils.jaspersession_set_value("report_list_dirt_doc", False)
 
 		if data:
 			#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
@@ -149,11 +150,17 @@ class JasperRoot(Jb.JasperBase):
 			if not self.check_server_status():
 				self.remove_server_docs(data)
 			try:
-				data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
+				version = utils.getFrappeVersion()
+				if version >= 5:
+					from jasper_erpnext_report.utils.jasper_email import is_email_enabled
+					acc = cint(is_email_enabled())
+				else:
+					acc = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
+
+				data['mail_enabled'] = acc
 			except:
 				data['mail_enabled'] = "disabled"
 
-			print "data before pop data {}".format(data.get("size"))
 			#utils.insert_list_all_memcache_db(data, cachename="user:" + self.user + "_report_list_all")
 			#utils.jaspersession_set_value("user:" + self.user + "_report_list_all", frappe.utils.now())
 
@@ -249,7 +256,7 @@ class JasperRoot(Jb.JasperBase):
 		if not self.check_server_status():
 			self.remove_server_docs(new_data)
 
-		new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
+		#new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
 		#utils.insert_list_all_memcache_db(new_data, cachename="user:" + self.user + "_report_list_doctype")
 		return new_data
 

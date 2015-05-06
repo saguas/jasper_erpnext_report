@@ -14,8 +14,8 @@ from jasper_erpnext_report import jasper_session_obj
 from jasper_erpnext_report.core.JasperRoot import get_copies
 
 from jasper_erpnext_report.utils.utils import set_jasper_email_doctype, check_frappe_permission, jasper_run_method,\
-	jasper_users_login, jaspersession_set_value, pipInstall
-from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail
+	jasper_users_login, jaspersession_set_value, pipInstall, getFrappeVersion
+from jasper_erpnext_report.utils.jasper_email import jasper_save_email, get_sender, get_email_pdf_path, get_email_other_path, sendmail, sendmail_v5
 from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, write_file
 from jasper_erpnext_report.utils.cache import redis_transation
 
@@ -221,6 +221,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			limit += 1
 
 	pformat = data.get("pformat")
+	print "format email {}".format(pformat)
 	#we have to remove the original and send only duplicate
 	if result[0].get("status", "not ready") == "ready":
 		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
@@ -279,6 +280,27 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	jasper_run_method("jasper_before_sendmail", data, file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
+
+	version = getFrappeVersion()
+	if version >= 5:
+		file_path = None
+		if pformat != "html":
+			file_path = os.path.join(filepath, file_name)
+			jasper_save_email(file_path, output)
+
+		set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
+
+		if isinstance(attachments, basestring):
+			attachments = json.loads(attachments)
+
+		attachments.append(file_path)
+
+		sendmail_v5(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+				sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments)
+
+		jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
+
+		return
 
 	sendmail(file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,

@@ -249,9 +249,7 @@ jasper.get_doc = function(doctype, docname){
 };
 
 setJasperDropDown = function(list, callback){
-	console.log("a remover before ", $("#jasper_report_list"));
 	$(".dropdown.jasper_report_list_menu").remove();
-	console.log("a remover after ", $("#jasper_report_list"));
 	if (list && !$.isEmptyObject(list) && list.size > 0){
 		var size = list.size;
 		
@@ -350,7 +348,13 @@ jasper.getOrphanReport = function(data, ev){
 		}
     	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: jr_format, params: params, is_doctype_id: obj.is_doctype_id, grid_data: {columns: columns, data: grid_data}};
         if(jr_format === "email"){
-            jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname);
+        	var version = jasper.get_app_version("frappe");
+        	if (version >= "5"){
+        		jasper.email_doc_v5("Jasper Email Doc", cur_frm, args, data.list, docname);
+        	}else{
+        		jasper.email_doc("Jasper Email Doc", cur_frm, args, data.list, docname);
+        	}
+
         }else{
             jasper.run_jasper_report("run_report", args, docname);
         }

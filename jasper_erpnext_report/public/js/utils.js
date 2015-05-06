@@ -191,3 +191,7 @@ jasper.server_type = function(){
 	var list = frappe.boot.jasper_reports_list;
 	return list.origin;
 }
+
+jasper.get_app_version = function(appname){
+	return frappe.boot.versions[appname];
+}
