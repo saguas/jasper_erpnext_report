@@ -295,12 +295,12 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 
 		attachments.append(file_path)
 
-		sendmail_v5(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+		comm_name = sendmail_v5(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 				sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments)
 
 		jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
 
-		return
+		return comm_name
 
 	sendmail(file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,

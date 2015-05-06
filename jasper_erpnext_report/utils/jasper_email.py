@@ -75,7 +75,7 @@ def sendmail_v5(doctype=None, name=None, sender=None, content=None, subject=None
 
 	from frappe.core.doctype.communication.communication import make
 
-	make(doctype=doctype, name=name, sender=sender, content=content, subject=subject, sent_or_received=sent_or_received, print_html=print_html, print_format=print_format, attachments=attachments,
+	return make(doctype=doctype, name=name, sender=sender, content=content, subject=subject, sent_or_received=sent_or_received, print_html=print_html, print_format=print_format, attachments=attachments,
 		recipients=recipients)
 
 def get_email_pdf_path(report_name, reqId, site=None):
@@ -113,7 +113,10 @@ def get_sender(sender):
 	from jasper_erpnext_report.utils.utils import getFrappeVersion
 	version = getFrappeVersion()
 	if version >= 5:
-		return frappe.utils.get_formatted_email(frappe.session.user)
+		if not sender and frappe.session.user != "Administrator":
+			sender = frappe.utils.get_formatted_email(frappe.session.user)
+
+		return sender
 
 	try:
 		sender = json.loads(sender)
