@@ -42,7 +42,6 @@ def get_context(context):
 	#sent_to = frappe.db.get_value("Jasper Email Report", frappe.session.user, "jasper_email_sent_to")
 	context.children = get_all_email_reports()
 	context.pathname = "Jasper Reports?jasper_doc_path=" + jasper_report_path
-	print "context pathname children {} jasper_report_path {}".format(context.pathname, context.children)
 	return viewer(doc_title)
 
 

@@ -167,7 +167,6 @@ class JasperLocal(Jb.JasperBase):
 		src = fileName + "." + "html_files"
 		html_files = os.path.join(outputPath, src)
 		#this is a report without folder html_files
-		print "copy images content 3 is unicode? {}".format(isinstance(content, unicode))
 		if not os.path.exists(html_files):
 			return
 		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
@@ -179,7 +178,9 @@ class JasperLocal(Jb.JasperBase):
 		if not data['data']:
 			frappe.throw(_("No report for this requestid %s." % reqId[13:]))
 		output_path = data['data']['result'].get("uri")
-		if os.path.exists(output_path):
+		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
+		# create the file in disc
+		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
 		else:

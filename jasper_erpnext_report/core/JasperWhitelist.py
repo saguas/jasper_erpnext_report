@@ -218,13 +218,16 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
-		while not "status" in result[0] and limit <= 10:
+		while limit <= 10:
 			time.sleep(cint(jasper_polling_time)/1000)
 			result = report_polling(poll_data)
+			print "email result[0] {}".format(result[0])
+			if "status" in result[0] and result[0].get("status", "not ready") == "ready":
+				#time.sleep(cint(jasper_polling_time)/1000)
+				break
 			limit += 1
 
 	pformat = data.get("pformat")
-	print "format email {}".format(pformat)
 	#we have to remove the original and send only duplicate
 	if result[0].get("status", "not ready") == "ready":
 		rdoc = frappe.get_doc(data.get("doctype"), data.get('report_name'))
@@ -296,12 +299,10 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			jasper_save_email(file_path, output)
 			attachments.append(file_path)
 
-		set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
-
-
 		comm_name = sendmail_v5(url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 				sender=sender, recipients=recipients, send_email=send_email, print_html=print_html, print_format=print_format, attachments=attachments)
 
+		set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
 		jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
 
 		return comm_name
