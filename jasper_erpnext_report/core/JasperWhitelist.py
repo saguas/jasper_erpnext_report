@@ -206,6 +206,9 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	print_html=None, print_format=None, attachments='[]', send_me_a_copy=False, set_lead=True, date=None,
 	jasper_doc=None, docdata=None):
 
+	custom_print_html = print_html
+	custom_print_format = print_format
+
 	jasper_polling_time = frappe.db.get_value('JasperServerConfig', fieldname="jasper_polling_time")
 	data = json.loads(jasper_doc)
 	result = run_report(data, docdata)
@@ -236,7 +239,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		sender = get_sender(sender)
 
 		if pformat == "html":
-			print_html = True
+			custom_print_html = True
 			#filepath = output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
 			#filepath = output = getHtmlFilepath(report_name, fileName)
 			url, filepath = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
@@ -252,7 +255,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			#url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
 
 		elif pformat == "pdf":
-			print_format = "pdf"
+			custom_print_format = "pdf"
 			file_name, filepath, output, url = make_pdf(fileName, jasper_content, pformat, report_name, reqId=result[0].get("requestId"), merge_all=merge_all, pages=pages, email=True)
 			output = output.getvalue()
 			#filepath = get_email_pdf_path(data.get('report_name'), result[0].get("requestId"))
@@ -284,23 +287,27 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	version = getFrappeVersion()
 	if version >= 5:
 		file_path = None
-		if pformat != "html":
-			file_path = os.path.join(filepath, file_name)
-			jasper_save_email(file_path, output)
-
-		set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
 
 		if isinstance(attachments, basestring):
 			attachments = json.loads(attachments)
 
-		attachments.append(file_path)
+		if pformat != "html":
+			file_path = os.path.join(filepath, file_name)
+			jasper_save_email(file_path, output)
+			attachments.append(file_path)
 
-		comm_name = sendmail_v5(doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
-				sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments)
+		set_jasper_email_doctype(data.get('report_name'), recipients, sender, frappe.utils.now(), url, file_name)
+
+
+		comm_name = sendmail_v5(url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
+				sender=sender, recipients=recipients, send_email=send_email, print_html=print_html, print_format=print_format, attachments=attachments)
 
 		jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
 
 		return comm_name
+
+	print_format = custom_print_format
+	print_html = custom_print_html
 
 	sendmail(file_name, output, url, doctype=doctype, name=name, content=content, subject=subject, sent_or_received=sent_or_received,
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,

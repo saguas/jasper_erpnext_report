@@ -41,7 +41,8 @@ def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None
 			d.content = sent_via.get_content(d)
 
 	if print_format == "pdf" or print_html:
-		footer = "<hr>" + set_portal_link(sent_via, d, fileid)
+		#footer = "<hr>" + set_portal_link(sent_via, d, fileid)
+		pass
 
 	mail = get_email(d.recipients, sender=d.sender, subject=d.subject,
 		msg=d.content, footer=footer)
@@ -65,18 +66,28 @@ def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, co
 		send_me_a_copy=False, recipients=None):
 
 	sent_via = frappe.get_doc(doctype, name)
+	content += get_attach_link(fileid)
 	d = frappe._dict({"subject": subject, "content": content, "sent_or_received": sent_or_received, "sender": sender or frappe.db.get_value("User", frappe.session.user, "email"),
 	"recipients": recipients})
 	send_comm_email(d, file_name, output, fileid, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
 
-def sendmail_v5(doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received="Sent", print_html=None, print_format=None, attachments='[]',
+def sendmail_v5(url, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received="Sent", send_email=False, print_html=None, print_format=None, attachments='[]',
 		recipients=None):
 
 	from frappe.core.doctype.communication.communication import make
 
-	return make(doctype=doctype, name=name, sender=sender, content=content, subject=subject, sent_or_received=sent_or_received, print_html=print_html, print_format=print_format, attachments=attachments,
+	content += get_attach_link(url)
+	return make(doctype=doctype, name=name, sender=sender, content=content, subject=subject, sent_or_received=sent_or_received, send_email=send_email, print_html=print_html, print_format=print_format, attachments=attachments,
 		recipients=recipients)
+
+
+def get_attach_link(url):
+		"""Returns public link for the attachment via `templates/emails/print_link.html`."""
+		return frappe.get_template("templates/emails/print_link.html").render({
+			"url": "%s/%s" % (frappe.utils.get_url(), url)#frappe.utils.quoted("%s/%s" % (frappe.utils.get_url(), url))
+		})
+
 
 def get_email_pdf_path(report_name, reqId, site=None):
 
