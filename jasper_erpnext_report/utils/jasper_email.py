@@ -27,7 +27,7 @@ def set_portal_link(sent_via, comm, endurl):
 	return footer
 
 
-def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None, print_format=None, attachments='[]', send_me_a_copy=False):
+def send_comm_email(d, file_name, output, sent_via=None, print_html=None, print_format=None, attachments='[]', send_me_a_copy=False):
 	footer = None
 
 	from frappe.core.doctype.communication.communication import get_email, send
@@ -40,9 +40,9 @@ def send_comm_email(d, file_name, output, fileid, sent_via=None, print_html=None
 		if hasattr(sent_via, "get_content"):
 			d.content = sent_via.get_content(d)
 
-	if print_format == "pdf" or print_html:
+	#if print_format == "pdf" or print_html:
 		#footer = "<hr>" + set_portal_link(sent_via, d, fileid)
-		pass
+	#	pass
 
 	mail = get_email(d.recipients, sender=d.sender, subject=d.subject,
 		msg=d.content, footer=footer)
@@ -69,7 +69,7 @@ def sendmail(file_name, output, fileid, doctype=None, name=None, sender=None, co
 	content += get_attach_link(fileid)
 	d = frappe._dict({"subject": subject, "content": content, "sent_or_received": sent_or_received, "sender": sender or frappe.db.get_value("User", frappe.session.user, "email"),
 	"recipients": recipients})
-	send_comm_email(d, file_name, output, fileid, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
+	send_comm_email(d, file_name, output, sent_via=sent_via, print_html=print_html, print_format=print_format, attachments=attachments, send_me_a_copy=send_me_a_copy)
 
 
 def sendmail_v5(url, doctype=None, name=None, sender=None, content=None, subject=None, sent_or_received="Sent", send_email=False, print_html=None, print_format=None, attachments='[]',
