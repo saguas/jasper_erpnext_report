@@ -193,5 +193,5 @@ jasper.server_type = function(){
 }
 
 jasper.get_app_version = function(appname){
-	return frappe.boot.versions[appname] || "4";
+	return (frappe.boot.versions && frappe.boot.versions[appname]) || "4";
 }
