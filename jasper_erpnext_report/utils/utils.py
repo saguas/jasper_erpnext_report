@@ -215,7 +215,8 @@ def pipInstall(package=""):
 		frappe.msgprint(_("Error when install package {}".format(package)))
 
 def getFrappeVersion(version=None):
-	version = version or frappe.__version__.split(".", 1)
+	version = version or frappe.__version__#.split(".", 1)
 	import semantic_version as sv
+	print "version {}".format(version)
 	#cint(frappe.__version__.split(".", 1)[0])
 	return sv.Version(version)
