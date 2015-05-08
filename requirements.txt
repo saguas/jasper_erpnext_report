@@ -1,5 +1,4 @@
 frappe
-lxml
 PyPDF2
 cython
-#-e git+https://github.com/kivy/pyjnius.git#egg=jnius
+lxml
