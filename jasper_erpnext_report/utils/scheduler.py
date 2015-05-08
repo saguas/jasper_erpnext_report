@@ -1,8 +1,9 @@
 __author__ = 'luissaguas'
 import frappe
 from frappe import _
-from jasper_erpnext_report.utils.utils import jaspersession_get_value,\
-	get_expiry_in_seconds, get_jasper_data, get_expiry_period, get_jasper_session_expiry_seconds
+from jasper_erpnext_report.utils.utils import jaspersession_get_value,get_expiry_in_seconds,\
+	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion
+
 from jasper_erpnext_report.utils.file import remove_directory
 
 
@@ -192,7 +193,8 @@ def clear_all_jasper_cache(force=True):
 	"""This function is meant to be called from scheduler"""
 	removed = 0
 
-	version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+	#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+	version = getFrappeVersion().major
 	if version > 4:
 		r = clear_all_jasper_user_redis_cache(force=force)
 		removed += r
@@ -233,7 +235,8 @@ def clear_jasper_sessions(force=True):
 		removed += 1
 		frappe.db.sql("""delete from `tabJasperSessions` """)
 		if force:
-			version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+			#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+			version = getFrappeVersion().major
 			if version > 4:
 				clear_all_jasper_from_redis_cache()
 			else:
@@ -282,12 +285,9 @@ def clear_cache():
 	if local_session_data.sid == "Administrator":
 		clear_all_jasper_reports()
 		clear_all_jasper_cache()
-		version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+		#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
+		version = getFrappeVersion().major
 		if version > 4:
 			clear_all_jasper_from_redis_cache()
 		else:
 			clear_all_jasper_from_cache_v4()
-
-
-#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
-#if version < 5:

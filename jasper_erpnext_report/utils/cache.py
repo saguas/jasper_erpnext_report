@@ -8,6 +8,7 @@ from frappe.utils import cint
 from redis import WatchError
 import pickle, time
 
+from jasper_erpnext_report.utils.utils import getFrappeVersion
 redis_cache_retry = 10 #10s
 
 jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},
@@ -19,7 +20,9 @@ jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mca
 def redis_transation(data, watch):
 	#if not data:
 	#	return True#version frappe 4
-	if frappe.utils.cint(frappe.__version__.split(".", 1)[0]) < 5:
+	version = getFrappeVersion().major
+	#if frappe.utils.cint(frappe.__version__.split(".", 1)[0]) < 5:
+	if version < 5:
 		return True
 
 	ret = False

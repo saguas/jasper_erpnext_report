@@ -287,7 +287,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
 		send_me_a_copy=send_me_a_copy)
 
-	version = getFrappeVersion()
+	version = getFrappeVersion().major
 	if version >= 5:
 		file_path = None
 

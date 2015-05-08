@@ -122,7 +122,7 @@ def jasper_save_email(file_path, output):
 def get_sender(sender):
 
 	from jasper_erpnext_report.utils.utils import getFrappeVersion
-	version = getFrappeVersion()
+	version = getFrappeVersion().major
 	if version >= 5:
 		if not sender and frappe.session.user != "Administrator":
 			sender = frappe.utils.get_formatted_email(frappe.session.user)

@@ -150,7 +150,7 @@ class JasperRoot(Jb.JasperBase):
 			if not self.check_server_status():
 				self.remove_server_docs(data)
 			try:
-				version = utils.getFrappeVersion()
+				version = utils.getFrappeVersion().major
 				if version >= 5:
 					from jasper_erpnext_report.utils.jasper_email import is_email_enabled
 					acc = cint(is_email_enabled())
