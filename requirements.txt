@@ -1,6 +1,1 @@
-frappe
-PyPDF2
-cython
-lxml
-semantic_version
-#-e git+https://github.com/kivy/pyjnius.git#egg=jnius
+-e git+https://github.com/kivy/pyjnius.git#egg=jnius
