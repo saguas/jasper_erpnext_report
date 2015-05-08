@@ -3,8 +3,8 @@ import os
 
 version = '0.0.1'
 
-#with open("requirements.txt", "r") as f:
-#	install_requires = f.readlines()
+with open("requirements.txt", "r") as f:
+	install_requires = f.readlines()
 
 setup(
     name='jasper_erpnext_report',
@@ -15,11 +15,11 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
-    #install_requires=install_requires
-	install_requires=[
-		"frappe",
-		"lxml",
-		"PyPDF2",
-		"cython"
-	]
+    install_requires=install_requires
+	#install_requires=[
+	#	"frappe",
+	#	"lxml",
+	#	"PyPDF2",
+	#	"cython"
+	#]
 )
