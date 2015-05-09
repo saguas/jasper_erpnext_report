@@ -376,9 +376,9 @@ class JasperBase(object):
 		pass
 
 	def prepareResponse(self, detail, reqId):
-		uri = detail.get("reportURI")
+		uri = detail.get("reportURI", None)
 		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
-		if detail.get("status") == "ready":
+		if detail.get("status", "not ready") == "ready":
 			ids = []
 			print "details in prepare {}".format(detail)
 			for i in detail.get("exports"):

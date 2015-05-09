@@ -110,7 +110,7 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("numberPattern", frappe.db.get_default("number_format"))
 				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), ) )
+				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId) )
 				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
@@ -119,7 +119,7 @@ class JasperLocal(Jb.JasperBase):
 				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
-	def _export_report(self, mparams, report_name, localsite, grid_data):
+	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId):
 		try:
 			outtype = mparams.get("type")
 			outputPath = mparams.get("outputPath")
@@ -139,6 +139,7 @@ class JasperLocal(Jb.JasperBase):
 				self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
 			print "Error in report %s, error is: %s" % (report_name, e)
+			utils.jaspersession_set_value(sessionId, e)
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):
@@ -180,6 +181,12 @@ class JasperLocal(Jb.JasperBase):
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
+		error = utils.jaspersession_get_value(reqId)
+		if error:
+			print "request with error {}".format(reqId)
+			res = self.prepareResponse({}, reqId)
+			res[error] = error
+			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
