@@ -319,9 +319,11 @@ class JasperServer(Jb.JasperBase):
 				frappe.utils.email_lib.sendmail_to_system_managers(subject, body)
 			except Exception as e:
 				_logger.info(_("Jasper Server, email error: {}".format(e)))
+				_logger.error(_("Jasper Server, email error: {}".format(e)))
 		else:
 			import frappe.email
 			try:
 				frappe.email.sendmail_to_system_managers(subject, body)
 			except Exception as e:
 				_logger.info(_("Jasper Server, email error: {}".format(e)))
+				_logger.error(_("Jasper Server, email error: {}".format(e)))
