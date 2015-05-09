@@ -312,7 +312,7 @@ class JasperServer(Jb.JasperBase):
 
 	def send_email(self, body, subject, user="no_reply@gmail.com"):
 		from jasper_erpnext_report.utils.utils import getFrappeVersion
-		version = getFrappeVersion()
+		version = getFrappeVersion().major
 		if version < 5:
 			import frappe.utils.email_lib
 			try:
