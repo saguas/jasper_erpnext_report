@@ -60,7 +60,7 @@ def _jasperserver(fn):
 			return fn_result
 		except Exception as e:
 			print "Problems: {}\n".format(e)
-			_logger.error(_("Problems {}".format(e)))
+			_logger.error(_("Problems {}").format(e))
 
 	return innerfn
 
@@ -85,6 +85,7 @@ class JasperServer(Jb.JasperBase):
 		self.connect()
 		if not self.in_jasper_session() and self.user == "Administrator":
 			self.send_email(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."), _("Jasper Server, login error"))
+			_logger.error(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."))
 
 	def in_jasper_session(self):
 		try:
@@ -117,7 +118,8 @@ class JasperServer(Jb.JasperBase):
 		except Exception as e:
 			self.is_login = False
 			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
-			self.send_email(_("Jasper Server, login error. Reason: {}".format(e)), _("Jasper Server, login error"), user=cur_user)
+			self.send_email(_("Jasper Server, login error. Reason: {}").format(e), _("Jasper Server, login error"), user=cur_user)
+			_logger.error(_("Jasper Server, login error. Reason: {}").format(e))
 
 	def logout(self):
 		if self.session:
@@ -128,7 +130,7 @@ class JasperServer(Jb.JasperBase):
 			self.logout()
 			self.login()
 		except:
-			_logger.info("_login: JasperServerSession Error while timeout and login")
+			_logger.error(_("_login: JasperServerSession Error while timeout and login"))
 
 		_logger.info("_timeout JasperServerSession login successfuly {0}".format(self.doc))
 
