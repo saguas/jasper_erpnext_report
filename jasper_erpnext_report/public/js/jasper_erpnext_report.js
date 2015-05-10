@@ -93,7 +93,6 @@ jasper.polling_report = function(data, $banner, timeout){
 	       callback: function(response_data){
                if (response_data && response_data.message){
                    var msg = response_data.message;
-                   console.log ("message msg ", msg);
                    if (msg[0].status === "ready"){
 					   jasper.poll_count = 0;
                        jasper.jasper_report_ready(msg, $banner, timeout);
