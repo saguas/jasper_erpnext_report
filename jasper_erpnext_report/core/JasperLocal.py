@@ -16,9 +16,10 @@ import uuid
 import thread
 import os
 
-_logger = frappe.get_logger(__name__)
 
-error_cache = frappe._dict({})
+_logger = frappe.get_logger("frappe")
+
+#error_cache = frappe._dict({})
 
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 
@@ -142,13 +143,15 @@ class JasperLocal(Jb.JasperBase):
 				content = get_file(outputPath + fileName + ".html")
 				self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
+			import calendar, time
 			print "Error in report %s, error is: %s" % (report_name, e)
 			#utils.jaspersession_set_value(sessionId, e)
 			s = "{0}".format(str(e))
 			#error_cache[sessionId] = s
 			cache = frappe.cache()
-			cache.set(sessionId.encode('utf-8'), s)
-			print "str(sessionId) {} s {}".format(str(sessionId), cache.get(sessionId.encode('utf-8')))
+			t = calendar.timegm(time.gmtime())
+			cache.set("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8'), {"e": s, "t": t})
+			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):
@@ -193,15 +196,15 @@ class JasperLocal(Jb.JasperBase):
 		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
 		cache = frappe.cache()
-		error = cache.get(reqId.encode('utf-8'))
+		error = cache.get("site.all:jasper:".encode('utf-8') + reqId.encode('utf-8'))
 		print "polling str(sessionId) {} s {}".format(str(reqId), error)
 		if error:
 			print "request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
-			res["error"] = error if self.user == "Administrator" else "Erro, contact Administrator."
+			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
 			#del error_cache[reqId]
-			cache.delete(reqId.encode('utf-8'))
-			_logger.error(_("Jasper Report Error {} for reqid {}".format(error, reqId)))
+			#cache.delete("site.all:jasper:".encode('utf-8') + reqId.encode('utf-8'))
+			_logger.error(_("Jasper Report Error {} for reqid {}".format(error.get("e"), reqId)))
 			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)

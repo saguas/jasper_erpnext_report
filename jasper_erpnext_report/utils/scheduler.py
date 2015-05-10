@@ -2,7 +2,7 @@ __author__ = 'luissaguas'
 import frappe
 from frappe import _
 from jasper_erpnext_report.utils.utils import jaspersession_get_value,get_expiry_in_seconds,\
-	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion
+	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion, add_to_time_str
 
 from jasper_erpnext_report.utils.file import remove_directory
 
@@ -11,26 +11,30 @@ from jasper_erpnext_report.utils.file import remove_directory
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.list_all_memcached_keys_v4
 def list_all_memcached_keys_v4(value=None):
 	from memcache_stats import MemcachedStats
+	keys = []
 	memc = MemcachedStats()
 	if value:
 		for m in memc.keys():
 			if value in m:
 				print m
+				keys.append(m)
 	else:
-		print (memc.keys())
+		keys = memc.keys()
+		print (keys)
 
+	return keys
 
 def list_all_redis_keys(key):
 	redis = frappe.cache()
 	return redis.get_keys(key)
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_all_jasper_cache_v4 to force clear cache
-def clear_all_jasper_from_cache_v4():
+def clear_all_jasper_from_cache_v4(key="jasper"):
 	from memcache_stats import MemcachedStats
 	#use memcache_stats for delete any cache that remains
 	memc = MemcachedStats()
 	for m in memc.keys():
-		if "jasper" in m:
+		if key in m:
 			value = m.split(":", 1)
 			frappe.cache().delete_value(value[1])
 
@@ -269,10 +273,57 @@ def clear_expired_jasper_html():
 						remove_directory(dirName)
 """
 
+def clear_expired_jasper_error(force=False):
+
+	for sessionId in ["connect_error", "login_error"]:
+		if force:
+			frappe.cache().delete_value("jasper:" + sessionId)
+			continue
+		clear_expired_jasper_error_help(sessionId)
+
+def clear_expired_jasper_error_help(sessionId):
+	import frappe.utils
+	last_err = jaspersession_get_value(sessionId)
+	if not last_err:
+		return
+	time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_err)
+	if time_diff >= 4:
+		frappe.cache().delete_value("jasper:" + sessionId)
+
+
+def clear_jasper_cache_local_report():
+	key="jasper:site.all:local_report_"
+	version = getFrappeVersion().major
+	if version <= 4:
+		clear_all_jasper_from_cache_v4(key=key)
+	else:
+		clear_all_jasper_from_redis_cache(key=key)
+
+
+def clear_expired_jasper_cache_local_reports():
+	version = getFrappeVersion().major
+	if version <= 4:
+		keys = list_all_memcached_keys_v4(value="site.all:jasper:local_report_")
+	else:
+		keys = list_all_redis_keys("site.all:jasper:local_report_")
+
+	if not keys:
+		return
+	print "keys {}".format(keys)
+	if isinstance(keys, basestring):
+		keys = [keys]
+
+	for key in keys:
+		val = frappe.cache().get(key)
+
+		if val.get("t") >= 600:
+			frappe.cache().delete(key)
 
 def clear_expired(force=False):
 	clear_expired_jasper_reports(force=force)
 	clear_expired_jasper_sessions(force=force)
+	clear_expired_jasper_error(force=force)
+	clear_expired_jasper_cache_local_reports()
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
@@ -285,6 +336,8 @@ def clear_cache():
 	if local_session_data.sid == "Administrator":
 		clear_all_jasper_reports()
 		clear_all_jasper_cache()
+		clear_expired_jasper_error(force=True)
+		clear_jasper_cache_local_report()
 		#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
 		version = getFrappeVersion().major
 		if version > 4:

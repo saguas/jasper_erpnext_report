@@ -32,8 +32,8 @@ import jasper_erpnext_report.utils.utils as utils
 
 import JasperBase as Jb
 
-_logger = frappe.get_logger(__name__)
 
+_logger = frappe.get_logger("frappe")
 
 
 def _jasperserver(fn):
@@ -148,6 +148,7 @@ class JasperServer(Jb.JasperBase):
 		if not last_err:
 			last_err = utils.add_to_time_str(hours=-5)
 		time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_err)
+		print "last_err 3 {} time_diff {}".format(last_err, time_diff)
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
