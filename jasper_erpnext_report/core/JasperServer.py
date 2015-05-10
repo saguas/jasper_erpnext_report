@@ -309,21 +309,3 @@ class JasperServer(Jb.JasperBase):
 			return content
 		except NotFound:
 			frappe.throw(_("Not Found!!!"))
-
-	def send_email(self, body, subject, user="no_reply@gmail.com"):
-		from jasper_erpnext_report.utils.utils import getFrappeVersion
-		version = getFrappeVersion().major
-		if version < 5:
-			import frappe.utils.email_lib
-			try:
-				frappe.utils.email_lib.sendmail_to_system_managers(subject, body)
-			except Exception as e:
-				_logger.info(_("Jasper Server, email error: {}".format(e)))
-				_logger.error(_("Jasper Server, email error: {}".format(e)))
-		else:
-			import frappe.email
-			try:
-				frappe.email.sendmail_to_system_managers(subject, body)
-			except Exception as e:
-				_logger.info(_("Jasper Server, email error: {}".format(e)))
-				_logger.error(_("Jasper Server, email error: {}".format(e)))

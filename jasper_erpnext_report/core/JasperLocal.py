@@ -16,6 +16,8 @@ import uuid
 import thread
 import os
 
+_logger = frappe.get_logger(__name__)
+
 error_cache = frappe._dict({})
 
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
@@ -143,9 +145,8 @@ class JasperLocal(Jb.JasperBase):
 			print "Error in report %s, error is: %s" % (report_name, e)
 			#utils.jaspersession_set_value(sessionId, e)
 			s = "Error {0}".format(str(e))
-			print "json dump {}".format(s)
 			error_cache[sessionId] = s
-			print "setting in cache ssid {}".format(sessionId)
+			_logger.error(_("Jasper Report Error, report name {} sessionID {} Error: {}").format(report_name, sessionId, e))
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):

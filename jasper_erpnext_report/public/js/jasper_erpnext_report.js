@@ -114,13 +114,9 @@ jasper.polling_report = function(data, $banner, timeout){
 							   jasper.polling_report(data, $banner, timeout);
                            }
                        });
-                   }else if(msg[0].error){
-                       jasper.poll_count = 0;
-                       msgprint(msg[0].error, __("Report error."));
-                       jasper.close_banner($banner);
                    }else{
 					   jasper.poll_count = 0;
-                       msgprint(msg[0].value, __("Report error."));
+                       msgprint(msg[0].error || msg[0].value, __("Report error."));
                        jasper.close_banner($banner);
                    }
                }
