@@ -16,6 +16,8 @@ import uuid
 import thread
 import os
 
+error_cache = frappe._dict({})
+
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 
 class JasperLocal(Jb.JasperBase):
@@ -139,7 +141,11 @@ class JasperLocal(Jb.JasperBase):
 				self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
 			print "Error in report %s, error is: %s" % (report_name, e)
-			utils.jaspersession_set_value(sessionId, e)
+			#utils.jaspersession_set_value(sessionId, e)
+			s = "Error {0}".format(str(e))
+			print "json dump {}".format(s)
+			error_cache[sessionId] = s
+			print "setting in cache ssid {}".format(sessionId)
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):
@@ -181,11 +187,13 @@ class JasperLocal(Jb.JasperBase):
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
-		error = utils.jaspersession_get_value(reqId)
+		print "reqId {}".format(reqId)
+		error = error_cache.get(reqId)
 		if error:
-			print "request with error {}".format(reqId)
+			print "request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
-			res[error] = error
+			res["error"] = error if self.user == "Administrator" else "Erro, contact Administrator."
+			del error_cache[reqId]
 			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)

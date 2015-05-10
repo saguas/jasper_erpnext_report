@@ -470,6 +470,7 @@ class JasperBase(object):
 	def report_polling_base(self, reqId, report_name):
 		result = []
 		req = [{}]
+		error = None
 		data = self.get_jasper_reqid_data(reqId)
 		if data:
 			d = data['data']
@@ -478,8 +479,9 @@ class JasperBase(object):
 					res = self.polling(id)
 					if not res:
 						frappe.msgprint(_("There was an error in report request."),raise_exception=True)
-					if res.get('status') != "ready":
+					if res.get('status', "not ready") != "ready":
 						result = []
+						error = res.get("error", None)
 						break
 					result.append(res)
 				if not result:
@@ -492,6 +494,8 @@ class JasperBase(object):
 		else:
 			print "Report Not Found."
 			frappe.throw(_("Report Not Found."))
+		if error:
+			req[0]["error"] = error
 		return req
 
 	def get_html_path(self, report_name, localsite=None, content=None):

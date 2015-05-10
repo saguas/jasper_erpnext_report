@@ -93,10 +93,11 @@ jasper.polling_report = function(data, $banner, timeout){
 	       callback: function(response_data){
                if (response_data && response_data.message){
                    var msg = response_data.message;
+                   console.log ("message msg ", msg);
                    if (msg[0].status === "ready"){
 					   jasper.poll_count = 0;
                        jasper.jasper_report_ready(msg, $banner, timeout);
-                   }else if (!msg[0].status){
+                   }else if (!msg[0].status && !msg[0].error){
 					   if (jasper.poll_count <= 9 ){
 						   jasper.poll_count++;
 						   var ptime = parseInt(frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list.jasper_polling_time);
@@ -114,9 +115,14 @@ jasper.polling_report = function(data, $banner, timeout){
 							   jasper.polling_report(data, $banner, timeout);
                            }
                        });
+                   }else if(msg[0].error){
+                       jasper.poll_count = 0;
+                       msgprint(msg[0].error, __("Report error."));
+                       jasper.close_banner($banner);
                    }else{
 					   jasper.poll_count = 0;
                        msgprint(msg[0].value, __("Report error."));
+                       jasper.close_banner($banner);
                    }
                }
 		   }
