@@ -10,6 +10,7 @@
 *.exe
 *.o
 *.so
+*rdb
 tags
 
 # Backups #
