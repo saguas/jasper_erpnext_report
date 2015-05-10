@@ -220,3 +220,10 @@ def getFrappeVersion(version=None):
 	print "version {}".format(version)
 	#cint(frappe.__version__.split(".", 1)[0])
 	return sv.Version(version)
+
+def add_to_time_str(date=None, hours=0, days=0, weeks=0):
+	from datetime import timedelta
+	date = date or frappe.utils.now()
+	d = frappe.utils.get_datetime(date) + timedelta(hours=hours, days=days, weeks=weeks)
+	new_date = frappe.utils.get_datetime_str(d)
+	return new_date

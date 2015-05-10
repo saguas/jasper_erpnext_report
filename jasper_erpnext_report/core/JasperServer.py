@@ -60,7 +60,7 @@ def _jasperserver(fn):
 			return fn_result
 		except Exception as e:
 			print "Problems: {}\n".format(e)
-			_logger.error(_("Problems {}").format(e))
+			_logger.error(_("Problems {}".format(e)))
 
 	return innerfn
 
@@ -84,8 +84,19 @@ class JasperServer(Jb.JasperBase):
 	def login(self):
 		self.connect()
 		if not self.in_jasper_session() and self.user == "Administrator":
-			self.send_email(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."), _("Jasper Server, login error"))
-			_logger.error(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."))
+			sessionId = "login_error"
+			msg = _("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius).")
+			title = _("Jasper Server, login error")
+			self.send_mail_and_logger(sessionId, msg, title)
+			#last_login = utils.jaspersession_get_value("login_error")
+			#if not last_login:
+			#	last_login = utils.add_to_time_str(hours=-5)
+			#time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_login)
+			#if time_diff >= 4:
+			#	self.send_email(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."), _("Jasper Server, login error"))
+			#	utils.jaspersession_set_value("login_error", frappe.utils.now())
+			#	_logger.error(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."))
+
 
 	def in_jasper_session(self):
 		try:
@@ -117,9 +128,30 @@ class JasperServer(Jb.JasperBase):
 
 		except Exception as e:
 			self.is_login = False
-			cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
-			self.send_email(_("Jasper Server, login error. Reason: {}").format(e), _("Jasper Server, login error"), user=cur_user)
-			_logger.error(_("Jasper Server, login error. Reason: {}").format(e))
+			sessionId = "connect_error"
+			msg = _("Jasper Server, login error. Reason: {}".format(e))
+			title = _("Jasper Server, login error")
+			self.send_mail_and_logger(sessionId, msg, title)
+			#cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
+			#last_conn = utils.jaspersession_get_value("connect_error")
+			#if not last_conn:
+			#	last_conn = utils.add_to_time_str(hours=-5)
+			#time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_conn)
+			#if time_diff >= 4:
+			#	self.send_email(_("Jasper Server, login error. Reason: {}").format(e), _("Jasper Server, login error"), user=cur_user)
+			#	utils.jaspersession_set_value("connect_error", frappe.utils.now())
+			#	_logger.error(_("Jasper Server, login error. Reason: {}").format(e))
+
+	def send_mail_and_logger(self, sessionId, msg, title):
+		cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
+		last_err = utils.jaspersession_get_value(sessionId)
+		if not last_err:
+			last_err = utils.add_to_time_str(hours=-5)
+		time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_err)
+		if time_diff >= 4:
+			self.send_email(msg, title, user=cur_user)
+			utils.jaspersession_set_value(sessionId, frappe.utils.now())
+			_logger.error(msg)
 
 	def logout(self):
 		if self.session:
@@ -301,7 +333,7 @@ class JasperServer(Jb.JasperBase):
 			report = rexecreq.export().outputResource().getResult("content")
 			return report
 		except NotFound:
-			frappe.throw(_("Not Found!!!"))
+			frappe.throw(_("Not Found."))
 
 	def getAttachment(self, reqId, expId, attachmentId):
 		try:
@@ -310,4 +342,4 @@ class JasperServer(Jb.JasperBase):
 			content = rexecreq.export().attachment(attachmentId)
 			return content
 		except NotFound:
-			frappe.throw(_("Not Found!!!"))
+			frappe.throw(_("Not Found."))
