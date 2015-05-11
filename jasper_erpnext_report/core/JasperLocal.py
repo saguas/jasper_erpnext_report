@@ -151,7 +151,7 @@ class JasperLocal(Jb.JasperBase):
 			cache = frappe.cache()
 			#t = calendar.timegm(time.gmtime())
 			t = int(time.time())
-			cache.set("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8'), {"e": s, "t": t})
+			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), {"e": s, "t": t})
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
@@ -197,15 +197,15 @@ class JasperLocal(Jb.JasperBase):
 		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
 		cache = frappe.cache()
-		error = cache.get("site.all:jasper:".encode('utf-8') + reqId.encode('utf-8'))
+		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
 		print "polling str(sessionId) {} s {}".format(str(reqId), error)
 		if error:
 			print "request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
 			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
 			#del error_cache[reqId]
-			#cache.delete("site.all:jasper:".encode('utf-8') + reqId.encode('utf-8'))
 			_logger.error(_("Jasper Report Error {} for reqid {}".format(error.get("e"), reqId)))
+			cache.delete(("site.all:jasper:" + reqId).encode('utf-8'))
 			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
