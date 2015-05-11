@@ -152,8 +152,8 @@ class JasperServer(Jb.JasperBase):
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
-		if log:
-			_logger.error(msg)
+			if log:
+				_logger.error(msg)
 
 	def logout(self):
 		if self.session:
