@@ -11,7 +11,7 @@ import uuid
 import jasper_erpnext_report.utils.utils as utils
 from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
 
-_logger = frappe.get_logger(__name__)
+_logger = frappe.get_logger("jasper_erpnext_report")
 
 jasper_fields_not_supported = ["parent", "owner", "modified_by", "parenttype", "parentfield", "docstatus", "doctype", "name", "idx"]
 

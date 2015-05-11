@@ -17,7 +17,7 @@ import thread
 import os
 
 
-_logger = frappe.get_logger(__name__)
+_logger = frappe.get_logger("jasper_erpnext_report")
 
 #error_cache = frappe._dict({})
 
