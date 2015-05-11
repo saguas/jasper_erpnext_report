@@ -169,8 +169,10 @@ def get_server_info():
 	return jsr._get_server_info()
 
 @frappe.whitelist()
-def jasper_server_login():
-	jsr = jasper_session_obj or Jr.JasperRoot()
+def jasper_server_login(doc):
+	print "doc from client {}".format(doc)
+	doc = json.loads(doc)
+	jsr = jasper_session_obj or Jr.JasperRoot(doc)
 	checkJasperRestLib()
 	login = jsr.login()
 	#get the list of reports on the server
@@ -190,6 +192,12 @@ def jasper_server_login():
 def checkJasperRestLib():
 	#from jasper_erpnext_report import jasperserverlib
 	import jasper_erpnext_report as jr
+	try:
+		import jasperserver.core as jasper
+		jr.jasperserverlib = True
+	except:
+		jr.jasperserverlib = False
+
 	print "jasperserverlib {}".format(jr.jasperserverlib)
 	if not jr.jasperserverlib:
 		pipInstall()

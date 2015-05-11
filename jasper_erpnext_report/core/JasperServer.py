@@ -87,7 +87,7 @@ class JasperServer(Jb.JasperBase):
 			sessionId = "login_error"
 			msg = _("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius).")
 			title = _("Jasper Server, login error")
-			self.send_mail_and_logger(sessionId, msg, title)
+			#self.send_mail_and_logger(sessionId, msg, title)
 			#last_login = utils.jaspersession_get_value("login_error")
 			#if not last_login:
 			#	last_login = utils.add_to_time_str(hours=-5)
@@ -131,7 +131,7 @@ class JasperServer(Jb.JasperBase):
 			sessionId = "connect_error"
 			msg = _("Jasper Server, login error. Reason: {}".format(e))
 			title = _("Jasper Server, login error")
-			self.send_mail_and_logger(sessionId, msg, title)
+			#self.send_mail_and_logger(sessionId, msg, title)
 			#cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
 			#last_conn = utils.jaspersession_get_value("connect_error")
 			#if not last_conn:

@@ -11,9 +11,10 @@ jasper.get_jasper_server_info = function(){
 	});
 }
 
-jasper.jasper_server_connect = function(){
+jasper.jasper_server_connect = function(doc){
 	var deferred = jQuery.Deferred();
 	frappe.call({
+        args:{"doc":doc},
 		"method": "jasper_erpnext_report.core.JasperWhitelist.jasper_server_login",
 		callback: function (data) {
 			if(data.message){
@@ -30,7 +31,7 @@ jasper.jasper_server_connect = function(){
 }
 
 cur_frm.cscript.jasper_connect_update_btn = function(doc){
-	var deferred = jasper.jasper_server_connect();
+	var deferred = jasper.jasper_server_connect(doc);
 	deferred.done(function(data){
 		var info = [];
 		server_info = JSON.parse(data);

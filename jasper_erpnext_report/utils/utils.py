@@ -206,12 +206,13 @@ def jasper_after_list_all(method, lista):
 #install module to rest in jasperreports server
 def pipInstall(package=""):
 	import pip
+	import jasper_erpnext_report as jr
 	package = package or "git+https://github.com/saguas/jasperserverlib.git"
 	try:
 		pip.main(['install', package])
-		jasperserverlib = True
+		jr.jasperserverlib = True
 	except:
-		jasperserverlib = False
+		jr.jasperserverlib = False
 		frappe.msgprint(_("Error when install package {}".format(package)))
 
 def getFrappeVersion(version=None):
