@@ -141,7 +141,7 @@ class JasperServer(Jb.JasperBase):
 			#	utils.jaspersession_set_value("connect_error", frappe.utils.now())
 			#	_logger.error(_("Jasper Server, login error. Reason: {}").format(e))
 
-	def send_mail_and_logger(self, sessionId, msg, title):
+	def send_mail_and_logger(self, sessionId, msg, title, log=True):
 		cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
 		last_err = utils.jaspersession_get_value(sessionId)
 		if not last_err:
@@ -151,7 +151,8 @@ class JasperServer(Jb.JasperBase):
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
-			_logger.error({"asctime": time_diff, "message":msg, "site":"this site", "tb": "teste"})
+			if log:
+				_logger.error(msg)
 
 	def logout(self):
 		if self.session:
