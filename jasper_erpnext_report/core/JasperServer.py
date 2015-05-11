@@ -33,8 +33,7 @@ import jasper_erpnext_report.utils.utils as utils
 import JasperBase as Jb
 
 
-_logger = frappe.get_logger("frappe")
-
+_logger = frappe.get_logger(__name__)
 
 def _jasperserver(fn):
 	"""
@@ -152,7 +151,7 @@ class JasperServer(Jb.JasperBase):
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
-			_logger.error(msg)
+			_logger.error({"asctime": time_diff, "message":msg, "site":"this site", "tb": "teste"})
 
 	def logout(self):
 		if self.session:

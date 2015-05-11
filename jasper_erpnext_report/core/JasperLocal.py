@@ -17,7 +17,7 @@ import thread
 import os
 
 
-_logger = frappe.get_logger("frappe")
+_logger = frappe.get_logger(__name__)
 
 #error_cache = frappe._dict({})
 
@@ -143,13 +143,14 @@ class JasperLocal(Jb.JasperBase):
 				content = get_file(outputPath + fileName + ".html")
 				self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
-			import calendar, time
+			import time
 			print "Error in report %s, error is: %s" % (report_name, e)
 			#utils.jaspersession_set_value(sessionId, e)
 			s = "{0}".format(str(e))
 			#error_cache[sessionId] = s
 			cache = frappe.cache()
-			t = calendar.timegm(time.gmtime())
+			#t = calendar.timegm(time.gmtime())
+			t = int(time.time())
 			cache.set("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8'), {"e": s, "t": t})
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))

@@ -318,10 +318,13 @@ def clear_expired_jasper_cache_local_reports(force=False):
 	if isinstance(keys, basestring):
 		keys = [keys]
 
+	import time
+
 	for key in keys:
 		val = frappe.cache().get(key)
 
-		if val.get("t") >= 600:
+		t = int(time.time())
+		if t - int(val.get("t")) >= 600:
 			frappe.cache().delete(key)
 
 def clear_expired(force=False):
