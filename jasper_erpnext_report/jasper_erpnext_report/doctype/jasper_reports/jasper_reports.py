@@ -25,26 +25,32 @@ HOOKS:
 
 
 class JasperReports(Document):
-	def on_update(self, method=None):
-		r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
-		jr = JasperRoot()
-		data = jr._get_reports_list(filters_report=r_filters)
-		#report_list_dirt_doc is not called from here
-		cached = redis_transation(data, "report_list_all")
-		if cached and data:
-			#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-			#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
-			jaspersession_set_value("report_list_dirt_doc", True)
-		elif data:
-			#redis not cache
-			jaspersession_set_value("report_list_dirt_all", True)
 
-		if check_root_exists(self.doctype, self.name):
-			return
-		#if jrxml file was removed then remove all associated images and params
-		if self.jasper_report_origin.lower() == "localserver":
-			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(self.name), auto_commit=1)
-			self.query = ""
+	def on_update(self, method=None):
+
+		if not frappe.flags.in_import:
+
+			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+			jr = JasperRoot()
+			data = jr._get_reports_list(filters_report=r_filters)
+			#report_list_dirt_doc is not called from here
+			cached = redis_transation(data, "report_list_all")
+			if cached and data:
+				#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
+				#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
+				jaspersession_set_value("report_list_dirt_all", False)
+				jaspersession_set_value("report_list_dirt_doc", False)
+			elif data:
+				#redis not cache
+				jaspersession_set_value("report_list_dirt_doc", True)
+				jaspersession_set_value("report_list_dirt_all", True)
+
+			if check_root_exists(self.doctype, self.name):
+				return
+			#if jrxml file was removed then remove all associated images and params
+			if self.jasper_report_origin.lower() == "localserver":
+				frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(self.name), auto_commit=1)
+				self.query = ""
 
 	def before_save(self, method=None):
 		self.jasper_doctype = None if not frappe.utils.strip(self.jasper_doctype) else self.jasper_doctype

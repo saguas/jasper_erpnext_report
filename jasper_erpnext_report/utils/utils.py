@@ -78,13 +78,17 @@ def validate_print_permission(doc):
 
 def import_all_jasper_remote_reports(docs, force=True):
 	frappe.only_for("Administrator")
+	if not docs:
+		return
 	frappe.flags.in_import = True
 	for d in docs:
 		import_doc(d.parent_doc.as_dict(), force=force)
 		for param_doc in d.param_docs:
+			print "param_doc param name {} jasper_param_name {}".format(param_doc.name, param_doc.jasper_param_name)
 			import_doc(param_doc.as_dict(), force=force)
 		for perm_doc in d.perm_docs:
 			import_doc(perm_doc.as_dict(), force=force)
+		frappe.db.commit()
 
 	frappe.flags.in_import = False
 
@@ -218,7 +222,7 @@ def pipInstall(package=""):
 def getFrappeVersion(version=None):
 	version = version or frappe.__version__#.split(".", 1)
 	import semantic_version as sv
-	print "version {}".format(version)
+	print "version is {}".format(version)
 	#cint(frappe.__version__.split(".", 1)[0])
 	return sv.Version(version)
 

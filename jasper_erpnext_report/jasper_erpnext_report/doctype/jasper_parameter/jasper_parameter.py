@@ -6,4 +6,9 @@ import frappe
 from frappe.model.document import Document
 
 class JasperParameter(Document):
-	pass
+
+	def autoname(self, method=None):
+		#field:jasper_param_name
+		if not frappe.flags.in_import:
+			print "jasper reports autoname name {} parent {}".format(self.name, self.parent)
+			self.name = self.parent + "_" + self.name

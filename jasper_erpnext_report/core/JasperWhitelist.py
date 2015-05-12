@@ -182,26 +182,23 @@ def jasper_server_login(doc):
 	if cached and data:
 		#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
 		#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
-		jaspersession_set_value("report_list_dirt_doc", True)
+		jaspersession_set_value("report_list_dirt_doc", False)
+		jaspersession_set_value("report_list_dirt_all", False)
 	elif data:
 		#redis not cache
 		jaspersession_set_value("report_list_dirt_all", True)
+		jaspersession_set_value("report_list_dirt_doc", True)
 
 	return login
 
 def checkJasperRestLib():
-	#from jasper_erpnext_report import jasperserverlib
-	import jasper_erpnext_report as jr
-	try:
-		import jasperserver.core as jasper
-		jr.jasperserverlib = True
-	except:
-		jr.jasperserverlib = False
+	from jasper_erpnext_report import jasperserverlib
+	#import jasper_erpnext_report as jr
 
-	print "jasperserverlib {}".format(jr.jasperserverlib)
-	if not jr.jasperserverlib:
+	print "jasperserverlib {}".format(jasperserverlib)
+	if not jasperserverlib:
 		pipInstall()
-		jr.jasperserverlib = True
+		#jasperserverlib = True
 
 @frappe.whitelist()
 def get_doc(doctype, docname):

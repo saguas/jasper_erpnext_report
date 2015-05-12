@@ -78,6 +78,8 @@ class JasperRoot(Jb.JasperBase):
 		ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 		#check to see if there is any report by now. If there are reports don't check the server
 		#jasperserverlib sign if it was imported jasperserver, a library to connect to the jasperreport server
+		import inspect
+		print "ret {} caller {}".format(frappe.utils.now(), inspect.stack()[1][3])
 		if self.user == "Administrator" and ret is None and self.use_server() and jasperserverlib:
 			#called from client. Don't let him change old reports attributes
 			import_only_new = self.data['data'].get('import_only_new')
@@ -88,7 +90,8 @@ class JasperRoot(Jb.JasperBase):
 			#could be recursive but there is no need for resume again because decorator
 			ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 
-		in_transation = frappe.utils.cint(frappe.__version__.split(".", 1)[0]) > 4
+		#in_transation = frappe.utils.cint(frappe.__version__.split(".", 1)[0]) > 4
+		in_transation = utils.getFrappeVersion().major > 4
 		data = None
 		if ret:
 			ptime = self.data['data'].get('jasper_polling_time')

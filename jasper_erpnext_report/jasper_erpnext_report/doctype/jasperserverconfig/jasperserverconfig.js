@@ -17,7 +17,7 @@ jasper.jasper_server_connect = function(doc){
         args:{"doc":doc},
 		"method": "jasper_erpnext_report.core.JasperWhitelist.jasper_server_login",
 		callback: function (data) {
-			if(data.message){
+			if(data.message && data.message !== "Not connected!"){
 				//return data.message
 				deferred.resolve(data.message);
 			}else{
@@ -32,6 +32,7 @@ jasper.jasper_server_connect = function(doc){
 
 cur_frm.cscript.jasper_connect_update_btn = function(doc){
 	var deferred = jasper.jasper_server_connect(doc);
+	console.log("call jasper_server_login");
 	deferred.done(function(data){
 		var info = [];
 		server_info = JSON.parse(data);

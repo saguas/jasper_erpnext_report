@@ -87,7 +87,7 @@ class JasperServer(Jb.JasperBase):
 			sessionId = "login_error"
 			msg = _("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius).")
 			title = _("Jasper Server, login error")
-			#self.send_mail_and_logger(sessionId, msg, title)
+			self.send_mail_and_logger(sessionId, msg, title)
 			#last_login = utils.jaspersession_get_value("login_error")
 			#if not last_login:
 			#	last_login = utils.add_to_time_str(hours=-5)
@@ -113,7 +113,7 @@ class JasperServer(Jb.JasperBase):
 			self.is_login = True
 
 
-	def connect(self):
+	def connect(self, on_error_send_email=True):
 		if self.user=="Guest":
 			return
 
@@ -128,10 +128,11 @@ class JasperServer(Jb.JasperBase):
 
 		except Exception as e:
 			self.is_login = False
-			sessionId = "connect_error"
-			msg = _("Jasper Server, login error. Reason: {}".format(e))
-			title = _("Jasper Server, login error")
-			#self.send_mail_and_logger(sessionId, msg, title)
+			if on_error_send_email:
+				sessionId = "connect_error"
+				msg = _("Jasper Server, login error. Reason: {}".format(e))
+				title = _("Jasper Server, login error")
+				self.send_mail_and_logger(sessionId, msg, title)
 			#cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
 			#last_conn = utils.jaspersession_get_value("connect_error")
 			#if not last_conn:
@@ -148,12 +149,12 @@ class JasperServer(Jb.JasperBase):
 		if not last_err:
 			last_err = utils.add_to_time_str(hours=-5)
 		time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_err)
-		print "last_err 4 {} time_diff {} site {}".format(last_err, time_diff, getattr(frappe.local, 'site', None))
+		print "last_err 5 {} time_diff {} site {}".format(last_err, time_diff, getattr(frappe.local, 'site', None))
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
-			if log:
-				_logger.error(msg)
+		if log:
+			_logger.error(msg)
 
 	def logout(self):
 		if self.session:
