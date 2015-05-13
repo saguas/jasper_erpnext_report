@@ -21,8 +21,8 @@ boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 #write_file = "jasper_erpnext_report.utils.file.write_file_jrxml"
 #delete_file_data_content = "jasper_erpnext_report.utils.file.delete_file_jrxml"
 #website_clear_cache = "jasper_erpnext_report.core.jaspersession.website_clear_cache"
-jasper_before_list_for_all = "jasper_erpnext_report.utils.utils.jasper_before_list_all"
-jasper_after_list_for_all = "jasper_erpnext_report.utils.utils.jasper_after_list_all"
+#jasper_before_list_for_all = "jasper_erpnext_report.utils.utils.jasper_before_list_all"
+#jasper_after_list_for_all = "jasper_erpnext_report.utils.utils.jasper_after_list_all"
 # Includes in <head>
 # ------------------
 
