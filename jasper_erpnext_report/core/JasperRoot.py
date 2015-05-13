@@ -92,16 +92,18 @@ class JasperRoot(Jb.JasperBase):
 
 		#in_transation = frappe.utils.cint(frappe.__version__.split(".", 1)[0]) > 4
 		in_transation = utils.getFrappeVersion().major > 4
-		data = None
+
 		if ret:
 			ptime = self.data['data'].get('jasper_polling_time')
 			ret['jasper_polling_time'] = ptime
+
 		if ret and not update:
 			data = utils.insert_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
 		elif ret:
 			data = utils.update_list_all_memcache_db(ret, cachename=cachename, in_transation=in_transation)
 		else:
 			data = {"data":{"origin": self.get_report_origin()}}
+
 		return data
 
 	def get_reports_list_for_all(self):
@@ -240,7 +242,7 @@ class JasperRoot(Jb.JasperBase):
 				r_filters={"report": report}
 			update = False if not data else True
 			ldata = self._get_reports_list(filters_report=r_filters, cachename="report_list_doctype", update=update)
-			cached = redis_transation(ldata, "report_list_all")
+			cached = redis_transation(ldata, "report_list_doctype")
 			if ldata:
 				data = ldata.get("data", None)
 			if cached and data and dirt:

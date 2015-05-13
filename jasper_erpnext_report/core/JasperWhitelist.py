@@ -182,7 +182,7 @@ def jasper_server_login(doc):
 	if cached and data:
 		#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
 		#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
-		jaspersession_set_value("report_list_dirt_doc", False)
+		jaspersession_set_value("report_list_dirt_doc", True)
 		jaspersession_set_value("report_list_dirt_all", False)
 	elif data:
 		#redis not cache
