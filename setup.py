@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0.0'
+version = '1.1.0'
 
 #with open("requirements.txt", "r") as f:
 #	install_requires = f.readlines()
@@ -15,7 +15,7 @@ setup(
 	packages=find_packages(),
 	zip_safe=False,
 	include_package_data=True,
-	dependency_links=['http://github.com/kivy/pyjnius/tarball/master#egg=jnius'],
+	dependency_links=['http://github.com/kivy/pyjnius/tarball/master#egg=jnius-1.0'],
 	#install_requires=install_requires
 	install_requires=[
 		"frappe",
