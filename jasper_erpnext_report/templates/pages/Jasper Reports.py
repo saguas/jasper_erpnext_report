@@ -69,17 +69,3 @@ def viewer_pdf(filename):
 		"rtype":"pdf"
 	}
 
-def Old_viewer_pdf(filename):
-	jasper_report_path = frappe.form_dict.jasper_doc_path
-	url = frappe.utils.get_url()
-	if url.endswith("/"): url = url[:-1]
-
-	urlpdf = url + "/assets/jasper_erpnext_report/reports/"+ frappe.local.site + "/" + jasper_report_path
-	url = frappe.utils.quote_urls(urlpdf)
-	urlbase = frappe.utils.get_url() + "/assets/jasper_erpnext_report/pdfjs/web/viewer.html?file=" + url
-	urlbase = frappe.utils.quote_urls(urlbase)
-	return {
-		"jasper_report_path": urlbase,
-		"doc_title": filename,
-		"rtype":"pdf"
-	}
