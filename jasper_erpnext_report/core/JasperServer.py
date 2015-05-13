@@ -6,13 +6,13 @@ import jasper_erpnext_report as jr
 import copy
 
 try:
-	import jasperserver.core as jasper
-	from jasperserver.core.reportingService import ReportingService
-	from jasperserver.core.ReportExecutionRequest import ReportExecutionRequest
-	from jasperserver.resource_details import Details
-	from jasperserver.repo_search import Search
-	from jasperserver.resource_download import DownloadBinary
-	from jasperserver.core.exceptions import Unauthorized, NotFound
+	import jasperserverlib.core as jasper
+	from jasperserverlib.core.reportingService import ReportingService
+	from jasperserverlib.core.ReportExecutionRequest import ReportExecutionRequest
+	from jasperserverlib.resource_details import Details
+	from jasperserverlib.repo_search import Search
+	from jasperserverlib.resource_download import DownloadBinary
+	from jasperserverlib.core.exceptions import Unauthorized, NotFound
 	jr.jasperserverlib = True
 except:
 	jr.jasperserverlib = False
@@ -153,8 +153,8 @@ class JasperServer(Jb.JasperBase):
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
-		if log:
-			_logger.error(msg)
+			if log:
+				_logger.error(msg)
 
 	def logout(self):
 		if self.session:

@@ -84,11 +84,10 @@ def import_all_jasper_remote_reports(docs, force=True):
 	for d in docs:
 		import_doc(d.parent_doc.as_dict(), force=force)
 		for param_doc in d.param_docs:
-			print "param_doc param name {} jasper_param_name {}".format(param_doc.name, param_doc.jasper_param_name)
 			import_doc(param_doc.as_dict(), force=force)
 		for perm_doc in d.perm_docs:
 			import_doc(perm_doc.as_dict(), force=force)
-		frappe.db.commit()
+		#frappe.db.commit()
 
 	frappe.flags.in_import = False
 
@@ -208,16 +207,17 @@ def jasper_after_list_all(method, lista):
 	pass
 
 #install module to rest in jasperreports server
-def pipInstall(package=""):
-	import pip
+def pipInstall(package=None):
+	import pip, sys
 	import jasper_erpnext_report as jr
 	package = package or "git+https://github.com/saguas/jasperserverlib.git"
 	try:
 		pip.main(['install', package])
-		jr.jasperserverlib = True
-	except:
+		reload(sys.modules['jasper_erpnext_report.core.JasperServer'])
+		#jr.jasperserverlib = True
+	except Exception as e:
 		jr.jasperserverlib = False
-		frappe.msgprint(_("Error when install package {}".format(package)))
+		frappe.msgprint(_("Error when install package {}. Error: {}".format(package, e)))
 
 def getFrappeVersion(version=None):
 	version = version or frappe.__version__#.split(".", 1)

@@ -1,1 +1,1 @@
--e git+https://github.com/kivy/pyjnius.git#egg=jnius
+git+https://github.com/kivy/pyjnius.git

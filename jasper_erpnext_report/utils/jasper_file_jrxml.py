@@ -188,8 +188,13 @@ def check_root_exists(dt, dn):
 
 
 def get_jrxml_root(dt,dn):
+	furl = None
+	fname = None
 	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "attached_to_report_name": "root"})
-	return docs[0].file_name, docs[0].file_url
+	if docs:
+		fname = docs[0].file_name
+		furl = docs[0].file_url
+	return fname, furl
 
 
 def delete_file_jrxml(doc, event):
@@ -200,14 +205,15 @@ def delete_file_jrxml(doc, event):
 		jasper_all_sites_report = frappe.db.get_value(dt, dn, 'jasper_all_sites_report')
 		file_path = os.path.join(get_jasper_path(jasper_all_sites_report), doc.file_url[1:])
 		path = os.path.normpath(os.path.join(file_path,".."))
-		file_root_name, file_root_url = get_jrxml_root(dt,dn)
 
 		#don't remove directory if it is a subreport
-		if ext == "jrxml" and file_root_url == doc.file_url:
-			from . file import remove_directory
-			remove_directory(path)
-			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
-			frappe.db.set_value(dt, dn, 'query', "")
+		if ext == "jrxml":
+			file_root_name, file_root_url = get_jrxml_root(dt,dn)
+			if file_root_url == doc.file_url:
+				from .file import remove_directory
+				remove_directory(path)
+				frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
+				frappe.db.set_value(dt, dn, 'query', "")
 		else:
 			delete_jrxml_child_file(doc.file_url, jasper_all_sites_report)
 

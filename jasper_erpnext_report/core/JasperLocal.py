@@ -148,10 +148,11 @@ class JasperLocal(Jb.JasperBase):
 			#utils.jaspersession_set_value(sessionId, e)
 			s = "{0}".format(str(e))
 			#error_cache[sessionId] = s
+			import json
 			cache = frappe.cache()
 			#t = calendar.timegm(time.gmtime())
 			t = int(time.time())
-			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), {"e": s, "t": t})
+			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
@@ -196,10 +197,11 @@ class JasperLocal(Jb.JasperBase):
 		# create the file in disc
 		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
+		import json
 		cache = frappe.cache()
 		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
-		print "polling str(sessionId) {} s {}".format(str(reqId), error)
 		if error:
+			error = json.loads(error)
 			print "request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
 			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."

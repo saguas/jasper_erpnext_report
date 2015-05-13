@@ -83,7 +83,7 @@ class JasperReports(Document):
 			#give feedback to the user shown related params
 			params = xmldoc.get_params_from_xml()
 			#get total number of parameters to concatenate with name of parameter
-			idx = frappe.db.sql("""select count(*) from `tabJasper Parameter`""")[0][0] + 1
+			#idx = frappe.db.sql("""select count(*) from `tabJasper Parameter`""")[0][0] + 1
 			is_copy = "Is for copies"
 			action_type = "Ask"
 			for param in params:
@@ -96,9 +96,11 @@ class JasperReports(Document):
 				if check_queryString_param(xmldoc.queryString, pname[0]):
 					is_copy = "Is for where clause"
 					action_type = "Automatic"
+				#self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
+				#		"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name":pname[0] + ":" + str(idx)})
 				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
-						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name":pname[0] + ":" + str(idx)})
-				idx = idx + 1
+						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name": self.name + "_" + pname[0]})
+				#idx = idx + 1
 			self.query = rootquery + self.query
 			return
 		#if jrxml file was removed then prepare to remove all associated images and params given feedback to the user
