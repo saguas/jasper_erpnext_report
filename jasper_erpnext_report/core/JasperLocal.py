@@ -14,7 +14,7 @@ import JasperBase as Jb
 
 import uuid
 import thread
-import os
+import os, json
 
 
 _logger = frappe.get_logger("jasper_erpnext_report")
@@ -148,7 +148,6 @@ class JasperLocal(Jb.JasperBase):
 			#utils.jaspersession_set_value(sessionId, e)
 			s = "{0}".format(str(e))
 			#error_cache[sessionId] = s
-			import json
 			cache = frappe.cache()
 			#t = calendar.timegm(time.gmtime())
 			t = int(time.time())
@@ -197,7 +196,6 @@ class JasperLocal(Jb.JasperBase):
 		# create the file in disc
 		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
-		import json
 		cache = frappe.cache()
 		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
 		if error:

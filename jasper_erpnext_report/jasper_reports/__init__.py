@@ -1,7 +1,7 @@
 import os, frappe
 import jasper_erpnext_report as jr
 
-_logger = frappe.get_logger(__name__)
+_logger = frappe.get_logger("jasper_erpnext_report")
 
 try:
 	import jnius_config as jc
