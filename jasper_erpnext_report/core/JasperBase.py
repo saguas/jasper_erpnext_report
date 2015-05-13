@@ -4,7 +4,6 @@ from frappe.model.document import Document
 
 from frappe import _
 import frappe
-import frappe.utils
 from io import BytesIO
 import uuid
 

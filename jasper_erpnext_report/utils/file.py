@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 __author__ = 'luissaguas'
-import os
+import os, re
 import frappe
-import frappe.model
-import frappe.model.naming
 from frappe import _
 from frappe.utils import get_site_path
 from frappe.utils.file_manager import get_content_hash
@@ -11,7 +9,6 @@ import jasper_erpnext_report
 
 from jasper_erpnext_report.utils.jrxml import *
 
-import re
 
 jasper_ext_supported = ["jrxml", "jpg", "gif", "png", "bmp", "properties", "xml"]
 

@@ -17,8 +17,6 @@ try:
 except:
 	jr.jasperserverlib = False
 
-from frappe.utils import pprint_dict
-
 
 from frappe import _
 import frappe

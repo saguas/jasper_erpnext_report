@@ -208,13 +208,12 @@ def jasper_after_list_all(method, lista):
 
 #install module to rest in jasperreports server
 def pipInstall(package=None):
-	import pip, sys
+	import sys
 	import jasper_erpnext_report as jr
 	package = package or "git+https://github.com/saguas/jasperserverlib.git"
 	try:
-		pip.main(['install', package])
+		frappe.utils.execute_in_shell("../env/bin/pip install " + package)
 		reload(sys.modules['jasper_erpnext_report.core.JasperServer'])
-		#jr.jasperserverlib = True
 	except Exception as e:
 		jr.jasperserverlib = False
 		frappe.msgprint(_("Error when install package {}. Error: {}".format(package, e)))
@@ -222,8 +221,6 @@ def pipInstall(package=None):
 def getFrappeVersion(version=None):
 	version = version or frappe.__version__#.split(".", 1)
 	import semantic_version as sv
-	print "version is {}".format(version)
-	#cint(frappe.__version__.split(".", 1)[0])
 	return sv.Version(version)
 
 def add_to_time_str(date=None, hours=0, days=0, weeks=0):

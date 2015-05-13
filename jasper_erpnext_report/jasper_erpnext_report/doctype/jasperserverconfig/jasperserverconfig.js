@@ -14,6 +14,8 @@ jasper.get_jasper_server_info = function(){
 jasper.jasper_server_connect = function(doc){
 	var deferred = jQuery.Deferred();
 	frappe.call({
+		freeze: true,
+		freeze_message: "Connecting...",
         args:{"doc":doc},
 		"method": "jasper_erpnext_report.core.JasperWhitelist.jasper_server_login",
 		callback: function (data) {

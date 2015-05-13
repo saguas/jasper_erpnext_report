@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
 import frappe
-import frappe.utils
 from frappe import _
 
 import jasper_erpnext_report.utils.utils
