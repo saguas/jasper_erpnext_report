@@ -8,48 +8,6 @@ jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "ic
 						/*ppt:"icon-file-powerpoint", pptx:"icon-file-powerpoint",*/ odt: "icon-file-openoffice", ods: "icon-libreoffice",
 	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
 
-/*
-jasper.download = function(url, data, method){
-    //url and data options required
-    if( url && data ){
-        //data can be string of parameters or array/object
-        data = typeof data == 'string' ? data : jQuery.param(data);
-        //split params into form inputs
-        var inputs = '';
-        jQuery.each(data.split('&'), function(){
-            var pair = this.split('=');
-            inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'" />';
-        });
-        //send request
-        jQuery('<form target="_blank" action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
-        .appendTo('body').submit().remove();
-        
-        console.log("sented request %s %s args %s", url, inputs)
-    };
-};
-*/
-/*
-//jasper.get_jasper_report = function(path, method, format, data){
-jasper.get_jasper_report = function(method, data, doc, type){
-    //var format = format || 'pdf';
-    //var args = 'path='+ encodeURIComponent(path) +'&format='+ format;
-    var args = "";
-    if (data){
-        args = args + 'data=' + encodeURIComponent(JSON.stringify(data));
-        console.log("args ", args);
-    };
-    
-    if (doc){
-        args = args + '&doc=' + encodeURIComponent(JSON.stringify(doc));
-    };
-    
-    if(type){
-        args = args + '&type=' + type;
-    };
-    
-	jasper.download("/api/method/jasper_erpnext_report.core.JasperWhitelist." + method, args);
-};
-*/
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
     frappe.call({
@@ -174,7 +132,6 @@ jasper.getList = function(page, doctype, docnames){
 		method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 		data = {doctype: doctype, docnames: docnames, report: null};
 		jasper.jasper_make_request(method, data,function(response_data){
-			console.log("jasper.getList response ", response_data);
 			jasper.pages[page] = response_data.message;
 			setJasperDropDown(response_data.message, jasper.getOrphanReport);
 		});

@@ -215,21 +215,6 @@ class JasperBase(object):
 				copies["pram_copy_index"] = len(pram) #if len(pram) > 0 else 0
 				values = utils.get_default_param_value(param, error=False) or ""
 				value = self.get_param_values(values)
-				"""
-				if values and isinstance(values, basestring):
-					val = values.split(",")
-					#value = [val]
-					if len(val)>1:
-						value = val
-					else:
-						value = [values]
-				else:
-					if len(values)>1:
-						value = values
-					else:
-						value = [values]
-				"""
-				print "is of base string {} value {} len(pram) {}".format(isinstance(values, basestring), value, len(pram))
 
 			elif is_copy == "is for page number" and pformat=="pdf":#_("is for page number") and pformat=="pdf":
 				copies["pram_copy_page_index"] = len(pram) #if len(pram) > 0 else 0
@@ -245,23 +230,7 @@ class JasperBase(object):
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
 				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
-				print "valor other e: {}".format(value)
 				value = self.get_param_values(values)
-				"""
-				if values and isinstance(values, basestring):
-					val = values.replace("\"","").replace("'","").split(",")
-					if len(val)>1:
-						value = val
-					else:
-						value = [values]
-				else:
-					if len(values)>1:
-						value = values
-					else:
-						value = [values]
-				"""
-
-				print "valores para List 2 {} {}".format(value, params)
 
 			pram.append({"name":p, 'value':value})
 
@@ -380,7 +349,6 @@ class JasperBase(object):
 		res = {"requestId": reqId, "uri": uri, "reqtime": frappe.utils.now()}
 		if detail.get("status", "not ready") == "ready":
 			ids = []
-			print "details in prepare {}".format(detail)
 			for i in detail.get("exports"):
 				if i.get("status") == "ready":
 					id = i.get("id")
@@ -492,7 +460,6 @@ class JasperBase(object):
 			if result:
 				req = [{"requestId": reqId, "reqtime": frappe.utils.now(), "status": "ready"}]
 		else:
-			print "Report Not Found."
 			frappe.throw(_("Report Not Found."))
 		if error:
 			req[0]["error"] = error

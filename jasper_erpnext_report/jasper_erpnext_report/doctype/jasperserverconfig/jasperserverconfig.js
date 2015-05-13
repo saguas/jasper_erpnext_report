@@ -34,7 +34,6 @@ jasper.jasper_server_connect = function(doc){
 
 cur_frm.cscript.jasper_connect_update_btn = function(doc){
 	var deferred = jasper.jasper_server_connect(doc);
-	console.log("call jasper_server_login");
 	deferred.done(function(data){
 		var info = [];
 		server_info = JSON.parse(data);

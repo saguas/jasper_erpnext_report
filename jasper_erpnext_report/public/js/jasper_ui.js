@@ -85,7 +85,6 @@ jasper.make_dialog = function(doc, title, callback){
 	if(doc.jasper_report_origin === "LocalServer"){
 		var lang_default = frappe.defaults.get_user_default("lang");
 		var country = jasper.get_country_from_alpha3(lang_default);
-		console.log("lang ", lang_default + " country " + country);
 		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",
 	 		description: __("Select the report language."), options: jasper.make_country_list(), default:[country]});
 	};

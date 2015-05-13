@@ -43,7 +43,6 @@ class JasperRoot(Jb.JasperBase):
 			frappe.throw(_("Something was wrong, there is no document." ))
 
 		from jasper_erpnext_report import pyjnius
-		print "use local and pyjnius local? {} pyjnius {}".format(self.use_local(), pyjnius)
 		if self.use_local() and not pyjnius:
 			frappe.throw(_("You don't have local server. Install python module pyjnius first." ))
 
@@ -169,26 +168,6 @@ class JasperRoot(Jb.JasperBase):
 
 		return data
 
-	"""
-	def is_cache_dirt(self, lstdirt, what):
-		#data = utils.get_jasper_session_data_from_cache(what)
-		#if data:
-		is_dirt = False
-		user_last_update = utils.jaspersession_get_value(what)
-		dirt = utils.jaspersession_get_value(lstdirt)
-		if not user_last_update or not dirt:
-			utils.jaspersession_set_value(what, frappe.utils.now())
-			return False
-		#user_last_update = data.get('last_updated')
-		#user_last_update = data
-		time_diff = frappe.utils.time_diff_in_seconds(dirt, user_last_update)
-		#print "what {} dirt {} last_update {} time_diff {}".format(what, dirt, user_last_update, time_diff)
-		if time_diff >= 0:
-			is_dirt = True
-
-		return is_dirt
-	"""
-
 	def remove_server_docs(self, data):
 		toremove = []
 		removed = 0
@@ -250,17 +229,10 @@ class JasperRoot(Jb.JasperBase):
 			data.pop('session_expiry',None)
 			data.pop('last_updated', None)
 			new_data = self.doc_filter_perm_roles(doctype or report, data, docnames)
-			#print "report list dirt {} report {} docnames {} doctype {}".format(dirt, report, docnames, data)
-			#if the list was updated or inserted
-			#if dirt:
-			#	utils.jaspersession_set_value("report_list_dirt_doc", False)
-				#utils.jaspersession_set_value("user:" + self.user + "_report_list_doctype", frappe.utils.now())
 
 		if not self.check_server_status():
 			self.remove_server_docs(new_data)
 
-		#new_data['mail_enabled'] = cint(frappe.db.get_single_value("Outgoing Email Settings", "enabled"))
-		#utils.insert_list_all_memcache_db(new_data, cachename="user:" + self.user + "_report_list_doctype")
 		return new_data
 
 	def report_polling(self, data):
@@ -354,7 +326,6 @@ class JasperRoot(Jb.JasperBase):
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")
 					fileName = expId[0].get("fileName", None)
-					print "_get_report id 2 {} fileName {}".format(id, frappe.utils.pprint_dict(report, level=3))
 					file_ext = get_extension(fileName)
 					#this is for another situation
 					rid_len = 1

@@ -40,7 +40,6 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 				size += 1
 				for report in with_param:
 						name = report.parent
-						#print "report with params name {} r.name {} params {}".format(name, r.name, report)
 						if name == r.name:
 							if report.jasper_param_action == "Automatic":
 								#continue
@@ -184,27 +183,6 @@ def jasper_users_login(user):
 		s += user + ";"
 		jaspersession_set_value("jasper_list_user", s)
 
-
-def jasper_params(method, hook_name, data=None, params=None):
-	print "utils jasper_params: method {} hook_name {} data {} params {}".format(method, hook_name, data, params)
-	a = []
-	for param in params:
-		if param.get("name") == "idade":
-			a.append({"name": param.get("name"), "value":39.6})
-	return a
-
-
-def jasper_params_teste(method, t, data=None, docdata=None):
-	print "jasper_before_run_report teste hooks method {} t {} data {}".format(method, t, data)
-
-
-def jasper_before_list_all(method):
-	#print "teste list for all hooks {}".format(method)
-	pass
-
-def jasper_after_list_all(method, lista):
-	#print "teste list after for all hooks {} lista {}".format(method, lista)
-	pass
 
 #install module to rest in jasperreports server
 def pipInstall(package=None):

@@ -28,6 +28,7 @@ class JasperReports(Document):
 
 	def on_update(self, method=None):
 
+		#if we are importing docs from jasperserver
 		if not frappe.flags.in_import:
 
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
@@ -36,8 +37,6 @@ class JasperReports(Document):
 			#report_list_dirt_doc is not called from here
 			cached = redis_transation(data, "report_list_all")
 			if cached and data:
-				#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-				#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 				jaspersession_set_value("report_list_dirt_all", False)
 				jaspersession_set_value("report_list_dirt_doc", True)
 			elif data:
@@ -83,7 +82,6 @@ class JasperReports(Document):
 			#give feedback to the user shown related params
 			params = xmldoc.get_params_from_xml()
 			#get total number of parameters to concatenate with name of parameter
-			#idx = frappe.db.sql("""select count(*) from `tabJasper Parameter`""")[0][0] + 1
 			is_copy = "Is for copies"
 			action_type = "Ask"
 			for param in params:
@@ -96,62 +94,14 @@ class JasperReports(Document):
 				if check_queryString_param(xmldoc.queryString, pname[0]):
 					is_copy = "Is for where clause"
 					action_type = "Automatic"
-				#self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
-				#		"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name":pname[0] + ":" + str(idx)})
 				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
 						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name": self.name + "_" + pname[0]})
-				#idx = idx + 1
 			self.query = rootquery + self.query
 			return
 		#if jrxml file was removed then prepare to remove all associated images and params given feedback to the user
 		if self.jasper_report_origin.lower() == "localserver":
 			self.jasper_parameters = []
-			#self.jasper_report_images = []
 		return
-
-	def on_jasper_params_ids(self, data=None, params=None):
-		print "new params hooks {} name {}".format(data.get("fortype", None), self.name)
-		"""
-		for param in params:
-			if param.get('name') != "name_ids":
-				pname = param.get("name")
-				attrs = param.get("attrs")
-				default_value = param.get("value")
-				print "jasper_params hook: doc {0} data {1} pname {2} param {3} default_value {4}".format(self, data, pname, attrs.param_expression, default_value)
-				a = ["'%s'" % t for t in default_value]
-				value = "where name %s (%s)" % (attrs.param_expression, ",".join(a))
-				if not default_value:
-					default_value.append(value)
-				else:
-					param['value'] = value
-				print "old_value {0} {1}".format(default_value, param.get('value'))
-			else:
-				param['value'].append('Administrator')
-		"""
-		ret = {"ids": ["Administrator", "luisfmfernandes@gmail.com", "Guest"], "report_type": "List"}
-		#ret = None
-		return ret
-
-	def on_jasper_params(self, data=None, params=None):
-		print "doc on_jasper_params: {} params {}".format(data, params)
-		a = []
-		for param in params:
-			if param.get("name") == "idade":
-				a.append({"name": param.get("name"), "value": 35.6})
-			else:
-				#a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
-				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})
-			#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": _("is for where clause")})
-		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
-		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": _("is for where clause")})
-		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
-		#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
-		#a.append({"name": params[0].get("name"), "value":345})
-		#a.append({"name": params[0].get("name"), "value":35})
-		return a
-
-	#def jasper_before_run_report(self, data=None, docdata=None):
-	#	print "in report doc teste hooks {}".format(data)
 
 	@property
 	def jrxml_root_path(self):
@@ -164,7 +114,6 @@ class JasperReports(Document):
 			frappe.msgprint(_("The report is missing."), raise_exception=True)
 
 		return root_path
-
 
 
 @frappe.whitelist()

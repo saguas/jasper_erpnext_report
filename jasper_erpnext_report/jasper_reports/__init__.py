@@ -41,7 +41,7 @@ try:
 
 	ExportReport = getJavaClass('ExportReport')
 	jr.pyjnius = True
-	print "pyjnius is ok: {}".format(jr.pyjnius)
+	print "pyjnius is installed: {}".format(jr.pyjnius)
 except Exception, e:
-	print "pyjnius is not ok: {}".format(e)
+	print "pyjnius is not installed: {}".format(e)
 	jr.pyjnius = False

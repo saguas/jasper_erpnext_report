@@ -86,14 +86,6 @@ class JasperServer(Jb.JasperBase):
 			msg = _("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius).")
 			title = _("Jasper Server, login error")
 			self.send_mail_and_logger(sessionId, msg, title)
-			#last_login = utils.jaspersession_get_value("login_error")
-			#if not last_login:
-			#	last_login = utils.add_to_time_str(hours=-5)
-			#time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_login)
-			#if time_diff >= 4:
-			#	self.send_email(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."), _("Jasper Server, login error"))
-			#	utils.jaspersession_set_value("login_error", frappe.utils.now())
-			#	_logger.error(_("Jasper Server is down. Please check Jasper Server or change to local report only (you will need pyhton module pyjnius)."))
 
 
 	def in_jasper_session(self):
@@ -131,15 +123,6 @@ class JasperServer(Jb.JasperBase):
 				msg = _("Jasper Server, login error. Reason: {}".format(e))
 				title = _("Jasper Server, login error")
 				self.send_mail_and_logger(sessionId, msg, title)
-			#cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
-			#last_conn = utils.jaspersession_get_value("connect_error")
-			#if not last_conn:
-			#	last_conn = utils.add_to_time_str(hours=-5)
-			#time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_conn)
-			#if time_diff >= 4:
-			#	self.send_email(_("Jasper Server, login error. Reason: {}").format(e), _("Jasper Server, login error"), user=cur_user)
-			#	utils.jaspersession_set_value("connect_error", frappe.utils.now())
-			#	_logger.error(_("Jasper Server, login error. Reason: {}").format(e))
 
 	def send_mail_and_logger(self, sessionId, msg, title, log=True):
 		cur_user = "no_reply@gmail.com" if self.user == "Administrator" else self.user
@@ -147,7 +130,6 @@ class JasperServer(Jb.JasperBase):
 		if not last_err:
 			last_err = utils.add_to_time_str(hours=-5)
 		time_diff = frappe.utils.time_diff_in_hours(frappe.utils.now(), last_err)
-		print "last_err 5 {} time_diff {} site {}".format(last_err, time_diff, getattr(frappe.local, 'site', None))
 		if time_diff >= 4:
 			self.send_email(msg, title, user=cur_user)
 			utils.jaspersession_set_value(sessionId, frappe.utils.now())
@@ -252,7 +234,6 @@ class JasperServer(Jb.JasperBase):
 			npram = copy.deepcopy(pram)
 			if pram_copy_index != -1:
 				values = pram[pram_copy_index].get("value","")
-				print "values in range 3 {}".format(values)
 				if not values or not values[0]:
 					npram[pram_copy_index]['value'] = [copies[m]]
 				else:
@@ -268,7 +249,6 @@ class JasperServer(Jb.JasperBase):
 				resp.append({"requestId":requestId, "report_name": data.get("report_name"), "status": result.get('status')})
 			else:
 				frappe.msgprint(_("There was an error in report request."),raise_exception=True)
-		#TODO get reqId for check report state
 		return resp
 
 	@_jasperserver

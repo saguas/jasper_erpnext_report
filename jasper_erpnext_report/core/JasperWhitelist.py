@@ -170,7 +170,6 @@ def get_server_info():
 
 @frappe.whitelist()
 def jasper_server_login(doc):
-	print "doc from client {}".format(doc)
 	doc = json.loads(doc)
 	jsr = jasper_session_obj or Jr.JasperRoot(doc)
 	checkJasperRestLib()
@@ -180,8 +179,6 @@ def jasper_server_login(doc):
 	data = jsr._get_reports_list(filters_report=r_filters)
 	cached = redis_transation(data, "report_list_all")
 	if cached and data:
-		#jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-		#jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
 		jaspersession_set_value("report_list_dirt_doc", True)
 		jaspersession_set_value("report_list_dirt_all", False)
 	elif data:
@@ -193,12 +190,9 @@ def jasper_server_login(doc):
 
 def checkJasperRestLib():
 	from jasper_erpnext_report import jasperserverlib
-	#import jasper_erpnext_report as jr
 
-	print "jasperserverlib {}".format(jasperserverlib)
 	if not jasperserverlib:
 		pipInstall()
-		#jasperserverlib = True
 
 @frappe.whitelist()
 def get_doc(doctype, docname):
@@ -220,9 +214,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	jasper_polling_time = frappe.db.get_value('JasperServerConfig', fieldname="jasper_polling_time")
 	data = json.loads(jasper_doc)
 	result = run_report(data, docdata)
-	#print "result for email {}".format(result)
 	if result[0].get("status", "not ready") != "ready":
-		#intern_reqid = result[0].get("requestId")
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
@@ -231,7 +223,6 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			result = report_polling(poll_data)
 			print "email result[0] {}".format(result[0])
 			if "status" in result[0] and result[0].get("status", "not ready") == "ready":
-				#time.sleep(cint(jasper_polling_time)/1000)
 				break
 			limit += 1
 
@@ -251,8 +242,6 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 
 		if pformat == "html":
 			custom_print_html = True
-			#filepath = output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
-			#filepath = output = getHtmlFilepath(report_name, fileName)
 			url, filepath = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
 			output = filepath
 			file_name = output.rsplit("/",1)
@@ -261,19 +250,11 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 			else:
 				file_name = file_name[0]
 
-			#g = "jasper_erpnext_report/reports/site1.local"
-			#path = os.path.normpath(os.path.relpath(filepath, g))
-			#url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
 
 		elif pformat == "pdf":
 			custom_print_format = "pdf"
 			file_name, filepath, output, url = make_pdf(fileName, jasper_content, pformat, report_name, reqId=result[0].get("requestId"), merge_all=merge_all, pages=pages, email=True)
 			output = output.getvalue()
-			#filepath = get_email_pdf_path(data.get('report_name'), result[0].get("requestId"))
-			#down = os.path.normpath(os.path.join(os.path.dirname(jasper_erpnext_report.__file__), "public", "reports", frappe.local.site))
-			#norm = os.path.normpath(os.path.relpath(filepath, down))
-			#path = os.path.join(norm, file_name)
-			#url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
 
 		else:
 			file_name, output = make_pdf(fileName, jasper_content, pformat, report_name, merge_all=merge_all, pages=pages, email=True)
@@ -331,11 +312,7 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 	jasper_run_method("jasper_after_sendmail", data, url, file_name, file_path)
 
 def prepare_polling(data):
-	#reqids = []
-	#for d in data:
-	#print "data in prepare email {}".format(data)
 	d = data[0]
-	#reqids.append(d.get("requestId"))
 	poll_data = {"reqIds": [d.get("requestId")], "reqtime": d.get("reqtime"), "pformat": d.get("pformat"), "origin": d.get("origin")}
 	return poll_data
 
@@ -361,5 +338,3 @@ def get_jasper_email_report(data):
 	except:
 		frappe.throw(_("There is no %s report." % file_name))
 
-def pipInstallServerLib():
-	lib = "jasperserverlib"

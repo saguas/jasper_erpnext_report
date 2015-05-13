@@ -842,7 +842,6 @@ jasper.CommunicationComposer = Class.extend({
 		}
 		var method = 'frappe.utils.email_lib.get_contact_list';
 		var version = jasper.get_app_version("frappe");
-		console.log("metodo ", method + " version frappe  " + version);
 		if (version >= "5.0"){
 			method = 'frappe.email.get_contact_list';
 		}
