@@ -86,7 +86,6 @@ def import_all_jasper_remote_reports(docs, force=True):
 			import_doc(param_doc.as_dict(), force=force)
 		for perm_doc in d.perm_docs:
 			import_doc(perm_doc.as_dict(), force=force)
-		#frappe.db.commit()
 
 	frappe.flags.in_import = False
 

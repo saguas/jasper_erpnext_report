@@ -71,7 +71,6 @@ class WriteFileJrxml(object):
 			if self.ext == "jrxml":
 				self.compile()
 		except:
-			#TODO remove this doc
 			frappe.delete_doc("File Data", f.name)
 			print "Remove this doc: doctype {} docname {}".format(f.doctype, f.name)
 
@@ -142,7 +141,6 @@ class WriteFileJrxml(object):
 
 		xmldoc.change_path_images()
 		xmldoc.setProperty("parent", self.parent)
-		#self.autofilename = frappe.model.naming.make_autoname("File.#####", doctype='')
 		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
@@ -236,7 +234,6 @@ def delete_file_jrxml_old(doc, event):
 
 def delete_jrxml_child_file(path, jasper_all_sites):
 	file_path = os.path.join(get_jasper_path(jasper_all_sites),path[1:])
-	print "file_path {}".format(file_path)
 	if os.path.exists(file_path):
 		os.remove(file_path)
 
@@ -249,30 +246,11 @@ def delete_jrxml_images(dt, dn, jasper_all_sites = False):
 		if ext != "jrxml":
 			delete_jrxml_child_file(dt, jasper_all_sites)
 
-"""
-def get_next_hook_method(hook_name, last_method_name, fallback=None):
-	method = (frappe.get_hooks().get(hook_name))
-	if method:
-		try:
-			method = frappe.get_attr(method[method.index(last_method_name) + 1])
-			return method
-		except:
-			return fallback
-"""
-
 def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
-	#path_join = os.path.join
-	#file_path = None
 	dt = frappe.form_dict.doctype
 	if dt == "Jasper Reports":
 		from . jasper_file_jrxml import WriteFileJrxml
 		wobj = WriteFileJrxml(dt, fname, content, parent)
 		f = wobj.process(dn=dn)
-		#fpath = write_file(wobj.content, wobj.file_path)
-		#path =  os.path.relpath(fpath, wobj.jasper_path)
-		#if wobj.ext == "jrxml":
-		#	jasper_compile_jrxml(wobj.fname, wobj.file_path, wobj.compiled_path)
 
 		return f
-	#else:
-	#	return save_file_on_filesystem(fname, content, content_type)

@@ -15,6 +15,7 @@ setup(
 	packages=find_packages(),
 	zip_safe=False,
 	include_package_data=True,
+	dependency_links=['http://github.com/kivy/pyjnius/tarball/master#egg=jnius'],
 	#install_requires=install_requires
 	install_requires=[
 		"frappe",

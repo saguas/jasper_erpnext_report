@@ -151,7 +151,6 @@ def clear_all_jasper_reports(force=True):
 					print "go to db data {}".format(data)
 				file_path = data['data'].get('result').get("uri").rsplit("/",1)
 				compiled_path = file_path[0]
-				#file_name = file_path[1]
 				remove_directory(compiled_path)
 				compiled_removed += 1
 				#if this report was not sent by email then remove it from assets/jasper_erpnext_report/reports/
@@ -197,7 +196,6 @@ def clear_all_jasper_cache(force=True):
 	"""This function is meant to be called from scheduler"""
 	removed = 0
 
-	#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
 	version = getFrappeVersion().major
 	if version > 4:
 		r = clear_all_jasper_user_redis_cache(force=force)
@@ -239,7 +237,6 @@ def clear_jasper_sessions(force=True):
 		removed += 1
 		frappe.db.sql("""delete from `tabJasperSessions` """)
 		if force:
-			#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
 			version = getFrappeVersion().major
 			if version > 4:
 				clear_all_jasper_from_redis_cache()
@@ -249,29 +246,6 @@ def clear_jasper_sessions(force=True):
 		print _("was removed {0} jaspersession(s)".format(removed))
 
 	return removed
-
-"""
-#remove from disc all reports that expired based on timestamp of html file
-def clear_expired_jasper_html():
-	import os, jasper_erpnext_report
-	from datetime import datetime
-	path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-	path = os.path.join(path_jasper_module, "public", "reports")
-	rootDir = path
-	for dirName, subdirList, fileList in os.walk(rootDir, topdown=False):
-		for fname in fileList:
-			names = fname.split(".")
-			tam = len(names)
-			if tam > 1:
-				ext = names[tam - 1]
-				if ext == "html":
-					last_modified = os.path.getmtime(os.path.join(dirName,fname))
-					lm = datetime.fromtimestamp(last_modified).strftime('%Y-%m-%d %H:%M:%S')
-					texpire = get_expiry_period("client_html_")
-					time_diff, expiry = get_jasper_session_expiry_seconds(lm, texpire)
-					if time_diff > expiry:#remove from disc
-						remove_directory(dirName)
-"""
 
 def clear_expired_jasper_error(force=False):
 
@@ -335,7 +309,6 @@ def clear_expired(force=False):
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
-	#local_session_data = frappe.local.session
 	clear_cache()
 
 def clear_cache():
@@ -346,7 +319,6 @@ def clear_cache():
 		clear_all_jasper_cache()
 		clear_expired_jasper_error(force=True)
 		clear_jasper_cache_local_report()
-		#version = frappe.utils.cint(frappe.__version__.split(".", 1)[0])
 		version = getFrappeVersion().major
 		if version > 4:
 			clear_all_jasper_from_redis_cache()

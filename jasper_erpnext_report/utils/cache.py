@@ -13,15 +13,10 @@ redis_cache_retry = 10 #10s
 jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"},{"mcache":'report_list_all', "db": None},
 					{"mcache":'report_list_doctype', "db": None}]
 
-#jasper_cache_data = [{"mcache":"jaspersession", "db": "tabJasperSessions"}]
-
 
 def redis_transation(data, watch):
-	#if not data:
-	#	return True#version frappe 4
 	from jasper_erpnext_report.utils.utils import getFrappeVersion
 	version = getFrappeVersion().major
-	#if frappe.utils.cint(frappe.__version__.split(".", 1)[0]) < 5:
 	if version < 5:
 		return True
 
@@ -64,8 +59,6 @@ def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}, in
 		except:
 			pass
 
-		#return
-
 	return {"data":data}
 
 def update_jasper_list_all(data, cachename="report_list_all"):
@@ -81,7 +74,6 @@ def update_list_all_memcache_db(data, cachename="report_list_all", fields={}, in
 		new_data[k] = v
 	if not in_transation:
 		update_jasper_list_all({"data":new_data}, cachename)
-		#return
 
 	return {"data":new_data}
 

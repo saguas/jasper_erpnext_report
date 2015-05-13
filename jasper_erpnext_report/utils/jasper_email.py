@@ -37,10 +37,6 @@ def send_comm_email(d, file_name, output, sent_via=None, print_html=None, print_
 		if hasattr(sent_via, "get_content"):
 			d.content = sent_via.get_content(d)
 
-	#if print_format == "pdf" or print_html:
-		#footer = "<hr>" + set_portal_link(sent_via, d, fileid)
-	#	pass
-
 	mail = get_email(d.recipients, sender=d.sender, subject=d.subject,
 		msg=d.content, footer=footer)
 
@@ -82,7 +78,7 @@ def sendmail_v5(url, doctype=None, name=None, sender=None, content=None, subject
 def get_attach_link(url):
 		"""Returns public link for the attachment via `templates/emails/print_link.html`."""
 		return frappe.get_template("templates/emails/print_link.html").render({
-			"url": "%s/%s" % (frappe.utils.get_url(), url)#frappe.utils.quoted("%s/%s" % (frappe.utils.get_url(), url))
+			"url": "%s/%s" % (frappe.utils.get_url(), url)
 		})
 
 
@@ -158,6 +154,5 @@ def set_jasper_email_doctype(parent_name, sent_to, sender, when, filepath, filen
 
 def is_email_enabled():
 	from frappe.email.smtp import _get_email_account
-	#acc = frappe.get_all("Email Account", fields=["default_outgoing"], filters={"enable_outgoing": 1, "default_outgoing": 1})
 	acc = _get_email_account({"enable_outgoing": 1, "default_outgoing": 1})
 	return acc != None
