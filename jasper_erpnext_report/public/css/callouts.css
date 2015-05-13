@@ -1,14 +1,3 @@
-@import url(font-awesome.min.css);
-@import url(iconFont.css);
-@import url(fontello.css);
-@import url(style.min.css);
-/*.create:before {
-content: url("SVG/pdf_icon2.svg");
-height: 16px;
-line-height: 16px;
-width: 16px;
-}*/
-
 .dropdown-submenu {
     position:relative;
 }
@@ -53,7 +42,7 @@ width: 16px;
 
 
 .icon-jasper-pdf {
-    content: url("SVG/file-pdf.svg");
+    content: url("../jasper_erpnext_report/css/SVG/file-pdf.svg");
     background-position: center center;
 	height: 16px;
 	line-height: 16px;
@@ -62,7 +51,7 @@ width: 16px;
 }
 
 .icon-jasper-word {
-    content: url("SVG/file-word.svg");
+    content: url("../jasper_erpnext_report/css/SVG/file-word.svg");
     background-position: center center;
 	height: 16px;
 	line-height: 16px;
@@ -71,7 +60,7 @@ width: 16px;
 }
 
 .icon-jasper-excel {
-    content: url("SVG/file-excel.svg");
+    content: url("../jasper_erpnext_report/css/SVG/file-excel.svg");
     background-position: center center;
 	height: 16px;
 	line-height: 16px;
@@ -80,7 +69,7 @@ width: 16px;
 }
 
 .icon-jasper-openoffice {
-    content: url("SVG/file-openoffice.svg");
+    content: url("../jasper_erpnext_report/css/SVG/file-openoffice.svg");
     background-position: center center;
 	height: 16px;
 	line-height: 16px;
@@ -89,7 +78,7 @@ width: 16px;
 }
 
 .icon-jasper-libreoffice {
-    content: url("SVG/file-libreoffice.svg");
+    content: url("../jasper_erpnext_report/css/SVG/file-libreoffice.svg");
     background-position: center center;
 	height: 16px;
 	line-height: 16px;

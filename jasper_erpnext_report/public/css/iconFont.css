@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'iconFont';
-  src: url('../fonts/iconFont.eot');
-  src: url('../fonts/iconFont.eot?#iefix') format('embedded-opentype'), url('../fonts/iconFont.woff') format('woff'), url('../fonts/iconFont.ttf') format('truetype'), url('../fonts/iconFont.svg#iconFont') format('svg');
+  src: url('../jasper_erpnext_report/css/fonts/iconFont.eot');
+  src: url('../jasper_erpnext_report/css/fonts/iconFont.eot?#iefix') format('embedded-opentype'), url('../jasper_erpnext_report/css/fonts/iconFont.woff') format('woff'), url('../jasper_erpnext_report/css/fonts/iconFont.ttf') format('truetype'), url('../jasper_erpnext_report/css/fonts/iconFont.svg#iconFont') format('svg');
   font-weight: normal;
   font-style: normal;
 }

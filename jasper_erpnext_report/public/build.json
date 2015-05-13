@@ -1,6 +1,7 @@
 {
 	"css/jasper_erpnext_report.css": [
-		"public/css/callouts.css"
+		"public/css/callouts.css",
+        "public/css/iconFont.css"
     ],
 	"js/jasper_erpnext_report.js": [
         "public/js/jstree.min.js",
