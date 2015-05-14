@@ -8,7 +8,7 @@ from ast import literal_eval
 from . cache import *
 from . jasper_document import *
 from . jasper_email import set_jasper_email_doctype
-
+import jasper_erpnext_report
 from jasper_erpnext_report.utils.jasper_iter_hooks import JasperHooks
 
 jasper_formats = ["pdf", "docx", "xls","ods","odt", "rtf"]
@@ -40,6 +40,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 				size += 1
 				for report in with_param:
 						name = report.parent
+						#print "report with params name {} r.name {} params {}".format(name, r.name, report)
 						if name == r.name:
 							if report.jasper_param_action == "Automatic":
 								#continue
@@ -86,6 +87,7 @@ def import_all_jasper_remote_reports(docs, force=True):
 			import_doc(param_doc.as_dict(), force=force)
 		for perm_doc in d.perm_docs:
 			import_doc(perm_doc.as_dict(), force=force)
+		#frappe.db.commit()
 
 	frappe.flags.in_import = False
 
@@ -195,10 +197,14 @@ def pipInstall(package=None):
 		jr.jasperserverlib = False
 		frappe.msgprint(_("Error when install package {}. Error: {}".format(package, e)))
 
-def getFrappeVersion(version=None):
-	version = version or frappe.__version__#.split(".", 1)
+
+def get_Frappe_Version(version=None):
+	version = version or frappe.__version__
 	import semantic_version as sv
 	return sv.Version(version)
+
+def getFrappeVersion():
+	return jasper_erpnext_report.FRAPPE_VERSION
 
 def add_to_time_str(date=None, hours=0, days=0, weeks=0):
 	from datetime import timedelta
