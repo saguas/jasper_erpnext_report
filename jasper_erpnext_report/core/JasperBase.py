@@ -331,7 +331,7 @@ class JasperBase(object):
 		Run one report at a time for Form type report and many ids
 		"""
 		if (doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form") and not data.get("is_doctype_id", None):
-			ids = data.get('ids', [])
+			ids = data.get('ids', [])[:]
 			for id in ids:
 				data['ids'] = [id]
 				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
