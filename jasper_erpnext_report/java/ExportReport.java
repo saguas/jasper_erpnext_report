@@ -32,6 +32,8 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.JRFileVirtualizer;
 
+import net.sf.jasperreports.engine.JRRewindableDataSource;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.sql.Connection;
@@ -40,6 +42,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.Locale;
+
+import java.util.ListIterator;
+//import FrappeDataSource;
 
 public class ExportReport
 {
@@ -59,6 +64,7 @@ public class ExportReport
 	private JasperPrint jasperPrint;
 	private JRDataSource dataSource;
 	private DefaultTableModel tableModel;
+	private JRRewindableDataSource frappeDSource;
 	private JRQuery query;
 	private String queryType;
 	private String sqlQueryPath;
@@ -134,16 +140,42 @@ public class ExportReport
       
       System.out.println("Done!");
   }
-
+  
+  private void make(FrappeDataSource fds){
+	  
+	  this.setParams();
+	  //this.setQueryType();
+	  System.out.println("inside make before create FrappeDataSource");
+	  //this.frappeDSource = new FrappeDataSource((ListIterator)ls);
+	  this.frappeDSource = fds;
+	  System.out.println("inside make before getJasperPrint");
+	  this.getJasperPrint(this.frappeDSource);
+	  System.out.println("inside make before makeReport()");
+ 	  this.makeReport();
+     
+      System.out.println("Done!");
+  }
+  
+  public void export(FrappeDataSource fds)
+  {
+	 System.out.println("inside java export(JRRewindableDataSource ds)");
+	 this.make(fds);
+  }
+  
+  public void export(String[][] data, String[] cols, FrappeDataSource fds){
+	  this.tables = data;
+	  this.columns = cols;
+	  if (fds != null){
+	  	this.make(fds);
+	  }else{
+	  	this.make();
+	  }
+	  
+  }
+  
   public void export()
   {
 	 this.make();
-  }
-  
-  public void export(String[][] data, String[] cols){
-	  this.tables = data;
-	  this.columns = cols;
-	  this.make();
   }
   
   public void setParams(){
@@ -295,5 +327,4 @@ public class ExportReport
 	      e.printStackTrace();
 	    }
 	}
-
 }

@@ -103,12 +103,21 @@
    "precision": ""
   }, 
   {
+   "default": "0", 
+   "description": "Check this for jasper get value from the field name. This take more time than regular selects to database. Field name is of the form doctype:docname:field. If you don't give doctype and docname it will use the doctype and docname from where you call the report.", 
+   "fieldname": "jasper_custom_fields", 
+   "fieldtype": "Check", 
+   "label": "Use For Custom Fields", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
    "default": "Ask", 
    "description": "Select the language to use in report.", 
    "fieldname": "jasper_locale", 
    "fieldtype": "Select", 
    "label": "Locale", 
-   "options": "", 
+   "options": "Ask", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -311,7 +320,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-05-02 21:38:45.902440", 
+ "modified": "2015-05-18 23:51:39.267111", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

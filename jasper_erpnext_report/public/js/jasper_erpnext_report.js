@@ -253,7 +253,7 @@ jasper.getOrphanReport = function(data, ev){
     var grid_data = null;
     var columns = null;
     var rtype = "General";
-    
+    var cur_doctype = null;
 
 	//if (len > 1 && route[0] === "List"){
 	//	var doctype = route[1];
@@ -267,13 +267,15 @@ jasper.getOrphanReport = function(data, ev){
 			msgprint(__("Please, select at least one name."), __("Jasper Report"));
 			return;
 		};
+		cur_doctype = route[1];
 	}else{ //if(len > 2 && route[0] === "Form"){
 		docids = jasper.getIdsFromForm();
 		//if (cur_frm){
 		if (docids){
 			docids = [docids];
 		//	docids = [cur_frm.doc.name];
-         docname = route[0];
+         	docname = route[0];
+         	cur_doctype = route[1];
 		//}else{
 		//	msgprint(__("To print this document you must be in a form."), __("Jasper Report"));
 		//	return;
@@ -287,6 +289,7 @@ jasper.getOrphanReport = function(data, ev){
 			}else{
 				docname = route[1];
 			}
+			cur_doctype = docname;
 		}
 	}
     var params;
@@ -304,7 +307,7 @@ jasper.getOrphanReport = function(data, ev){
 				params.locale = jasper.get_alpha3(doc.locale);
 			}
 		}
-    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", name_ids: docids, pformat: jr_format, params: params, is_doctype_id: obj.is_doctype_id, grid_data: {columns: columns, data: grid_data}};
+    	var args = {fortype: fortype, report_name: data.jr_name, doctype:"Jasper Reports", cur_doctype: cur_doctype, name_ids: docids, pformat: jr_format, params: params, is_doctype_id: obj.is_doctype_id, grid_data: {columns: columns, data: grid_data}};
         if(jr_format === "email"){
         	var version = jasper.get_app_version("frappe");
         	if (version >= "5"){

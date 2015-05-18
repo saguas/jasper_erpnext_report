@@ -212,3 +212,22 @@ def add_to_time_str(date=None, hours=0, days=0, weeks=0):
 	d = frappe.utils.get_datetime(date) + timedelta(hours=hours, days=days, weeks=weeks)
 	new_date = frappe.utils.get_datetime_str(d)
 	return new_date
+
+
+class FrappeContext:
+
+	def __init__(self, site, user):
+		self.site = site
+		self.user = user
+
+	def __enter__(self):
+		frappe.init(site=self.site)
+		frappe.connect()
+		print frappe.local.site
+		frappe.set_user(self.user)
+
+	def __exit__(self, type, value, trace):
+		if frappe.db:
+			frappe.db.commit()
+
+		frappe.destroy()
