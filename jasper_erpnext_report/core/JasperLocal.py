@@ -15,7 +15,7 @@ import JasperBase as Jb
 from jasper_erpnext_report.jasper_reports.FrappeDataSource import JasperCustomDataSourceDefault, _JasperCustomDataSource
 
 import uuid
-import thread
+import threading
 import os, json
 
 
@@ -77,10 +77,15 @@ class JasperLocal(Jb.JasperBase):
 
 		lang = data.get("params", {}).get("locale", None) or "EN"
 		cur_doctype = data.get("cur_doctype")
-		ids = data.get('ids', [])
+		ids = data.get('ids', [])[:]
 		virtua = 0
 		if doc.jasper_virtualizer:
 			virtua = cint(frappe.db.get_value('JasperServerConfig', fieldname="jasper_virtualizer_pages")) or 0
+
+		if custom and not frappe.local.fds:
+			default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
+			jds_method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", data.get("report_name"), default)
+			frappe.local.fds = jds_method
 
 		for m in range(ncopies):
 			if pram_copy_index != -1:
@@ -117,7 +122,10 @@ class JasperLocal(Jb.JasperBase):
 				#used for xml datasource
 				mparams.put("numberPattern", frappe.db.get_default("number_format"))
 				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
-				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids) )
+
+				thread = threading.Thread(target=self._export_report, args=(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds) )
+				thread.start()
+				thread.join()
 				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
@@ -126,7 +134,7 @@ class JasperLocal(Jb.JasperBase):
 				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
-	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId, user, cur_doctype, custom, ids):
+	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId, user, cur_doctype, custom, ids, jds_method):
 		try:
 			outtype = mparams.get("type")
 			outputPath = mparams.get("outputPath")
@@ -137,8 +145,10 @@ class JasperLocal(Jb.JasperBase):
 			fds = None
 			with utils.FrappeContext(localsite, user):
 				if custom:
-					jds = JasperCustomDataSourceDefault(ids)
-					fds = jr.FDataSource(_JasperCustomDataSource(jds, cur_doctype))
+				#	default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
+				#	method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", report_name, default)
+					jds = jds_method(ids, cur_doctype)
+					fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
 				if grid_data and grid_data.get("data", None):
 					data, cols = self._export_query_report(grid_data)
@@ -161,6 +171,10 @@ class JasperLocal(Jb.JasperBase):
 			t = int(time.time())
 			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
+
+		finally:
+			import jnius
+			jnius.detach()
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):

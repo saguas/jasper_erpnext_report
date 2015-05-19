@@ -64,7 +64,6 @@ public class ExportReport
 	private JasperPrint jasperPrint;
 	private JRDataSource dataSource;
 	private DefaultTableModel tableModel;
-	private JRRewindableDataSource frappeDSource;
 	private JRQuery query;
 	private String queryType;
 	private String sqlQueryPath;
@@ -144,13 +143,7 @@ public class ExportReport
   private void make(FrappeDataSource fds){
 	  
 	  this.setParams();
-	  //this.setQueryType();
-	  System.out.println("inside make before create FrappeDataSource");
-	  //this.frappeDSource = new FrappeDataSource((ListIterator)ls);
-	  this.frappeDSource = fds;
-	  System.out.println("inside make before getJasperPrint");
-	  this.getJasperPrint(this.frappeDSource);
-	  System.out.println("inside make before makeReport()");
+	  this.getJasperPrint(fds);
  	  this.makeReport();
      
       System.out.println("Done!");
@@ -158,7 +151,6 @@ public class ExportReport
   
   public void export(FrappeDataSource fds)
   {
-	 System.out.println("inside java export(JRRewindableDataSource ds)");
 	 this.make(fds);
   }
   
