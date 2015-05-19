@@ -5,7 +5,7 @@ from jasper_erpnext_report.utils.utils import jaspersession_get_value,get_expiry
 	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion, add_to_time_str
 
 from jasper_erpnext_report.utils.file import remove_directory
-
+import json
 
 #call from bench frappe --python session or
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.list_all_memcached_keys_v4
@@ -147,9 +147,18 @@ def clear_all_jasper_reports(force=True):
 
 				intern_reqid = m.get("reqid")
 				if not data:
-					data = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
+					db_data = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
+					if db_data:
+						data = db_data[0]
+						d = data.get("data")
+						data = ast.literal_eval(d)
 					print "go to db data {}".format(data)
-				file_path = data['data'].get('result').get("uri").rsplit("/",1)
+
+				else:
+					data = data.get("data")
+
+				#file_path = data.get('data').get('result').get("uri").rsplit("/",1)
+				file_path = data.get('result').get("uri").rsplit("/",1)
 				compiled_path = file_path[0]
 				remove_directory(compiled_path)
 				compiled_removed += 1
