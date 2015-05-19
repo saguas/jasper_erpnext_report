@@ -20,12 +20,12 @@ jasper.run_jasper_report = function(method, data, doc){
                if (response_data && response_data.message){
                    var msg = response_data.message;
                    if (msg[0].status === "ready"){
-                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when is ready."))
+                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."))
                        timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.pending_reports.push(msg);
                        setTimeout(jasper.jasper_report_ready, 1000*10, msg, $banner, timeout);
                    }else{
-                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when is ready."))
+                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."))
                        timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.polling_report(msg, $banner, timeout);
                    }
