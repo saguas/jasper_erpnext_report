@@ -12,8 +12,10 @@ import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
+from jasper_erpnext_report.jasper_reports.FrappeDataSource import JasperCustomDataSourceDefault, _JasperCustomDataSource
+
 import uuid
-import thread
+import threading
 import os, json
 
 
@@ -56,6 +58,7 @@ class JasperLocal(Jb.JasperBase):
 
 		path_join = os.path.join
 		resp = []
+		custom = doc.get("jasper_custom_fields")
 
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
@@ -66,18 +69,23 @@ class JasperLocal(Jb.JasperBase):
 		if doc.query:
 			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
-			#conn = "jdbc:mysql://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.local.site + "?user="+ frappe.conf.db_name +\
-				#"&password=" + frappe.conf.db_password
+
 		reportName = self.getFileName(path)
 		jasper_path = get_jasper_path(for_all_sites)
 		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
 		outtype = print_format.index(pformat)
 
 		lang = data.get("params", {}).get("locale", None) or "EN"
-
+		cur_doctype = data.get("cur_doctype")
+		ids = data.get('ids', [])[:]
 		virtua = 0
 		if doc.jasper_virtualizer:
 			virtua = cint(frappe.db.get_value('JasperServerConfig', fieldname="jasper_virtualizer_pages")) or 0
+
+		if custom and not frappe.local.fds:
+			default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
+			jds_method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", data.get("report_name"), default)
+			frappe.local.fds = jds_method
 
 		for m in range(ncopies):
 			if pram_copy_index != -1:
@@ -115,7 +123,9 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("numberPattern", frappe.db.get_default("number_format"))
 				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-				thread.start_new_thread(self._export_report, (mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId) )
+				thread = threading.Thread(target=self._export_report, args=(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds) )
+				thread.start()
+				thread.join()
 				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
@@ -124,7 +134,7 @@ class JasperLocal(Jb.JasperBase):
 				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
-	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId):
+	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId, user, cur_doctype, custom, ids, jds_method):
 		try:
 			outtype = mparams.get("type")
 			outputPath = mparams.get("outputPath")
@@ -132,16 +142,24 @@ class JasperLocal(Jb.JasperBase):
 
 			data = None
 			cols = None
-			if grid_data and grid_data.get("data", None):
-				data, cols = self._export_query_report(grid_data)
-				if not data or not cols:
-					print "Error in report {}. There is no data.".format(report_name)
-					return
-			export_report = jr.ExportReport(mparams)
-			export_report.export(data, cols)
-			if outtype == 7:#html file
-				content = get_file(outputPath + fileName + ".html")
-				self.copy_images(content, outputPath, fileName, report_name, localsite)
+			fds = None
+			with utils.FrappeContext(localsite, user):
+				if custom:
+				#	default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
+				#	method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", report_name, default)
+					jds = jds_method(ids, cur_doctype)
+					fds = jr.FDataSource(_JasperCustomDataSource(jds))
+
+				if grid_data and grid_data.get("data", None):
+					data, cols = self._export_query_report(grid_data)
+					if not data or not cols:
+						print "Error in report {}. There is no data.".format(report_name)
+						return
+				export_report = jr.ExportReport(mparams)
+				export_report.export(data, cols, fds)
+				if outtype == 7:#html file
+					content = get_file(outputPath + fileName + ".html")
+					self.copy_images(content, outputPath, fileName, report_name, localsite)
 		except Exception, e:
 			import time
 			print "Error in report %s, error is: %s" % (report_name, e)
@@ -153,6 +171,10 @@ class JasperLocal(Jb.JasperBase):
 			t = int(time.time())
 			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
+
+		finally:
+			import jnius
+			jnius.detach()
 			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):

@@ -326,6 +326,7 @@ class JasperBase(object):
 
 	def prepare_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 		resps = []
+		frappe.local.fds = None
 		data = self.run_report_async(doc, data=data, params=params)
 		"""
 		Run one report at a time for Form type report and many ids

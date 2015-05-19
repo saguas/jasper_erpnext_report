@@ -14,16 +14,16 @@ HOOKS:
 """
 
 class JasperHooks:
-	def __init__(self, hook_name, fallback=None):
+	def __init__(self, hook_name, docname=None, fallback=None):
 		self.hook_name = hook_name
-		self.fallback = fallback
 		self.current = 0
-		self.methods_len = 0
-		self.methods = (frappe.get_hooks().get(self.hook_name))
-		if self.fallback and not self.methods:
-			self.methods = (self.fallback)
-		if self.methods:
-			self.methods_len = len(self.methods)
+		self.methods = frappe.get_hooks().get(self.hook_name) or (fallback if fallback is not None else [])
+		if isinstance(self.methods, dict):
+			if docname in self.methods.keys():
+				self.methods = self.methods[docname]
+			else:
+				self.methods = fallback if fallback is not None else []
+		self.methods_len = len(self.methods)
 
 
 	def __iter__(self):

@@ -24,6 +24,9 @@ permission_query_conditions = {
 	"Jasper Reports": "jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_permission_query_conditions",
 }
 
+jasper_custom_data_source = {
+	"Cherry Local": "jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault"
+}
 #permissions
 
 has_permission = {

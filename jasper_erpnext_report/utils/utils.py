@@ -135,6 +135,14 @@ def jasper_run_method(hook_name, *args, **kargs):
 	for method in JasperHooks(hook_name):
 		method(hook_name, *args, **kargs)
 
+#call hooks for jasper custom data source
+def jasper_run_method_once_with_default(hook_name, docname, default):
+	m = JasperHooks(hook_name, docname, default)
+	method = m.get_next_jasper_hook_method()
+	return method
+
+def before_list_hook(arg0):
+	print "before_list_hook was called {}".format(arg0)
 
 def check_jasper_perm(perms, ptypes=("read",), user=None):
 		found = False
@@ -212,3 +220,21 @@ def add_to_time_str(date=None, hours=0, days=0, weeks=0):
 	d = frappe.utils.get_datetime(date) + timedelta(hours=hours, days=days, weeks=weeks)
 	new_date = frappe.utils.get_datetime_str(d)
 	return new_date
+
+class FrappeContext:
+
+	def __init__(self, site, user):
+		self.site = site
+		self.user = user
+
+	def __enter__(self):
+		frappe.init(site=self.site)
+		frappe.connect()
+		print frappe.local.site
+		frappe.set_user(self.user)
+
+	def __exit__(self, type, value, trace):
+		if frappe.db:
+			frappe.db.commit()
+
+		frappe.destroy()
