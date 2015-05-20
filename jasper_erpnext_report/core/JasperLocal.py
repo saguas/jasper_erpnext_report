@@ -12,10 +12,9 @@ import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
-from jasper_erpnext_report.jasper_reports.FrappeDataSource import JasperCustomDataSourceDefault, _JasperCustomDataSource
+from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 
 import uuid
-import threading
 import os, json
 
 
@@ -70,10 +69,34 @@ class JasperLocal(Jb.JasperBase):
 			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
 
-		reportName = self.getFileName(path)
-		jasper_path = get_jasper_path(for_all_sites)
-		compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
-		outtype = print_format.index(pformat)
+		if not frappe.local.batch:
+			batch = frappe._dict({})
+			batch.batchReport = jr.BatchReport()
+			batch.reportName = self.getFileName(path)
+			batch.jasper_path = get_jasper_path(for_all_sites)
+			batch.compiled_path = get_compiled_path(batch.jasper_path, data.get("report_name"))
+			batch.outtype = print_format.index(pformat)
+			batch.batchReport.setType(batch.outtype)
+			batch.batchReport.setFileName(batch.reportName)
+			reqId = uuid.uuid4().hex
+			batch.outputPath = path_join(batch.compiled_path, reqId)
+			frappe.create_folder(batch.outputPath)
+			batch.batchReport.setOutputPath(batch.outputPath + os.sep + batch.reportName)
+			batch.sessionId = "local_report_" + reqId
+
+			res = self.prepareResponse({"reportURI": os.path.relpath(batch.outputPath, batch.jasper_path) + os.sep + batch.reportName + "." + pformat}, batch.sessionId)
+			res["status"] = None
+			res["report_name"] = data.get("report_name")
+			resp.append(res)
+			result = {"fileName": batch.reportName + "." + pformat, "uri":batch.outputPath + os.sep + batch.reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(batch.sessionId)}
+			self.insert_jasper_reqid_record(batch.sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
+
+			frappe.local.batch = batch
+
+		#reportName = self.getFileName(path)
+		#jasper_path = get_jasper_path(for_all_sites)
+		#compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
+		#outtype = print_format.index(pformat)
 
 		lang = data.get("params", {}).get("locale", None) or "EN"
 		cur_doctype = data.get("cur_doctype")
@@ -98,34 +121,35 @@ class JasperLocal(Jb.JasperBase):
 			if pram_copy_page_index != -1:
 				pram_copy_page_name = pram[pram_copy_page_index].get("name","")
 				hashmap.put(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
-			reqId = uuid.uuid4().hex
-			outputPath = path_join(compiled_path, reqId)
-			frappe.create_folder(outputPath)
-			sessionId = "local_report_" + reqId
-			res = self.prepareResponse({"reportURI": os.path.relpath(outputPath, jasper_path) + os.sep + reportName + "." + pformat}, sessionId)
-			res["status"] = None
-			res["report_name"] = data.get("report_name")
-			resp.append(res)
+			#reqId = uuid.uuid4().hex
+			#outputPath = path_join(frappe.local.batch.compiled_path, reqId)
+			#frappe.create_folder(outputPath)
+			#sessionId = "local_report_" + reqId
+			#res = self.prepareResponse({"reportURI": os.path.relpath(frappe.local.batch.outputPath, frappe.local.batch.jasper_path) + os.sep + frappe.local.batch.reportName + "." + pformat}, frappe.local.batch.sessionId)
+			#res["status"] = None
+			#res["report_name"] = data.get("report_name")
+			#resp.append(res)
 			try:
-				result = {"fileName": reportName + "." + pformat, "uri":outputPath + os.sep + reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(sessionId)}
-				self.insert_jasper_reqid_record(sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
+				#result = {"fileName": frappe.local.batch.reportName + "." + pformat, "uri":frappe.local.batch.outputPath + os.sep + frappe.local.batch.reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(frappe.local.batch.sessionId)}
+				#self.insert_jasper_reqid_record(frappe.local.batch.sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 
 				mparams = jr.HashMap()
-				mparams.put("path_jasper_file", compiled_path + os.sep)
-				mparams.put("reportName", reportName)
-				mparams.put("outputPath", outputPath + os.sep)
+				mparams.put("path_jasper_file", frappe.local.batch.compiled_path + os.sep)
+				mparams.put("reportName", frappe.local.batch.reportName)
+				mparams.put("outputPath", frappe.local.batch.outputPath + os.sep)
 				mparams.put("params", hashmap)
 				mparams.put("conn", conn)
-				mparams.put("type", jr.Integer(outtype))
+				mparams.put("type", jr.Integer(frappe.local.batch.outtype))
 				mparams.put("lang", lang)
 				mparams.put("virtua", jr.Integer(virtua))
 				#used for xml datasource
 				mparams.put("numberPattern", frappe.db.get_default("number_format"))
 				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-				thread = threading.Thread(target=self._export_report, args=(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds) )
-				thread.start()
-				thread.join()
+				self._export_report(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), frappe.local.batch.sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds)
+				#thread = threading.Thread(target=self._export_report, args=(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds) )
+				#thread.start()
+				#thread.join()
 				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
@@ -143,23 +167,26 @@ class JasperLocal(Jb.JasperBase):
 			data = None
 			cols = None
 			fds = None
-			with utils.FrappeContext(localsite, user):
-				if custom:
-				#	default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
-				#	method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", report_name, default)
-					jds = jds_method(ids, cur_doctype)
-					fds = jr.FDataSource(_JasperCustomDataSource(jds))
+			#with utils.FrappeContext(localsite, user):
+			if custom:
+			#	default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
+			#	method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", report_name, default)
+				jds = jds_method(ids, cur_doctype)
+				fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
-				if grid_data and grid_data.get("data", None):
-					data, cols = self._export_query_report(grid_data)
-					if not data or not cols:
-						print "Error in report {}. There is no data.".format(report_name)
-						return
-				export_report = jr.ExportReport(mparams)
-				export_report.export(data, cols, fds)
-				if outtype == 7:#html file
-					content = get_file(outputPath + fileName + ".html")
-					self.copy_images(content, outputPath, fileName, report_name, localsite)
+			if grid_data and grid_data.get("data", None):
+				data, cols = self._export_query_report(grid_data)
+				if not data or not cols:
+					print "Error in report {}. There is no data.".format(report_name)
+					return
+			#export_report = jr.ExportReport(mparams)
+			#export_report.export(data, cols, fds)
+			frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
+
+			#if outtype == 7:#html file
+			#	content = get_file(outputPath + fileName + ".html")
+			#	self.copy_images(content, outputPath, fileName, report_name, localsite)
+
 		except Exception, e:
 			import time
 			print "Error in report %s, error is: %s" % (report_name, e)
@@ -172,10 +199,6 @@ class JasperLocal(Jb.JasperBase):
 			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 
-		finally:
-			import jnius
-			jnius.detach()
-			#frappe.throw(_("Error in report {}, error is: {}".format(report_name, e)))
 
 	def _export_query_report(self, grid_data):
 		tables = []
@@ -196,33 +219,20 @@ class JasperLocal(Jb.JasperBase):
 
 		return tables, cols
 
-
-	def copy_images(self, content, outputPath, fileName, report_name, localsite):
-		from distutils.dir_util import copy_tree
-
-		src = fileName + "." + "html_files"
-		html_files = os.path.join(outputPath, src)
-		#this is a report without folder html_files
-		if not os.path.exists(html_files):
-			return
-		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
-		dst = get_html_reports_images_path(report_path, where=src)
-		copy_tree(html_files, dst)
-
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
 			frappe.throw(_("No report for this requestid %s." % reqId[13:]))
+
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
-		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
 		cache = frappe.cache()
 		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
 		if error:
 			error = json.loads(error)
-			print "request with error {} user {}".format(reqId, self.user)
+			print "polling request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
 			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
 			#del error_cache[reqId]
@@ -230,7 +240,7 @@ class JasperLocal(Jb.JasperBase):
 			cache.delete(("site.all:jasper:" + reqId).encode('utf-8'))
 			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
-			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
+			res = self.prepareResponse({"reportURI": output_path, "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
 		else:
 			res = self.prepareResponse({}, reqId)

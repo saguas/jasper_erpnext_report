@@ -41,6 +41,7 @@ try:
 	ReportCompiler = getJavaClass('ReportCompiler')
 
 	ExportReport = getJavaClass('ExportReport')
+	BatchReport = getJavaClass('BatchReport')
 	FDataSource = getJavaClass('FrappeDataSource')
 
 	jr.pyjnius = True

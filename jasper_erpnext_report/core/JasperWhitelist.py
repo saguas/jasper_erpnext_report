@@ -218,12 +218,11 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		poll_data = prepare_polling(result)
 		result = report_polling(poll_data)
 		limit = 0
-		while limit <= 10:
+		while limit <= 10 and result[0].get("status", "not ready") != "ready":
 			time.sleep(cint(jasper_polling_time)/1000)
 			result = report_polling(poll_data)
-			print "email result[0] {}".format(result[0])
-			if "status" in result[0] and result[0].get("status", "not ready") == "ready":
-				break
+			#if "status" in result[0] and result[0].get("status", "not ready") == "ready":
+			#	break
 			limit += 1
 
 	pformat = data.get("pformat")
