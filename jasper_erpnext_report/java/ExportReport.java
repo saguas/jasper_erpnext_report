@@ -18,6 +18,8 @@ import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
@@ -70,10 +72,12 @@ public class ExportReport
 	private String xmlName;
 	private String numberPattern;
 	private String datePattern;
+	private Boolean batch;
 	
 	
 	
   public ExportReport(HashMap args){
+	  this.batch = false;
 	  this.path_jasper_file = (String) args.get("path_jasper_file");
 	  this.reportName = (String) args.get("reportName");
 	  this.outputPath = (String) args.get("outputPath");
@@ -135,39 +139,49 @@ public class ExportReport
 	  	this.dataSource = new JRTableModelDataSource(tableModel);
 		this.getJasperPrint(this.dataSource);
 	  }
-	  this.makeReport();
-      
-      System.out.println("Done!");
+	  
+	  if (this.batch != true){
+	  	 this.makeReport();
+		 System.out.println("Done!");
+	  }
   }
   
   private void make(FrappeDataSource fds){
 	  
 	  this.setParams();
 	  this.getJasperPrint(fds);
- 	  this.makeReport();
-     
-      System.out.println("Done!");
+	  if (this.batch != true){
+	  	 this.makeReport();
+		 System.out.println("Done!");
+	  }
   }
   
-  public void export(FrappeDataSource fds)
+  public JasperPrint export(FrappeDataSource fds, Boolean batch)
   {
+	 this.batch = batch;
 	 this.make(fds);
+	 return this.jasperPrint;
   }
   
-  public void export(String[][] data, String[] cols, FrappeDataSource fds){
+  public JasperPrint export(String[][] data, String[] cols, FrappeDataSource fds, Boolean batch){
 	  this.tables = data;
 	  this.columns = cols;
+	  this.batch = batch;
 	  if (fds != null){
 	  	this.make(fds);
 	  }else{
 	  	this.make();
 	  }
 	  
+	  return this.jasperPrint;
+	  
   }
   
-  public void export()
+  public JasperPrint export(Boolean batch)
   {
+	 this.batch = batch;
 	 this.make();
+	 return this.jasperPrint;
   }
   
   public void setParams(){
@@ -212,7 +226,9 @@ public class ExportReport
 		      case 0:
 		          JRDocxExporter docxexporter = new JRDocxExporter();
 		          docxexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
+				  //docxexporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
 		          docxexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".docx");
+				  //docxexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(this.outputPathName + ".docx"));
 		          docxexporter.exportReport();
 		          break;
 		      case 1:
@@ -272,6 +288,8 @@ public class ExportReport
 		      default:
 		          JRPdfExporter pdfexporter = new JRPdfExporter();
 		          pdfexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
+				  //pdfexporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
+				  //pdfexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(this.outputPathName + ".pdf"));
 		          pdfexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".pdf");
 		          pdfexporter.exportReport();
 		          break;

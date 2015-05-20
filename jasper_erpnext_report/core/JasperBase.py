@@ -7,6 +7,7 @@ import frappe
 from io import BytesIO
 import uuid
 
+import jasper_erpnext_report.jasper_reports as jr
 import jasper_erpnext_report.utils.utils as utils
 from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
 
@@ -327,6 +328,7 @@ class JasperBase(object):
 	def prepare_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 		resps = []
 		frappe.local.fds = None
+		frappe.local.batch = None
 		data = self.run_report_async(doc, data=data, params=params)
 		"""
 		Run one report at a time for Form type report and many ids
@@ -338,6 +340,11 @@ class JasperBase(object):
 				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 		else:
 			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
+
+		if self.__class__.__name__ == "JasperLocal":
+			resps = resps[:1]
+			frappe.local.batch.batchReport.export()
+
 		cresp = self.prepareCollectResponse(resps)
 		return cresp
 

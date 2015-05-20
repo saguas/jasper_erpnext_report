@@ -11,6 +11,7 @@ jasperserverlib = False
 frappe.get_logger("jasper_erpnext_report").addHandler(logging.NullHandler())
 
 fds = frappe.local("fds")
+batch = frappe.local("batch")
 
 from .utils.utils import get_Frappe_Version
 FRAPPE_VERSION = get_Frappe_Version()
