@@ -28,6 +28,7 @@ class JasperReports(Document):
 
 	def on_update(self, method=None):
 
+
 		#if we are importing docs from jasperserver
 		if not frappe.flags.in_import:
 
@@ -63,6 +64,7 @@ class JasperReports(Document):
 			frappe.throw(_("You need to configure Jasper first."))
 			return
 
+
 		if check_root_exists(self.doctype, self.name):
 			rootquery = ''
 			self.query = ''
@@ -84,6 +86,7 @@ class JasperReports(Document):
 			#get total number of parameters to concatenate with name of parameter
 			is_copy = "Is for copies"
 			action_type = "Ask"
+
 			for param in params:
 				pname = param.xpath('./@name')
 				pclass = param.xpath('./@class')
@@ -97,6 +100,7 @@ class JasperReports(Document):
 				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
 						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name": self.name + "_" + pname[0]})
 			self.query = rootquery + self.query
+
 			return
 		#if jrxml file was removed then prepare to remove all associated images and params given feedback to the user
 		if self.jasper_report_origin.lower() == "localserver":

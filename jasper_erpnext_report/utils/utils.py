@@ -40,10 +40,8 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 				size += 1
 				for report in with_param:
 						name = report.parent
-						#print "report with params name {} r.name {} params {}".format(name, r.name, report)
 						if name == r.name:
 							if report.jasper_param_action == "Automatic":
-								#continue
 								break
 							report.pop("parent")
 							report.pop("p_name")

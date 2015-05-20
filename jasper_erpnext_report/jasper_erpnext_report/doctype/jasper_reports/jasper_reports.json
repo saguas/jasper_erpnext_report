@@ -112,12 +112,12 @@
    "precision": ""
   }, 
   {
-   "default": "Ask", 
+   "default": "", 
    "description": "Select the language to use in report.", 
    "fieldname": "jasper_locale", 
    "fieldtype": "Select", 
    "label": "Locale", 
-   "options": "Ask", 
+   "options": "", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -329,7 +329,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-05-20 21:37:43.788556", 
+ "modified": "2015-05-20 22:39:40.659609", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

@@ -63,7 +63,6 @@ def _jasperserver(fn):
 	return innerfn
 
 
-
 class JasperServer(Jb.JasperBase):
 	def __init__(self, doc=None):
 		self.is_login = False
