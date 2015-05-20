@@ -322,7 +322,7 @@ class JasperRoot(Jb.JasperBase):
 				"""
 				for id in ids:
 					report = self.get_jasper_reqid_data(id)
-					rdata = report['data'].get('result')
+					rdata = report.get('data').get('result')
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")
 					fileName = expId[0].get("fileName", None)

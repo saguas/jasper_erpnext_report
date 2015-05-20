@@ -12,10 +12,9 @@ import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
-from jasper_erpnext_report.jasper_reports.FrappeDataSource import JasperCustomDataSourceDefault, _JasperCustomDataSource
+from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 
 import uuid
-#import threading
 import os, json
 
 
@@ -184,9 +183,9 @@ class JasperLocal(Jb.JasperBase):
 			#export_report.export(data, cols, fds)
 			frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
-			if outtype == 7:#html file
-				content = get_file(outputPath + fileName + ".html")
-				self.copy_images(content, outputPath, fileName, report_name, localsite)
+			#if outtype == 7:#html file
+			#	content = get_file(outputPath + fileName + ".html")
+			#	self.copy_images(content, outputPath, fileName, report_name, localsite)
 
 		except Exception, e:
 			import time
@@ -220,33 +219,20 @@ class JasperLocal(Jb.JasperBase):
 
 		return tables, cols
 
-
-	def copy_images(self, content, outputPath, fileName, report_name, localsite):
-		from distutils.dir_util import copy_tree
-
-		src = fileName + "." + "html_files"
-		html_files = os.path.join(outputPath, src)
-		#this is a report without folder html_files
-		if not os.path.exists(html_files):
-			return
-		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
-		dst = get_html_reports_images_path(report_path, where=src)
-		copy_tree(html_files, dst)
-
 	def polling(self, reqId):
 		data = self.get_jasper_reqid_data(reqId)
 		if not data['data']:
 			frappe.throw(_("No report for this requestid %s." % reqId[13:]))
+
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
-		print "reqId {}".format(reqId)
 		#error = error_cache.get(reqId)
 		cache = frappe.cache()
 		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
 		if error:
 			error = json.loads(error)
-			print "request with error {} user {}".format(reqId, self.user)
+			print "polling request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
 			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
 			#del error_cache[reqId]
@@ -254,7 +240,7 @@ class JasperLocal(Jb.JasperBase):
 			cache.delete(("site.all:jasper:" + reqId).encode('utf-8'))
 			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
-			res = self.prepareResponse({"reportURI": data['data']['result'].get("uri"), "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
+			res = self.prepareResponse({"reportURI": output_path, "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"
 		else:
 			res = self.prepareResponse({}, reqId)

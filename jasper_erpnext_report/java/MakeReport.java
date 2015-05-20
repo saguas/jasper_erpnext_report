@@ -120,7 +120,7 @@ public class MakeReport
 				  exporterOutput = new SimpleHtmlExporterOutput(outputPathName + extension[type]);
 				  //exporterOutput.setImageHandler(new WebHtmlResourceHandler(fileName + ".html_files/{0}"));
 				  //exporterOutput.setImageHandler(new WebHtmlResourceHandler("image?image={0}"));
-				  exporterOutput.setResourceHandler(new FileHtmlResourceHandler(new File("./"), "./images/"));
+				  //exporterOutput.setResourceHandler(new FileHtmlResourceHandler(new File("./"), "./images/"));
 				  xhtmlexporter.setExporterOutput(exporterOutput);
 		          //xhtmlexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrintList);
 		          //xhtmlexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outputPathName + ".html");

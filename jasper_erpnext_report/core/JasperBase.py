@@ -5,10 +5,11 @@ from frappe.model.document import Document
 from frappe import _
 import frappe
 from io import BytesIO
-import uuid
+import uuid, os
 
-import jasper_erpnext_report.jasper_reports as jr
+#import jasper_erpnext_report.jasper_reports as jr
 import jasper_erpnext_report.utils.utils as utils
+from jasper_erpnext_report.utils.file import get_file, get_html_reports_images_path
 from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
 
 _logger = frappe.get_logger("jasper_erpnext_report")
@@ -344,6 +345,9 @@ class JasperBase(object):
 		if self.__class__.__name__ == "JasperLocal":
 			resps = resps[:1]
 			frappe.local.batch.batchReport.export()
+			if frappe.local.batch.outtype == 7:#html file
+				content = get_file(frappe.local.batch.outputPath + os.sep + frappe.local.batch.reportName + ".html")
+				self.copy_images(content, frappe.local.batch.outputPath + os.sep, frappe.local.batch.reportName, data.get("report_name"), frappe.local.site)
 
 		cresp = self.prepareCollectResponse(resps)
 		return cresp
@@ -370,7 +374,6 @@ class JasperBase(object):
 							import re
 							fname = uri.rsplit("/",1)[1]
 							fname = re.sub('\t|\s', '', fname)
-							#fileName = fname.replace(" ","") + ".html"
 							fileName = fname + ".html"
 						ids.append({"id":id, "fileName": fileName, "attachmentsPrefix": options.get("attachmentsPrefix"),
 									"baseUrl": options.get("baseUrl"), "attachments": attachs, "contentType": contentType})
@@ -403,7 +406,7 @@ class JasperBase(object):
 	def make_internal_reqId(self, reqids, status, report_name):
 		intern_reqId = "intern_reqid_" + uuid.uuid4().hex
 		reqtime = frappe.utils.now()
-		reqDbObj = {"data":{"reqids": reqids, "report_name": report_name, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId), "db": frappe.conf.db_name}}
+		reqDbObj = {"data":{"reqids": reqids, "report_name": report_name, "last_updated": reqtime,'session_expiry': utils.get_expiry_period(intern_reqId), "db": frappe.conf.db_name, "site": frappe.local.site}}
 		self.insert_jasper_reqid_record(intern_reqId, reqDbObj)
 		res = {"requestId": intern_reqId, "reqtime": reqtime, "status": status}
 		return res
@@ -477,7 +480,6 @@ class JasperBase(object):
 		import hashlib
 		site = localsite or frappe.local.site
 		if not self.html_hash:
-			#hash_obj = hashlib.md5(content.encode('utf-8'))
 			hash_obj = hashlib.md5(frappe.utils.encode(content))
 			self.html_hash = hash_obj.hexdigest()
 		self.report_html_path = get_html_reports_path(report_name, localsite=site, hash=self.html_hash)
@@ -496,6 +498,18 @@ class JasperBase(object):
 		new_data['data']['reportPath'] = reportPath
 		new_data['data']['hash'] = self.html_hash
 		utils.insert_list_all_memcache_db(new_data['data'], cachename=name, tab="tabJasperClientHtmlDocs")
+
+	def copy_images(self, content, outputPath, fileName, report_name, localsite):
+		from distutils.dir_util import copy_tree
+
+		src = fileName + "." + "html_files"
+		html_files = os.path.join(outputPath, src)
+		#this is a report without folder html_files
+		if not os.path.exists(html_files):
+			return
+		report_path = self.get_html_path(report_name, localsite=localsite, content=content)
+		dst = get_html_reports_images_path(report_path, where=src)
+		copy_tree(html_files, dst)
 
 	#check what docs to show when global
 	def filter_perm_roles(self, data):

@@ -147,18 +147,20 @@ def clear_all_jasper_reports(force=True):
 
 				intern_reqid = m.get("reqid")
 				if not data:
-					data = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
-					print "go to db data {}".format(data)
-				file_path = data['data'].get('result').get("uri").rsplit("/",1)
+					d = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
+					data = ast.literal_eval(d[0]['data'])
+
+				file_path = data.get('result').get("uri").rsplit("/",1)
 				compiled_path = file_path[0]
 				remove_directory(compiled_path)
 				compiled_removed += 1
 				#if this report was not sent by email then remove it from assets/jasper_erpnext_report/reports/
 				urlemails = frappe.db.sql("""select count(*) from `tabJasper Email Report` where jasper_report_path like '%{0}%'""".format(intern_reqid))
-				if not urlemails[0][0]>0:
-					report_name = data['data'].get("report_name").get("data").get("report_name")
-					db = req.get("db")
-					path = get_email_pdf_path(report_name, intern_reqid, db)
+
+				if urlemails[0][0] == 0:
+					report_name = data.get("report_name").get("data").get("report_name")
+					site = req.get("site")
+					path = get_email_pdf_path(report_name, intern_reqid, site)
 					remove_directory(path)
 					emailed_removed += 1
 
@@ -182,7 +184,7 @@ def _f(data):
 	if data is None or isinstance(data, basestring):
 		return True
 
-	d = data.get('data') if data else {}
+	d = data.get('data') or {}
 	if d:
 		now = frappe.utils.now()
 		last_updated = d['last_updated']
@@ -324,3 +326,7 @@ def clear_cache():
 			clear_all_jasper_from_redis_cache()
 		else:
 			clear_all_jasper_from_cache_v4()
+
+
+def list_key():
+	print list_all_redis_keys("jasper")
