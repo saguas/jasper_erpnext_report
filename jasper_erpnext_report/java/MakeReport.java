@@ -10,12 +10,16 @@ import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.engine.JasperPrint;
 
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 
 import java.util.List;
 
@@ -48,9 +52,9 @@ public class MakeReport
 				  odsexporter.setExporterInput(SimpleExporterInput.getInstance(this.jasperPrintList));
 				  odsexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
 		          //odsexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".ods");	
-				  SimpleOdsReportConfiguration configuration = new SimpleOdsReportConfiguration();
-				  configuration.setOnePagePerSheet(false);
-				  odsexporter.setConfiguration(configuration);
+				  SimpleOdsReportConfiguration odsconfig = new SimpleOdsReportConfiguration();
+				  odsconfig.setOnePagePerSheet(false);
+				  odsexporter.setConfiguration(odsconfig);
 		          //odsexporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.TRUE);
 		          odsexporter.exportReport();
 		          break; 
@@ -65,7 +69,7 @@ public class MakeReport
 		      case 3:
 		          JRRtfExporter rtfexporter = new JRRtfExporter();
 				  rtfexporter.setExporterInput(SimpleExporterInput.getInstance(this.jasperPrintList));
-				  rtfexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
+				  rtfexporter.setExporterOutput(new SimpleWriterExporterOutput(outputPathName + extension[type]));
 		          //rtfexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
 		          //rtfexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".rtf");
 		          rtfexporter.exportReport();
@@ -76,9 +80,9 @@ public class MakeReport
 				  xlsexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
 		          //xlsexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
 		          //xlsexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".xls");
-				  SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
-				  configuration.setOnePagePerSheet(false);
-				  xlsexporter.setConfiguration(configuration);
+				  SimpleXlsReportConfiguration xlsconfig = new SimpleXlsReportConfiguration();
+				  xlsconfig.setOnePagePerSheet(false);
+				  xlsexporter.setConfiguration(xlsconfig);
 		          //xlsexporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.TRUE);
 		          xlsexporter.exportReport();
 		          break;
@@ -88,9 +92,9 @@ public class MakeReport
 				  xlsxexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
 		          //xlsxexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
 		          //xlsxexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".xlsx");
-				  SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
-				  configuration.setOnePagePerSheet(false);
-				  xlsxexporter.setConfiguration(configuration);
+				  SimpleXlsxReportConfiguration xlsxconfig = new SimpleXlsxReportConfiguration();
+				  xlsxconfig.setOnePagePerSheet(false);
+				  xlsxexporter.setConfiguration(xlsxconfig);
 		          //xlsxexporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.TRUE);
 		          xlsxexporter.exportReport();
 		          break;
@@ -108,14 +112,17 @@ public class MakeReport
 		          pptxexporter.exportReport();
 		          break;
 		      case 7:
+			  	  SimpleHtmlExporterOutput exporterOutput;
 		          JRXhtmlExporter xhtmlexporter = new JRXhtmlExporter();
 				  xhtmlexporter.setExporterInput(SimpleExporterInput.getInstance(this.jasperPrintList));
-				  xhtmlexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
-		          //xhtmlexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
-		          //xhtmlexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".html");
-		          xhtmlexporter.setParameter(JRHtmlExporterParameter.IS_OUTPUT_IMAGES_TO_DIR, Boolean.TRUE);
-		          xhtmlexporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "./");
-		          xhtmlexporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, "./images/");
+				  exporterOutput = new SimpleHtmlExporterOutput(outputPathName + extension[type]);
+				  exporterOutput.setImageHandler(new WebHtmlResourceHandler("images?image={0}"));
+				  xhtmlexporter.setExporterOutput(exporterOutput);
+		          //xhtmlexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrintList);
+		          //xhtmlexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outputPathName + ".html");
+		          //xhtmlexporter.setParameter(JRHtmlExporterParameter.IS_OUTPUT_IMAGES_TO_DIR, Boolean.TRUE);
+		          //xhtmlexporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "./");
+		          //xhtmlexporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, "./images/");
 		          xhtmlexporter.exportReport();
 		          break;
 		      case 8:
