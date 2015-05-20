@@ -30,11 +30,13 @@ class JasperRoot(Jb.JasperBase):
 		if origin == "server":
 			if not self.jps:
 				self.jps = Js.JasperServer(self.doc)
-				return self.jps
+				self.report_origin = origin
+			return self.jps
 		elif origin == "local":
 			if not self.jpl:
 				self.jpl = Jl.JasperLocal(self.doc)
-				return self.jpl
+				self.report_origin = origin
+			return self.jpl
 
 	#called in jasperserverconfig.py at the save button was pushed. Just save the data
 	def config(self):
@@ -388,6 +390,11 @@ class JasperRoot(Jb.JasperBase):
 			fileName = fileName[fileName.rfind(os.sep) + 1:]
 			output = cStringIO.StringIO()
 			file_name = fileName.replace(" ", "-").replace("/", "-")
+
+			if pformat == "pdf" and self.report_origin == "local":
+				output.write(content[0])
+				return file_name, output
+
 			if pformat=="pdf" and merge_all == True:
 				merger = PdfFileMerger()
 				for n in range(len(content)):

@@ -20,30 +20,15 @@ import os, json
 
 _logger = frappe.get_logger("jasper_erpnext_report")
 
-#error_cache = frappe._dict({})
 
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]
 
 class JasperLocal(Jb.JasperBase):
 	def __init__(self, doc=None):
-		super(JasperLocal, self).__init__(doc)
+		super(JasperLocal, self).__init__(doc, "local")
 
 	def run_local_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
-		"""
-		resps = []
-		data = self.run_report_async(doc, data=data, params=params)
-		print "doc.get is_doctype_id {}".format(data.get("is_doctype_id", None))
-		if (doc.jasper_report_type == "Form" or data.get('jasper_report_type', None) == "Form") and not data.get("is_doctype_id", None):
-			ids = data.get('ids')
-			for id in ids:
-				data['ids'] = [id]
-				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-		else:
-			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
-		cresp = self.prepareCollectResponse(resps)
-		cresp["origin"] = "local"
-		return [cresp]
-		"""
+
 		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
 		cresp["origin"] = "local"
 		return [cresp]
@@ -93,11 +78,6 @@ class JasperLocal(Jb.JasperBase):
 
 			frappe.local.batch = batch
 
-		#reportName = self.getFileName(path)
-		#jasper_path = get_jasper_path(for_all_sites)
-		#compiled_path = get_compiled_path(jasper_path, data.get("report_name"))
-		#outtype = print_format.index(pformat)
-
 		lang = data.get("params", {}).get("locale", None) or "EN"
 		cur_doctype = data.get("cur_doctype")
 		ids = data.get('ids', [])[:]
@@ -121,18 +101,8 @@ class JasperLocal(Jb.JasperBase):
 			if pram_copy_page_index != -1:
 				pram_copy_page_name = pram[pram_copy_page_index].get("name","")
 				hashmap.put(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
-			#reqId = uuid.uuid4().hex
-			#outputPath = path_join(frappe.local.batch.compiled_path, reqId)
-			#frappe.create_folder(outputPath)
-			#sessionId = "local_report_" + reqId
-			#res = self.prepareResponse({"reportURI": os.path.relpath(frappe.local.batch.outputPath, frappe.local.batch.jasper_path) + os.sep + frappe.local.batch.reportName + "." + pformat}, frappe.local.batch.sessionId)
-			#res["status"] = None
-			#res["report_name"] = data.get("report_name")
-			#resp.append(res)
-			try:
-				#result = {"fileName": frappe.local.batch.reportName + "." + pformat, "uri":frappe.local.batch.outputPath + os.sep + frappe.local.batch.reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(frappe.local.batch.sessionId)}
-				#self.insert_jasper_reqid_record(frappe.local.batch.sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 
+			try:
 				mparams = jr.HashMap()
 				mparams.put("path_jasper_file", frappe.local.batch.compiled_path + os.sep)
 				mparams.put("reportName", frappe.local.batch.reportName)
@@ -146,10 +116,7 @@ class JasperLocal(Jb.JasperBase):
 				mparams.put("numberPattern", frappe.db.get_default("number_format"))
 				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-				self._export_report(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), frappe.local.batch.sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds)
-				#thread = threading.Thread(target=self._export_report, args=(mparams, data.get("report_name"), frappe.local.site, data.get("grid_data", None), sessionId, self.user, cur_doctype, custom, ids, frappe.local.fds) )
-				#thread.start()
-				#thread.join()
+				self._export_report(mparams, data.get("report_name"), data.get("grid_data", None), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
 				if pram_copy_index != -1 and ncopies > 1:
 					hashmap = jr.HashMap()
 					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
@@ -158,19 +125,14 @@ class JasperLocal(Jb.JasperBase):
 				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
-	def _export_report(self, mparams, report_name, localsite, grid_data, sessionId, user, cur_doctype, custom, ids, jds_method):
+	def _export_report(self, mparams, report_name, grid_data, sessionId, cur_doctype, custom, ids, jds_method):
 		try:
-			outtype = mparams.get("type")
-			outputPath = mparams.get("outputPath")
-			fileName = mparams.get("reportName")
 
 			data = None
 			cols = None
 			fds = None
-			#with utils.FrappeContext(localsite, user):
+
 			if custom:
-			#	default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
-			#	method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", report_name, default)
 				jds = jds_method(ids, cur_doctype)
 				fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
@@ -179,22 +141,14 @@ class JasperLocal(Jb.JasperBase):
 				if not data or not cols:
 					print "Error in report {}. There is no data.".format(report_name)
 					return
-			#export_report = jr.ExportReport(mparams)
-			#export_report.export(data, cols, fds)
-			frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
-			#if outtype == 7:#html file
-			#	content = get_file(outputPath + fileName + ".html")
-			#	self.copy_images(content, outputPath, fileName, report_name, localsite)
+			frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
 		except Exception, e:
 			import time
 			print "Error in report %s, error is: %s" % (report_name, e)
-			#utils.jaspersession_set_value(sessionId, e)
 			s = "{0}".format(str(e))
-			#error_cache[sessionId] = s
 			cache = frappe.cache()
-			#t = calendar.timegm(time.gmtime())
 			t = int(time.time())
 			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
 			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))

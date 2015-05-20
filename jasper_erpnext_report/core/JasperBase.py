@@ -17,7 +17,7 @@ _logger = frappe.get_logger("jasper_erpnext_report")
 jasper_fields_not_supported = ["parent", "owner", "modified_by", "parenttype", "parentfield", "docstatus", "doctype", "name", "idx"]
 
 class JasperBase(object):
-	def __init__(self, doc=None):
+	def __init__(self, doc=None, origin=None):
 		doc = doc or {}
 		if isinstance(doc, Document):
 			self.doc = frappe._dict(doc.as_dict())
@@ -28,6 +28,7 @@ class JasperBase(object):
 		self.reset_data_session()
 		self.report_html_path = None
 		self.html_hash = None
+		self.report_origin = origin
 		self.resume()
 
 	def reset_data_session(self):
@@ -342,7 +343,7 @@ class JasperBase(object):
 		else:
 			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites))
 
-		if self.__class__.__name__ == "JasperLocal":
+		if self.report_origin == "local":
 			resps = resps[:1]
 			frappe.local.batch.batchReport.export()
 			if frappe.local.batch.outtype == 7:#html file

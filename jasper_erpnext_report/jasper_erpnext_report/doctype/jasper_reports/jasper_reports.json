@@ -238,6 +238,15 @@
    "precision": ""
   }, 
   {
+   "description": "Set Pdf Owner Password", 
+   "fieldname": "jasper_pdf_owner_passwd", 
+   "fieldtype": "Data", 
+   "hidden": 1, 
+   "label": "Owner Password", 
+   "permlevel": 0, 
+   "precision": ""
+  }, 
+  {
    "fieldname": "report_message:", 
    "fieldtype": "Section Break", 
    "label": "Report Message:", 
@@ -320,7 +329,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-05-18 23:51:39.267111", 
+ "modified": "2015-05-20 21:37:43.788556", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 

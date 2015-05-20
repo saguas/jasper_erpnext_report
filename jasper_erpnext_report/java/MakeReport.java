@@ -14,6 +14,8 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.engine.JasperPrint;
 
+import com.lowagie.text.pdf.PdfWriter;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
@@ -29,11 +31,17 @@ public class MakeReport
 {
 	
 	private List<JasperPrint> jasperPrintList;
+	private String opasswd;
+	private String upasswd;
+	private boolean encrypt;
 	
 	private String[] extension = {".docx",".ods",".odt", ".rtf", ".xls", ".xlsx", ".pptx", ".html", ".pdf"};
 	
-	public MakeReport(List<JasperPrint> jasperPrintList){
+	public MakeReport(List<JasperPrint> jasperPrintList, boolean encrypt, String opasswd, String upasswd){
 		this.jasperPrintList = jasperPrintList;
+		this.encrypt = encrypt; 
+		this.opasswd = opasswd; 
+		this.upasswd = upasswd;
 	}
 
 	public void makeReport(int type, String outputPathName, String fileName){
@@ -55,7 +63,7 @@ public class MakeReport
 				  odsexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
 		          //odsexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".ods");	
 				  SimpleOdsReportConfiguration odsconfig = new SimpleOdsReportConfiguration();
-				  odsconfig.setOnePagePerSheet(false);
+				  odsconfig.setOnePagePerSheet(true);
 				  odsexporter.setConfiguration(odsconfig);
 		          //odsexporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.TRUE);
 		          odsexporter.exportReport();
@@ -132,9 +140,18 @@ public class MakeReport
 		      case 8:
 		      default:
 		          JRPdfExporter pdfexporter = new JRPdfExporter();
+				  SimplePdfExporterConfiguration config = new SimplePdfExporterConfiguration();
+				  if (this.encrypt == true){
+					    config.setEncrypted(true);
+					    config.set128BitKey(true);
+					    config.setUserPassword(this.upasswd);
+					    config.setOwnerPassword(this.opasswd);
+					    config.setPermissions(PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_PRINTING);
+				  }
 		          //pdfexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrint);
 				  pdfexporter.setExporterInput(SimpleExporterInput.getInstance(this.jasperPrintList));
 				  pdfexporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputPathName + extension[type]));
+				  pdfexporter.setConfiguration(config);
 		          //pdfexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, this.outputPathName + ".pdf");
 		          pdfexporter.exportReport();
 		          break;

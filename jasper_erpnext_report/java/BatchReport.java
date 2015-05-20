@@ -8,6 +8,9 @@ public class BatchReport
 	private int type;
 	private String outputPathName;
 	private String fileName;
+	private String opasswd;
+	private String upasswd;
+	private boolean encrypt;
 	private List<JasperPrint> jasperPrintList;
 	
 	
@@ -18,6 +21,9 @@ public class BatchReport
 	public BatchReport(int type, String outputPathName){
 		this.jasperPrintList = new ArrayList<JasperPrint>();
 		this.type = type;
+		this.encrypt = false;
+		this.opasswd = "pdf";
+		this.upasswd = "pdf";
 		this.outputPathName = outputPathName;
 	}
 	
@@ -27,6 +33,18 @@ public class BatchReport
 	
 	public void setFileName(String fname){
 		this.fileName = fname;
+	}
+	
+	public void setUserPassword(String upasswd){
+		this.upasswd = upasswd;
+	}
+	
+	public void setOwnerPassword(String opasswd){
+		this.opasswd = opasswd;
+	}
+	
+	public void encrypt(boolean encrypt){
+		this.encrypt = encrypt;
 	}
 	
 	public void setOutputPath(String outputPathName){
@@ -40,7 +58,7 @@ public class BatchReport
 	}
 	
 	public void export(){
-		MakeReport mr = new MakeReport(this.jasperPrintList);
+		MakeReport mr = new MakeReport(this.jasperPrintList, this.encrypt, this.opasswd, this.upasswd);
 		mr.makeReport(this.type, this.outputPathName, this.fileName);
 	}
 	

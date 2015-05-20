@@ -116,27 +116,23 @@ def getPdfFilePath(file_name, filepath):
 	return path
 
 def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True, pages=None, email=False):
-	jsr = jasper_session_obj or Jr.JasperRoot()
-	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
-	#if not email:
 
 	if pformat == "html":
-		#path_jasper_module = os.path.dirname(jasper_erpnext_report.__file__)
-		#html_reports_path = get_html_reports_path(report_name, hash=jsr.html_hash)
-		#full_path = os.path.join(html_reports_path, fileName)
-		#relat_path = os.path.relpath(full_path, os.path.join(path_jasper_module, "public"))
-		#return os.path.join("jasper_erpnext_report",relat_path)
 		filepath = getHtmlFilepath(report_name, fileName)
 		g = "jasper_erpnext_report/reports/" + frappe.local.site
 		path = os.path.normpath(os.path.relpath(filepath, g))
 		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)
-		jasper_run_method("jasper_after_get_report", file_name, output.getvalue(), url, filepath)
+		fileName = fileName[fileName.rfind(os.sep) + 1:]
+		file_name = fileName.replace(" ", "-").replace("/", "-")
+		jasper_run_method("jasper_after_get_report", file_name, content, url, filepath)
 		if not email:
 			return url
 		return url, filepath
 
+	jsr = jasper_session_obj or Jr.JasperRoot()
+	file_name, output = jsr.make_pdf(fileName, content, pformat, merge_all, pages)
+
 	if pformat == "pdf":
-		#filepath = get_email_pdf_path(report_name, reqId)
 		filepath = get_email_pdf_path(report_name, reqId)
 		path = getPdfFilePath(file_name, filepath)
 		url = "%s?jasper_doc_path=%s" % ("Jasper Reports", path)

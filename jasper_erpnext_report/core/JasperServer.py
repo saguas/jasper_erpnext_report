@@ -68,7 +68,7 @@ class JasperServer(Jb.JasperBase):
 	def __init__(self, doc=None):
 		self.is_login = False
 		self.session = frappe.local.jasper_session = frappe._dict({'session': frappe._dict({})})
-		super(JasperServer, self).__init__(doc)
+		super(JasperServer, self).__init__(doc, "server")
 		self.check_session()
 
 	def check_session(self):
