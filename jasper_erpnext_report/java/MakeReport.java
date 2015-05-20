@@ -20,8 +20,10 @@ import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
+import net.sf.jasperreports.engine.export.FileHtmlResourceHandler;
 
 import java.util.List;
+import java.io.File;
 
 public class MakeReport
 {
@@ -34,7 +36,7 @@ public class MakeReport
 		this.jasperPrintList = jasperPrintList;
 	}
 
-	public void makeReport(int type, String outputPathName){
+	public void makeReport(int type, String outputPathName, String fileName){
   
 	  try{
 		  switch(type){
@@ -116,7 +118,9 @@ public class MakeReport
 		          JRXhtmlExporter xhtmlexporter = new JRXhtmlExporter();
 				  xhtmlexporter.setExporterInput(SimpleExporterInput.getInstance(this.jasperPrintList));
 				  exporterOutput = new SimpleHtmlExporterOutput(outputPathName + extension[type]);
-				  exporterOutput.setImageHandler(new WebHtmlResourceHandler("images?image={0}"));
+				  //exporterOutput.setImageHandler(new WebHtmlResourceHandler(fileName + ".html_files/{0}"));
+				  //exporterOutput.setImageHandler(new WebHtmlResourceHandler("image?image={0}"));
+				  exporterOutput.setResourceHandler(new FileHtmlResourceHandler(new File("./"), "./images/"));
 				  xhtmlexporter.setExporterOutput(exporterOutput);
 		          //xhtmlexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.jasperPrintList);
 		          //xhtmlexporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outputPathName + ".html");

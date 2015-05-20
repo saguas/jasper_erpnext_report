@@ -7,6 +7,7 @@ public class BatchReport
 {
 	private int type;
 	private String outputPathName;
+	private String fileName;
 	private List<JasperPrint> jasperPrintList;
 	
 	
@@ -24,6 +25,10 @@ public class BatchReport
 		this.type = type;
 	}
 	
+	public void setFileName(String fname){
+		this.fileName = fname;
+	}
+	
 	public void setOutputPath(String outputPathName){
 		this.outputPathName = outputPathName;
 	}
@@ -36,7 +41,7 @@ public class BatchReport
 	
 	public void export(){
 		MakeReport mr = new MakeReport(this.jasperPrintList);
-		mr.makeReport(this.type, this.outputPathName);
+		mr.makeReport(this.type, this.outputPathName, this.fileName);
 	}
 	
 }
