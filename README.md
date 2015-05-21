@@ -53,4 +53,4 @@ The localization files don't need to be imported if they are in `Java path`.
 
 To import the report just go to `Jasper Erpnext Report -> Documents -> Jasper Reports` make a new report (you just need to give a name) and before you can import the files that make your report you need to save the document. After save it an upload button appears. Note that after all files are imported you need to save again to make it permanent and to check if every thing is ok and all files needed were uploaded.
 Again, you need to configure each doctype Jasper Reports document and then save them to take effect.
-![enter image description here](/Users/saguas/erpnext4/erpnext/frappe_v5/jasper_new_report.png)
+![enter image description here](readmeimg/jasper_new_report.png)
