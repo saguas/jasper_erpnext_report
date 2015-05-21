@@ -6,7 +6,7 @@ import frappe
 
 from frappe.utils import cint
 
-from jasper_erpnext_report.utils.file import get_jasper_path, get_file, get_html_reports_images_path
+from jasper_erpnext_report.utils.file import get_jasper_path, get_file
 from jasper_erpnext_report.utils.jasper_file_jrxml import get_compiled_path
 import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
@@ -181,7 +181,6 @@ class JasperLocal(Jb.JasperBase):
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
-		#error = error_cache.get(reqId)
 		cache = frappe.cache()
 		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
 		if error:
@@ -189,7 +188,6 @@ class JasperLocal(Jb.JasperBase):
 			print "polling request with error {} user {}".format(reqId, self.user)
 			res = self.prepareResponse({}, reqId)
 			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
-			#del error_cache[reqId]
 			_logger.error(_("Jasper Report Error {} for reqid {}".format(error.get("e"), reqId)))
 			cache.delete(("site.all:jasper:" + reqId).encode('utf-8'))
 			return res

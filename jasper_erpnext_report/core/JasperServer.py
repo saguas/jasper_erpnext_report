@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 __author__ = 'luissaguas'
 
-#from jasper_erpnext_report import jasperserverlib
 import jasper_erpnext_report as jr
 import copy
 
@@ -50,7 +49,7 @@ def _jasperserver(fn):
 			me.update()
 			return fn_result
 
-		except Unauthorized as e:
+		except Unauthorized:
 			me._timeout()
 			fn_result = fn(*args, **newargs)
 			me.update()
@@ -199,20 +198,6 @@ class JasperServer(Jb.JasperBase):
 		return ret
 
 	def run_remote_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1):
-		"""
-		resps = []
-		data = self.run_report_async(doc, data=data, params=params)
-		if data.get('jasper_report_type', None) == "Form" or doc.jasper_report_type == "Form":
-			ids = data.get('ids')
-			for id in ids:
-				data['ids'] = [id]
-				resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies))
-		else:
-			resps.append(self._run_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies))
-		cresp = self.prepareCollectResponse(resps)
-		cresp["origin"] = "server"
-		return [cresp]
-		"""
 		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=0)
 		cresp["origin"] = "server"
 		return [cresp]

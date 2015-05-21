@@ -249,7 +249,6 @@ def delete_jrxml_images(dt, dn, jasper_all_sites = False):
 def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
 	dt = frappe.form_dict.doctype
 	if dt == "Jasper Reports":
-		#from . jasper_file_jrxml import WriteFileJrxml
 		wobj = WriteFileJrxml(dt, fname, content, parent)
 		f = wobj.process(dn=dn)
 

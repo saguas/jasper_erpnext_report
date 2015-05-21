@@ -139,9 +139,6 @@ def jasper_run_method_once_with_default(hook_name, docname, default):
 	method = m.get_next_jasper_hook_method()
 	return method
 
-def before_list_hook(arg0):
-	print "before_list_hook was called {}".format(arg0)
-
 def check_jasper_perm(perms, ptypes=("read",), user=None):
 		found = False
 

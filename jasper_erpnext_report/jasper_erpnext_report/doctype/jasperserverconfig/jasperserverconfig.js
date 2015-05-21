@@ -20,7 +20,6 @@ jasper.jasper_server_connect = function(doc){
 		"method": "jasper_erpnext_report.core.JasperWhitelist.jasper_server_login",
 		callback: function (data) {
 			if(data.message && data.message !== "Not connected!"){
-				//return data.message
 				deferred.resolve(data.message);
 			}else{
 				deferred.reject();

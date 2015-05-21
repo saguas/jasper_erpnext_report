@@ -89,7 +89,6 @@ class JasperRoot(Jb.JasperBase):
 			#could be recursive but there is no need for resume again because decorator
 			ret = self.get_reports_list_from_db(filters_report=filters_report, filters_param=filters_param)
 
-		#in_transation = frappe.utils.cint(frappe.__version__.split(".", 1)[0]) > 4
 		in_transation = utils.getFrappeVersion().major > 4
 
 		if ret:
@@ -109,31 +108,14 @@ class JasperRoot(Jb.JasperBase):
 		if self.sid == 'Guest':
 			return None
 		data = {}
-		#dirt = utils.jaspersession_get_value("report_list_dirt_all")
-		#dirt = self.is_dirt("report_list_dirt_all")
-		#dirt = self.is_cache_dirt("report_list_dirt_all", "user:" + self.user + "_report_list_all")
 		dirt = utils.jaspersession_get_value("report_list_dirt_all") or False
 
 		#dirt if redis not cache
 		if not dirt:
-			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_all")
-			#if not data:
-
 			data = utils.get_jasper_session_data_from_cache("report_list_all")
-			#if data:
-			#	dirt = utils.jaspersession_get_value("report_list_dirt_all") or frappe.utils.now()
-			#	all_last_update = data.get('last_updated')
-			#	time_diff = frappe.utils.time_diff_in_seconds(dirt, all_last_update)
-			#	if time_diff > 0:
-			#		data = None
-			#else:
-			#	if not self.check_server_status():
-			#		self.remove_server_docs(data)
-			#	return data
+
 		#if for some reason there is no cache get it from db
 		if not data:
-			#frappe.cache().delete_value("jasper:report_list_all")
-		#	frappe.cache().delete_value("jasper:user:" + self.user + "_report_list_all")
 			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
 			ldata = self._get_reports_list(filters_report=r_filters)
 			cached = redis_transation(ldata, "report_list_all")
@@ -141,12 +123,8 @@ class JasperRoot(Jb.JasperBase):
 				data = ldata.get("data", None)
 			if cached and data:
 				utils.jaspersession_set_value("report_list_dirt_all", False)
-				#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
-				#utils.jaspersession_set_value("report_list_dirt_doc", frappe.utils.now())
-				#utils.jaspersession_set_value("report_list_dirt_doc", False)
 
 		if data:
-			#utils.jaspersession_set_value("report_list_dirt_all", frappe.utils.now())
 			data.pop('session_expiry', None)
 			data.pop('last_updated', None)
 
@@ -164,9 +142,6 @@ class JasperRoot(Jb.JasperBase):
 				data['mail_enabled'] = acc
 			except:
 				data['mail_enabled'] = "disabled"
-
-			#utils.insert_list_all_memcache_db(data, cachename="user:" + self.user + "_report_list_all")
-			#utils.jaspersession_set_value("user:" + self.user + "_report_list_all", frappe.utils.now())
 
 		return data
 
@@ -202,19 +177,13 @@ class JasperRoot(Jb.JasperBase):
 		if frappe.local.session['sid'] == 'Guest':
 			return None
 
-		#dirt = utils.jaspersession_get_value("report_list_dirt_doc")
 		data = {}
-		#dirt = self.is_cache_dirt("report_list_dirt_doc", "user:" + self.user + "_report_list_doctype")
 		dirt = utils.jaspersession_get_value("report_list_dirt_doc")
 		if not dirt:
-			#data = utils.get_jasper_session_data_from_cache("user:" + self.user + "_report_list_doctype")
-			#if not data:
 
 			data = utils.get_jasper_session_data_from_cache("report_list_doctype")
 
 		if not data or not self.check_docname(data, doctype, report):
-			#frappe.cache().delete_value("jasper:report_list_doctype")
-			#frappe.cache().delete_value("jasper:user:" + self.user + "_report_list_doctype")
 			if doctype:
 				r_filters={"jasper_doctype": doctype}
 			else:
@@ -271,14 +240,12 @@ class JasperRoot(Jb.JasperBase):
 				if not utils.check_frappe_permission(rdoc.jasper_doctype, docname, ptypes=("read", "print")):
 					raise frappe.PermissionError(_("No {0} permission for document {1} in doctype {3}.").format("read or print", docname, rdoc.jasper_doctype))
 			#if user can read doc it is possible that can't print it! Just uncheck Read permission in doctype Jasper Reports
-			#if not self.check_jasper_doc_perm(rdoc.jasper_roles):
 		if not utils.check_frappe_permission("Jasper Reports", data.get('report_name', ""), ptypes="read"):
 			raise frappe.PermissionError(_("You don't have print permission."))
 
 		params = rdoc.jasper_parameters
 		origin = rdoc.jasper_report_origin.lower()
 		pformat = data.get('pformat')
-		#try:
 		ncopies = get_copies(rdoc, pformat)
 		if origin == "localserver":
 			path = rdoc.jrxml_root_path
@@ -383,7 +350,6 @@ class JasperRoot(Jb.JasperBase):
 			write_file(content.content, os.path.join(image_path, attachFileName), "wb")
 
 
-
 	#pages is an array of pages ex. [2,4,5]
 	def make_pdf(self, fileName, content, pformat, merge_all=True, pages=None):
 		if fileName:
@@ -428,7 +394,5 @@ def get_copies(rdoc, pformat):
 	"""
 	make copies (Single, Duplicated or Triplicated) only for pdf format
 	"""
-	#copies = [_("Original"), _("Duplicated"), _("Triplicate")]
 	copies = ["Original", "Duplicated", "Triplicate"]
-	#return copies.index(_(rdoc.jasper_report_number_copies)) + 1 if pformat == "pdf" else 1
 	return copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1

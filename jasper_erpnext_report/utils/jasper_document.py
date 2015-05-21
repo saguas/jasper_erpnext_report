@@ -108,7 +108,7 @@ def set_jasper_parameters(param_name, parent, c_idx, mydict, param_type="String"
 	doc = frappe.new_doc("Jasper Parameter")
 	#set the name here for support the same name from diferents reports
 	#can't exist two params with the same name for the same report
-	doc.name = parent + "_" + param_name#+ str(tot_idx)
+	doc.name = parent + "_" + param_name
 	doc.jasper_param_name = param_name
 	doc.idx = c_idx
 	doc.jasper_param_type = param_type

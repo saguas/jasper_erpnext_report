@@ -7,7 +7,6 @@ import frappe
 from io import BytesIO
 import uuid, os
 
-#import jasper_erpnext_report.jasper_reports as jr
 import jasper_erpnext_report.utils.utils as utils
 from jasper_erpnext_report.utils.file import get_file, get_html_reports_images_path
 from jasper_erpnext_report.utils.file import JasperXmlReport, get_html_reports_path
@@ -143,7 +142,6 @@ class JasperBase(object):
 		pram = []
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		if res is None:
-			#if hook on_jasper_params return None
 			frappe.throw(_("Error in report %s, there is no value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 		for param in res:
 			param.pop("attrs", None)
@@ -202,8 +200,7 @@ class JasperBase(object):
 			is_copy = param.is_copy.lower()
 			p = param.jasper_param_name
 			value = ""
-			if is_copy == "is for where clause":#_("is for where clause"):
-				#value = data.get('name_ids')
+			if is_copy == "is for where clause":
 				value = self.get_where_clause_value(data.get('ids', []), param)
 				if not value:
 					"""
@@ -211,20 +208,18 @@ class JasperBase(object):
 					"""
 					value = self.get_where_clause_value(data.get("params", {}).get(p), param, error=True)
 				value = [value]
-				#used_ids = True
-			elif is_copy == "is for copies" and pformat=="pdf":#_("is for copies") and pformat=="pdf":
+			elif is_copy == "is for copies" and pformat=="pdf":
 				#set the number of copies
 				#indicate the index of param is for copies
-				copies["pram_copy_index"] = len(pram) #if len(pram) > 0 else 0
+				copies["pram_copy_index"] = len(pram)
 				values = utils.get_default_param_value(param, error=False) or ""
 				value = self.get_param_values(values)
 
-			elif is_copy == "is for page number" and pformat=="pdf":#_("is for page number") and pformat=="pdf":
-				copies["pram_copy_page_index"] = len(pram) #if len(pram) > 0 else 0
+			elif is_copy == "is for page number" and pformat=="pdf":
+				copies["pram_copy_page_index"] = len(pram)
 
 			elif is_copy == "is for server hook":#_("is for server hook"):
 				#don't do server hook here. Get first all defaults values
-				#value = data.get('ids') if not used_ids else None
 				#if not value:
 					#if not data then get default first
 				value = utils.get_default_param_value(param, error=False)
@@ -494,11 +489,11 @@ class JasperBase(object):
 			rp = data['data']['reportPath']
 			if rp == reportPath:
 				data['data']['hash'] = self.html_hash
-				utils.update_list_all_memcache_db(data, cachename=name, tab="tabJasperClientHtmlDocs")
+				utils.update_list_all_memcache_db(data, cachename=name)
 				return
 		new_data['data']['reportPath'] = reportPath
 		new_data['data']['hash'] = self.html_hash
-		utils.insert_list_all_memcache_db(new_data['data'], cachename=name, tab="tabJasperClientHtmlDocs")
+		utils.insert_list_all_memcache_db(new_data['data'], cachename=name)
 
 	def copy_images(self, content, outputPath, fileName, report_name, localsite):
 		from distutils.dir_util import copy_tree

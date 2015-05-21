@@ -217,8 +217,6 @@ def jasper_make_email(doctype=None, name=None, content=None, subject=None, sent_
 		while limit <= 10 and result[0].get("status", "not ready") != "ready":
 			time.sleep(cint(jasper_polling_time)/1000)
 			result = report_polling(poll_data)
-			#if "status" in result[0] and result[0].get("status", "not ready") == "ready":
-			#	break
 			limit += 1
 
 	pformat = data.get("pformat")

@@ -84,7 +84,6 @@ class JasperReports(Document):
 			#give feedback to the user shown related params
 			params = xmldoc.get_params_from_xml()
 			#get total number of parameters to concatenate with name of parameter
-			#is_copy = "Is for copies"
 			is_copy = "Other"
 			action_type = "Ask"
 
