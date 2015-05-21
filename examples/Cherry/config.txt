@@ -1,0 +1,19 @@
+How to for frappe V5:
+
+1. Click on icon of Jasper Erpnext Report then in Jasper Reports an select New.
+2. Give it a name; for instance: "Cherry Local". The name must be unique.
+3. Select <<User>> in Doctype box.
+4. Select in <<Choose Origin>> -> LocalServer.
+5. Select in <<Report for>> -> Form or List.
+6. Check the <<Use For Custom Fields>> checkbox.
+7. Seve it.
+8. Click in Upload button.
+9. Import Cherry.jrxml.
+10. Import cherry.jpg.
+11. Import localizationdemo.properties.
+12. Save again.
+13. Reload/Refresh.
+14. Go to Setup -> User -> Select a user in <<User List>> or click in one to go to the form.
+15. Click in the icon of jasper in the upper-right corner.
+16. Select the report you just created clicking on pdf icon for instance to make a pdf version.
+17. That's all.

@@ -1,0 +1,18 @@
+How to for frappe V5:
+
+1. Click on icon of Jasper Erpnext Report then in Jasper Reports an select New.
+2. Give it a name; for instance: "Xml Books Local". The name must be unique.
+3. Select in <<Choose Origin>> -> LocalServer.
+4. Select in <<Report for>> -> General.
+5. Uncheck the <<Use For Custom Fields>> checkbox.
+6. Seve it.
+7. Click in Upload button.
+8. Import BooksReportWithDescription.jrxml.
+9. Import Books.xml. It must be well formed.
+10. Save again.
+11. Reload/Refresh.
+12. Go to desk.
+13. Click in the icon of jasper in the upper-right corner.
+14. Select the report you just created clicking on pdf icon for instance to make a pdf version.
+15. That's all.
+

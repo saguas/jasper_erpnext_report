@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Books>
+	<book>
+		<book_isbn>978-1-78328-039-1</book_isbn>
+		<book_year>2013</book_year>
+		<book_title>Getting Started with Magento</book_title>
+		<book_author>Branko Ajzele</book_author>
+	</book>
+	<book>
+		<book_isbn>978-1-78216-306-0</book_isbn>
+		<book_year>2013</book_year>
+		<book_title>Magento PHP Developer's Guide</book_title>
+		<book_author>Allan MacGregor</book_author>
+	</book>
+	<book>
+		<book_isbn>978-1-93778-549-9</book_isbn>
+		<book_year>2013</book_year>
+		<book_title>Programming Ruby 1.9 &amp; 2.0</book_title>
+		<book_author>Dave Thomas</book_author>
+	</book>
+	<book>
+		<book_isbn>978-1-59327-294-4</book_isbn>
+		<book_year>2011</book_year>
+		<book_title>THE BOOK OFTM RUBY</book_title>
+		<book_author>Huw Collingbourne</book_author>
+	</book>
+</Books>
