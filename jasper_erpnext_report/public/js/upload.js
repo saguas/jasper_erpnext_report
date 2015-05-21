@@ -259,7 +259,8 @@ jasper.dialog_upload_tree =	frappe.ui.form.Control.extend({
 				this.make_input();
 				if (parent_report === "root")
 					parent_report = null;
-				this.instance.create_node(parent_report || "#",{"id": name, "text":url, "data":{name: file_name.slice(0,-6)}});
+				console.log("set_input ", "{id: " + name + ", text: " +url + " ,data: {name: " + file_name.split(".")[0] + " " + parent_report);
+				this.instance.create_node(parent_report || "#",{"id": name, "text":url, "data":{"name": file_name.split(".")[0]}});
 			}
 	},
 	clear_input: function(){

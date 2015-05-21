@@ -197,7 +197,7 @@ cur_frm.cscript.update_upload = function(doc){
 	function children(name, msg){
 		var found = [];
 		for (var i=0; i<msg.length;i++){
-			if(msg[i].parent_report == name){
+			if(msg[i].parent_report === name){
 				found.push(i);
 			}
 		}
@@ -210,7 +210,7 @@ cur_frm.cscript.update_upload = function(doc){
 	       callback: function(response_data){
 	       			var msg = response_data.message;
 	       			cs.upload.clear_input();
-	       			if (!msg)
+	       			if (!msg || msg.length === 0)
 	       				return;
 	       			var roots = children("root", msg);
 	       			for (var j=0; j<roots.length;j++){

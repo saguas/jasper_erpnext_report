@@ -16,7 +16,7 @@ after_install = "jasper_erpnext_report.utils.install.after_install"
 
 boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 
-app_include_css = ["/assets/css/jasper_erpnext_report.css"]
+app_include_css = ["/assets/jasper_erpnext_report/css/style.min.css", "/assets/css/jasper_erpnext_report.css"]
 
 app_include_js = ["/assets/js/jasper_erpnext_report.js"]
 
