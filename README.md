@@ -2,14 +2,14 @@
 Jasper Erpnext Report
 =============================
 This project is a module to work with frappe framework. It integrate [JasperReports](http://community.jaspersoft.com/project/jasperreports-library) with frappe framework.
-You can make your reports in [Jaspersoft Studio](http://community.jaspersoft.com/project/jaspersoft-studio) and import them in frappe with this module or send it to [JasperReportsÂ® Server](http://community.jaspersoft.com/project/jasperreports-server) and get it from there into the framework.
+You can make your reports in [Jaspersoft Studio](http://community.jaspersoft.com/project/jaspersoft-studio) and import them in frappe with this module or send it to [JasperReports® Server](http://community.jaspersoft.com/project/jasperreports-server) and get it from there into the framework.
 So you can use Jasper Erpnext Report in tree ways:
 
- - With JasperReportsÂ® Server mode - you need to install it.
+ - With JasperReports® Server mode - you need to install it.
  - Standalone mode.
- - Standalone and JasperReportsÂ® Server mode.
+ - Standalone and JasperReports® Server mode.
  
-JasperReportsÂ® Server
+JasperReports® Server
 =======
 You make your reports in Jaspersoft Studio and put them in JasperReports Server. This way your reports are centralized. From Jasper Erpnext Report you get the reports that you want. After configure it you can send it to the JasperReports Server and get it back in pdf, docx,  xls, odds, dot and rtf. 
 
@@ -30,9 +30,9 @@ How to Install
 How to use it?
 ==============
 
-JasperReportsÂ® Server
+JasperReports® Server
 ---------------------
-First, make a folder, in JasperReportsÂ® Server, to put the reports to use with this module - name it, for instance, erpnext.
+First, make a folder, in JasperReports® Server, to put the reports to use with this module - name it, for instance, erpnext.
 Second, make your reports in Jaspersoft Studio and send them, from studio to the folder created in the first step, to JasperReports Server. 
 ![enter image description here](/Users/saguas/erpnext4/erpnext/frappe_v5/jasperserver_folder.png)
 
