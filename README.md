@@ -34,11 +34,11 @@ JasperReports® Server
 ---------------------
 First, make a folder, in JasperReports® Server, to put the reports to use with this module - name it, for instance, erpnext.
 Second, make your reports in Jaspersoft Studio and send them, from studio to the folder created in the first step, to JasperReports Server. 
-![enter image description here](/Users/saguas/erpnext4/erpnext/frappe_v5/jasperserver_folder.png)
+![enter image description here](readmeimg/jasperserver_folder.png)
 
 Now to import the folder (in my case is *`reports/`*) go to `Jasper Erpnext Report -> setup -> JasperServerConfig`. Once there make sure that *`Import All Reports`* is selected and make some configurations.
 
-![enter image description here](/Users/saguas/erpnext4/erpnext/frappe_v5/jasperserverconfig.png)
+![enter image description here](readmeimg/jasperserverconfig.png)
 
 After this you just have imported the settings of each report into the framework. That is all you need to make some decisions.
 
