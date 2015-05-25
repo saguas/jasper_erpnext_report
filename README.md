@@ -156,7 +156,7 @@ This hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"],
 
 **data:**
 
-	`{
+	{
 	fortype: fortype,// "doctype" or "query-report"
 	
 	report_name: data.jr_name,
@@ -174,7 +174,7 @@ This hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"],
 	is_doctype_id: is_doctype_id,
 	 
 	grid_data: {columns: columns, data: grid_data}//this is for query-report's of erpnext and frappe
-	}`
+	}
 
 
 **Permission Rules:**
