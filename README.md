@@ -152,7 +152,9 @@ The system call for hook named `on_jasper_params_ids` with parametesr `doc, meth
 Doc is the Jasper Report document, method is the name of the hook in this case `on_jasper_params_ids`, data is the data that was sent from the client and params are the params declared for the report.
 You must check if this call is for the report you want with doc.name. You can change everything in data.
 
-This hook must return a dict with this fields: `{"ids": ["name_id1", "name_id2"], "report_type": "List/Form"}`
+This hook must return a dict with this fields: 
+
+`{"ids": ["name_id1", "name_id2"], "report_type": "List/Form"}`
 
 **data:**
 
