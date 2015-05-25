@@ -124,3 +124,4 @@ To take most advantage of this you must insert in your report a parameter and ch
 Here you can choose who can access your report at the report level. This rules are combined with the rules of the frappe framework. 
 In this way you can give doctype access to Jasper Reports in frappe, then here you can complement access at the report/document level.
 
+You can remove this extra rules in `Jasper Erpnext Report>setup>JasperServerConfig` doctype unchecking `Ignore Jasper Permission Roles`.
