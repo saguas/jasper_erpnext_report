@@ -131,10 +131,10 @@ To take most advantage of this you must insert in your report a parameter and ch
 
 >You can make a sql select with where clause, but you must choose `Is doctype id` for the parameter that will have the doctype's id (name) of the documents you choose to print.
 
-> You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type. 
->In this case you can return the where clause or an entire sql select.
+> You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type or in the specific parameter choose `Is for server hook`. 
+>In both cases you can return the where clause or an entire sql select.
 
-> In the case you choose to return the entire sql select you must use $P!{param_name} for the value inside of the querystring tag of `jrxml` file.  
+> In the case you choose to return the entire sql select you must use $P!{param_name} for the value inside of the querystring tag of `jrxml` file.
 
 > For more information see [Jasper Reports](http://jasperreports.sourceforge.net/sample.reference/query/).
 
