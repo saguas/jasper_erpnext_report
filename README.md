@@ -202,7 +202,6 @@ Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where att
 
 		return a
 
-
 **Permission Rules:**
 
 Here you can choose who can access your report at the report level. This rules are combined with the rules of the frappe framework. 
