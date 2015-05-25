@@ -134,9 +134,10 @@ To take most advantage of this you must insert in your report a parameter and ch
 >If you don't indicate the where clause the system will made it for you, in that case you must choose `Is for where clause`.
 >That will be translated to select f1,f2,f3 from tabName where name in/not in (v1,v2,v3); Here name is the id for erpnext/frappe documents.  
 
->You can make a sql select with where clause, but you must choose `Is doctype id` for the parameter that will have the doctype's id (name) of the documents you choose to print.
+>You can make a sql select with where clause, but you must choose `Is doctype id` for the parameter that will have the doctype id (name) of the document you choose to print.
+>In this case you can provide only one id/name.
 
-> You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type or in the specific parameter choose `Is for server hook`. 
+>You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type or in the specific parameter choose `Is for server hook`. 
 >In both cases you can return the where clause or an entire sql select.
 
 > In the case you choose to return the entire sql select you must use $P!{param_name} for the value inside of the querystring tag of `jrxml` file.
