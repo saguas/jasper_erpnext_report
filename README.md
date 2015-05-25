@@ -64,6 +64,8 @@ Report Configurations
 **In Jasper Reports doctype configuration:**
 (See the image above)
 
+Only Administrator can configure reports.
+
 You can make reports for General/Global purpose leaving Doctype and Report box empty.
 You can also make reports for frappe doctype's or frappe report's choosing, respectively, Doctype or Report and select the correct document.
 After this, you must choose in `Report for` box between Form, List, General and Server Hooks.
@@ -220,6 +222,9 @@ Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where att
 		return a
 
 **Permission Rules:**
+
+If you don't configure only Administrator or the authorized members in Permission Rules of Jaspe Reports can see and change the reports. 
+You can tweak the Permission Rules of Jaspe Reports. 
 
 Here you can choose who can access your report at the report level. This rules are combined with the rules of the frappe framework. 
 In this way you can give doctype access to Jasper Reports in frappe, then here you can complement access at the report/document level.
