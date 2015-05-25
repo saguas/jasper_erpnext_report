@@ -191,11 +191,11 @@ Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where att
 			if param.get("name") == "idade":
 				a.append({"name": param.get("name"), "value": 35.6})
 			else:
-				#a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
-				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})
+				#a.append({"name": param.get("name"), "value":['someusermail@gmail.com'], "param_type": "is for where clause"})
+				a.append({"name": param.get("name"), "value":['someusermail@gmail.com']})
 		
-		#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": "is for where clause"})//here return where clause only
-		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})//here return an entire sql select
+		#a.append({"name":param.get("name"), "value": ["Administrator", "someusermail@gmail.com"], "param_type": "is for where clause"})//here return where clause only
+		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("someusermail@gmail.com")'})//here return an entire sql select
 		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
 		#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
 		#a.append({"name": params[0].get("name"), "value":345})
