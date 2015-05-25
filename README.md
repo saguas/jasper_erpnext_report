@@ -1,9 +1,6 @@
 
 Jasper Erpnext Report
 =============================
-
-[![Join the chat at https://gitter.im/saguas/jasper_erpnext_report](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/saguas/jasper_erpnext_report?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This project is a module to work with frappe framework. It integrate [JasperReports](http://community.jaspersoft.com/project/jasperreports-library) with frappe framework.
 You can make your reports in [Jaspersoft Studio](http://community.jaspersoft.com/project/jaspersoft-studio) and import them in frappe with this module or send it to [JasperReports® Server](http://community.jaspersoft.com/project/jasperreports-server) and get it from there into the framework.
 So you can use Jasper Erpnext Report in tree ways:
@@ -11,6 +8,8 @@ So you can use Jasper Erpnext Report in tree ways:
  - With JasperReports® Server mode - you need to install it.
  - Standalone mode.
  - Standalone and JasperReports® Server mode.
+
+[![Join the chat at https://gitter.im/saguas/jasper_erpnext_report](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/saguas/jasper_erpnext_report?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
  
 JasperReports® Server
 =======
