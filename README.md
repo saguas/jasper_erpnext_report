@@ -148,8 +148,8 @@ To take most advantage of this you must insert in your report a parameter and ch
 
 `Report for` of type: **Server Hooks**
 
-The system call for hook named `on_jasper_params_ids` with parameters `(method, data, params)`. 
-`method` is the name of the hook in this case `on_jasper_params_ids`, `data` is the data that was sent from the client and `params` are the params attributes declared for the report.
+The system call for hook named `on_jasper_params_ids` with parameters `(data, params)`. 
+`data` is the data that was sent from the client and `params` are the params attributes declared for the report.
 You must check if this call is for the report you want with `data.report_name`. You can change everything in `data`.
 
 This hook must return a dict with two fields: 
@@ -180,9 +180,28 @@ This hook must return a dict with two fields:
 
 **Parameters Hooks:**
 
-The system call for hook named `on_jasper_params` with parameters `(method, data, params)`. 
+The system call for hook named `on_jasper_params` with parameters `(data, params)`. 
 
 Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where attrs is the param attributes.
+
+	Some examples are:
+	def on_jasper_params(self, data=None, params=None):
+		a = []
+		for param in params:
+			if param.get("name") == "idade":
+				a.append({"name": param.get("name"), "value": 35.6})
+			else:
+				#a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
+				a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})
+		
+		#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": "is for where clause"})//here return where clause only
+		#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})//here return an entire sql select
+		#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
+		#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
+		#a.append({"name": params[0].get("name"), "value":345})
+
+		return a
+
 
 **Permission Rules:**
 

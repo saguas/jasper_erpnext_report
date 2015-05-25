@@ -139,6 +139,26 @@ class JasperBase(object):
 		return pram
 
 	def get_param_hook(self, doc, data, pram_server):
+		"""
+		HOOK: Must return a list of objects.
+		Some examples are:
+
+		def on_jasper_params(self, data=None, params=None):
+			a = []
+			for param in params:
+				if param.get("name") == "idade":
+					a.append({"name": param.get("name"), "value": 35.6})
+				else:
+					#a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
+					a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})
+				#a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": "Is for where clause"})
+			#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
+			#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
+			#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
+			#a.append({"name": params[0].get("name"), "value":345})
+
+			return a
+		"""
 		pram = []
 		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		if res is None:
