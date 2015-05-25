@@ -83,6 +83,8 @@ The most common case, and the preferred way, when you make a jasper report is to
 If you don't want or don't know how to make the database select then, in the case the report is for some doctype/Form or doctype/List, you can check `Use For Custom Fields` and the Jasper Report make
 the select for you. This way is more time consuming than making the select to the database.
 
+**Erpnext / Frappe Reports**
+
 To make erpnext/frappe reports in Jasper Reports just choose the report in Report box and in the **jrxml file** indicate whitch fields do you want. 
 The system will grab that fields and make the report. You can filter before tell Jasper Report to print. 
 
