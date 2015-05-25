@@ -74,7 +74,7 @@ After this, you must choose in `Report for` box between Form, List, General and 
 
 >**General:** Choose this if you want that the report to be global and don't depend of any fields of any doctype.
 
->**Server Hooks:** Choose this if you want to give the value of parameters in code. 
+>**Server Hooks:** Choose this if you want to give the value of parameters or make the entire sql select in code. 
 
 **NOTE:** When you enter a document in Doctype or Report the jasper report (upper-right corner) only appears when you are in that document. 
 If you leave it empty then it appears in upper-right corner of the desk.
