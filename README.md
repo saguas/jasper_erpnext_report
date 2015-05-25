@@ -90,6 +90,23 @@ You still has to indicate the fields in the xml field tag. The Jasperstudio make
 When you use this option you can insert static fields from other doctype's in the report. For that name the field like this: doctype:docname:field. 
 If you only use field for name then Jasper Reports will use the doctype you indicated and the docname you select inside that doctype.
 
+**Email**
+
+Check this if you allow to send the report by email.
+
+**Don't Show report**
+
+Check this if you don't want it to show in the upper-right corner.
+
+**Use Virtualizer**
+
+Because you may have a very large amount of data, the jasper print might be a very large file. This can lead to an Out Of Memory exception. 
+Use Jasper Virtualizer in this case. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).
+
+**Locale**
+
+Choose the default language to use with this report. 
+
 **Erpnext / Frappe Reports**
 
 To make erpnext/frappe reports in Jasper Reports just choose the report in Report box and in the **jrxml file** indicate whitch fields do you want. 
