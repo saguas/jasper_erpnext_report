@@ -29,9 +29,12 @@ class JasperLocal(Jb.JasperBase):
 
 	def run_local_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 
-		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
-		cresp["origin"] = "local"
-		return [cresp]
+		try:
+			cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
+			cresp["origin"] = "local"
+			return [cresp]
+		except Exception as e:
+				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 
 	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 		data = data or {}
@@ -102,56 +105,44 @@ class JasperLocal(Jb.JasperBase):
 				pram_copy_page_name = pram[pram_copy_page_index].get("name","")
 				hashmap.put(pram_copy_page_name, str(m) + _(" of ") + str(ncopies))
 
-			try:
-				mparams = jr.HashMap()
-				mparams.put("path_jasper_file", frappe.local.batch.compiled_path + os.sep)
-				mparams.put("reportName", frappe.local.batch.reportName)
-				mparams.put("outputPath", frappe.local.batch.outputPath + os.sep)
-				mparams.put("params", hashmap)
-				mparams.put("conn", conn)
-				mparams.put("type", jr.Integer(frappe.local.batch.outtype))
-				mparams.put("lang", lang)
-				mparams.put("virtua", jr.Integer(virtua))
-				#used for xml datasource
-				mparams.put("numberPattern", frappe.db.get_default("number_format"))
-				mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
+			mparams = jr.HashMap()
+			mparams.put("path_jasper_file", frappe.local.batch.compiled_path + os.sep)
+			mparams.put("reportName", frappe.local.batch.reportName)
+			mparams.put("outputPath", frappe.local.batch.outputPath + os.sep)
+			mparams.put("params", hashmap)
+			mparams.put("conn", conn)
+			mparams.put("type", jr.Integer(frappe.local.batch.outtype))
+			mparams.put("lang", lang)
+			mparams.put("virtua", jr.Integer(virtua))
+			#used for xml datasource
+			mparams.put("numberPattern", frappe.db.get_default("number_format"))
+			mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-				self._export_report(mparams, data.get("report_name"), data.get("grid_data", None), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
-				if pram_copy_index != -1 and ncopies > 1:
-					hashmap = jr.HashMap()
-					self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
+			self._export_report(mparams, data.get("report_name"), data.get("grid_data", None), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
+			if pram_copy_index != -1 and ncopies > 1:
+				hashmap = jr.HashMap()
+				self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 
-			except Exception as e:
-				frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 		return resp
 
 	def _export_report(self, mparams, report_name, grid_data, sessionId, cur_doctype, custom, ids, jds_method):
-		try:
 
-			data = None
-			cols = None
-			fds = None
+		data = None
+		cols = None
+		fds = None
 
-			if custom:
-				jds = jds_method(ids, cur_doctype)
-				fds = jr.FDataSource(_JasperCustomDataSource(jds))
+		if custom:
+			jds = jds_method(ids, cur_doctype)
+			fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
-			if grid_data and grid_data.get("data", None):
-				data, cols = self._export_query_report(grid_data)
-				if not data or not cols:
-					print "Error in report {}. There is no data.".format(report_name)
-					return
+		if grid_data and grid_data.get("data", None):
+			data, cols = self._export_query_report(grid_data)
+			if not data or not cols:
+				print "Error in report {}. There is no data.".format(report_name)
+				return
 
-			frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
+		frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
-		except Exception, e:
-			import time
-			print "Error in report %s, error is: %s" % (report_name, e)
-			s = "{0}".format(str(e))
-			cache = frappe.cache()
-			t = int(time.time())
-			cache.set(("site.all:jasper:" + sessionId).encode('utf-8'), json.dumps({"e": s, "t": t}))
-			print "str(sessionId) {} s {}".format(str(sessionId), cache.get("site.all:jasper:".encode('utf-8') + sessionId.encode('utf-8')))
 
 
 	def _export_query_report(self, grid_data):
@@ -181,16 +172,6 @@ class JasperLocal(Jb.JasperBase):
 		output_path = data['data']['result'].get("uri")
 		# check if file already exists but also check if is size is > 0 because java take some time to write to file after
 		# create the file in disc
-		cache = frappe.cache()
-		error = cache.get(("site.all:jasper:" + reqId).encode('utf-8'))
-		if error:
-			error = json.loads(error)
-			print "polling request with error {} user {}".format(reqId, self.user)
-			res = self.prepareResponse({}, reqId)
-			res["error"] = error.get("e") if self.user == "Administrator" else "Erro, contact Administrator."
-			_logger.error(_("Jasper Report Error {} for reqid {}".format(error.get("e"), reqId)))
-			cache.delete(("site.all:jasper:" + reqId).encode('utf-8'))
-			return res
 		if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
 			res = self.prepareResponse({"reportURI": output_path, "status":"ready", "exports":[{"status":"ready", "id":reqId, "outputResource":{"fileName": data['data']['result'].get("fileName")}}]}, reqId)
 			res["status"] = "ready"

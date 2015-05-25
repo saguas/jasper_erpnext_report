@@ -266,7 +266,7 @@ def clear_expired_jasper_error_help(sessionId):
 	if time_diff >= 4:
 		frappe.cache().delete_value("jasper:" + sessionId)
 
-
+"""
 def clear_jasper_cache_local_report():
 	key="site.all:jasper:local_report_"
 	version = getFrappeVersion().major
@@ -302,12 +302,13 @@ def clear_expired_jasper_cache_local_reports(force=False):
 		t = int(time.time())
 		if t - int(val.get("t")) >= 600:
 			frappe.cache().delete(key)
+"""
 
 def clear_expired(force=False):
 	clear_expired_jasper_reports(force=force)
 	clear_expired_jasper_sessions(force=force)
 	clear_expired_jasper_error(force=force)
-	clear_expired_jasper_cache_local_reports(force=force)
+	#clear_expired_jasper_cache_local_reports(force=force)
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
 def clear_jasper():
@@ -320,7 +321,7 @@ def clear_cache():
 		clear_all_jasper_reports()
 		clear_all_jasper_cache()
 		clear_expired_jasper_error(force=True)
-		clear_jasper_cache_local_report()
+		#clear_jasper_cache_local_report()
 		version = getFrappeVersion().major
 		if version > 4:
 			clear_all_jasper_from_redis_cache()
