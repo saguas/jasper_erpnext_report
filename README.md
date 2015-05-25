@@ -74,7 +74,7 @@ After this, you must choose in `Report for` box between Form, List, General and 
 
 >**General:** Choose this if you want that the report to be global and don't depend of any fields of any doctype.
 
->**Server Hooks:** Choose this if you want to give the value of parameters or make the entire sql select in code. 
+>**Server Hooks:** Choose this if you want to give the ids from code.
 
 **NOTE:** When you enter a document in Doctype or Report the jasper report (upper-right corner) only appears when you are in that document. 
 If you leave it empty then it appears in upper-right corner of the desk.
@@ -137,12 +137,37 @@ To take most advantage of this you must insert in your report a parameter and ch
 >You can make a sql select with where clause, but you must choose `Is doctype id` for the parameter that will have the doctype id (name) of the document you choose to print.
 >In this case you can provide only one id/name.
 
->You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type or in the specific parameter choose `Is for server hook`. 
->In both cases you can return the where clause or an entire sql select.
+>You can make more exotic sql select's but you have, in the specific parameter, to choose `Is for server hook`.
+>In this case you can return the where clause or an entire sql select.
 
 > In the case you choose to return the entire sql select you must use $P!{param_name} for the value inside of the querystring tag of `jrxml` file.
 
 > For more information see [Jasper Reports](http://jasperreports.sourceforge.net/sample.reference/query/).
+
+**Hooks:**
+
+`Report for` of type **Server Hooks**
+
+The system call for hook named `on_jasper_params_ids` with parametesr `doc, method, data, params`. 
+Doc is the Jasper Report document, method is the name of the hook in this case `on_jasper_params_ids`, data is the data that was sent from the client and params are the params declared for the report.
+You must check if this call is for the report you want with doc.name. You can change everything in data.
+
+This hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"], "report_type": "List/Form"}
+
+**data:**
+
+`{
+	fortype: fortype,// "doctype" or "query-report"
+	report_name: data.jr_name, 
+	doctype:"Jasper Reports", 
+	cur_doctype: cur_doctype, 
+	name_ids: docids, //ids (names) of the doctyp's to make Jasper Reports
+	pformat: jr_format, //pdf, etc.
+	params: params, //this is object with param/value
+	is_doctype_id: is_doctype_id, 
+	grid_data: {columns: columns, data: grid_data}//this is for query-report's of erpnext and frappe
+}`
+
 
 **Permission Rules:**
 
