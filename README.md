@@ -59,7 +59,7 @@ To import the report just go to `Jasper Erpnext Report -> Documents -> Jasper Re
 Again, you need to configure each doctype Jasper Reports document and then save them to take effect.
 ![enter image description here](readmeimg/jasper_new_report.png)
 
-Reports Configurations
+Report Configurations
 ---------------
 **In Jasper Reports doctype configuration:**
 (See the image above)
@@ -83,4 +83,8 @@ The most common case, and the preferred way, when you make a jasper report is to
 If you don't want or don't know how to make the database select then, in the case the report is for some doctype/Form or doctype/List, you can check `Use For Custom Fields` and the Jasper Report make
 the select for you. This way is more time consuming than making the select to the database.
 
+**Use For Custom Fields**
 
+When you check `Use For Custom Fields` the Jasper Reports ignore any database select inside the `jrxml` file. 
+You still has to indicate the fields in the xml field tag. The Jasperstudio make that automatically when you insert fields in the report in design mode.
+When you use this option you can insert static fields from other doctype's in the report. For that name the field like this: doctype:docname:field. 
