@@ -9,7 +9,8 @@ So you can use Jasper Erpnext Report in tree ways:
  - Standalone mode.
  - Standalone and JasperReports® Server mode.
 
-Any questions: [![Join the chat at https://gitter.im/saguas/jasper_erpnext_report](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/saguas/jasper_erpnext_report?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Any questions?: 
+[![Join the chat at https://gitter.im/saguas/jasper_erpnext_report](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/saguas/jasper_erpnext_report?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
  
 JasperReports® Server
 =======
