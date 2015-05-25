@@ -119,6 +119,25 @@ To take most advantage of this you must insert in your report a parameter and ch
 
 >For any parameter you can pass a default value in this text box.
 
+>**Database Sql Select:** 
+
+>You can make any sql select to the database you want. 
+>But at some point you will need to connect the report with erpnext/frappe. 
+>For that you will tell, with parameters, what doctype or doctype's are you interested and more precisely, in that doctype, what document's you want.
+>For doctype/Form and doctype/List the database sql select are very simples just make a sql select like this: select f1,f2,f3 from tabName $P!{param_name}. 
+>Where f1,f2 and f3 are the name of the fields and tabName the name of some database table. 
+>If you don't indicate the where clause the system will made it for you, in that case you must choose `Is for where clause`.
+>That will be translated to select f1,f2,f3 from tabName where name in/not in (v1,v2,v3); Here name is the id for erpnext/frappe documents.  
+
+>You can make a sql select with where clause, but you must choose `Is doctype id` for the parameter that will have the doctype's id (name) of the documents you choose to print.
+
+> You can make more exotic sql select's but you have to choose in `Report for` the **Server hooks** type. 
+>In this case you can return the where clause or an entire sql select.
+
+> In the case you choose to return the entire sql select you must use $P!{param_name} for the value inside of the querystring tag of `jrxml` file.  
+
+> For more information see [Jasper Reports](http://jasperreports.sourceforge.net/sample.reference/query/).
+
 **Permission Rules:**
 
 Here you can choose who can access your report at the report level. This rules are combined with the rules of the frappe framework. 

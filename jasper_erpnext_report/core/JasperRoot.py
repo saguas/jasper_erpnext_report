@@ -394,5 +394,5 @@ def get_copies(rdoc, pformat):
 	"""
 	make copies (Single, Duplicated or Triplicated) only for pdf format
 	"""
-	copies = ["Original", "Duplicated", "Triplicate"]
+	copies = ["Original", "Duplicate", "Triplicate"]
 	return copies.index(rdoc.jasper_report_number_copies) + 1 if pformat == "pdf" else 1

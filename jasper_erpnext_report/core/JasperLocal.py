@@ -51,7 +51,7 @@ class JasperLocal(Jb.JasperBase):
 
 		self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 
-		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		copies = [_("Original"), _("Duplicate"), _("Triplicate")]
 		conn = ""
 		if doc.query:
 			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\

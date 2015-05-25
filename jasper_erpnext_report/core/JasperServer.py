@@ -212,7 +212,7 @@ class JasperServer(Jb.JasperBase):
 
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
-		copies = [_("Original"), _("Duplicated"), _("Triplicate")]
+		copies = [_("Original"), _("Duplicate"), _("Triplicate")]
 
 		for m in range(ncopies):
 			npram = copy.deepcopy(pram)
