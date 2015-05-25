@@ -83,11 +83,6 @@ The most common case, and the preferred way, when you make a jasper report is to
 If you don't want or don't know how to make the database select then, in the case the report is for some doctype/Form or doctype/List, you can check `Use For Custom Fields` and the Jasper Report make
 the select for you. This way is more time consuming than making the select to the database.
 
-**Erpnext / Frappe Reports**
-
-To make erpnext/frappe reports in Jasper Reports just choose the report in Report box and in the **jrxml file** indicate whitch fields do you want. 
-The system will grab that fields and make the report. You can filter before tell Jasper Report to print. 
-
 **Use For Custom Fields**
 
 When you check `Use For Custom Fields` the Jasper Reports ignore any database select inside the `jrxml` file. 
@@ -95,6 +90,10 @@ You still has to indicate the fields in the xml field tag. The Jasperstudio make
 When you use this option you can insert static fields from other doctype's in the report. For that name the field like this: doctype:docname:field. 
 If you only use field for name then Jasper Reports will use the doctype you indicated and the docname you select inside that doctype.
 
+**Erpnext / Frappe Reports**
+
+To make erpnext/frappe reports in Jasper Reports just choose the report in Report box and in the **jrxml file** indicate whitch fields do you want. 
+The system will grab that fields and make the report. You can filter before tell Jasper Report to print. 
 
 **Parameters:**
 
