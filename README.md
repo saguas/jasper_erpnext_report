@@ -118,3 +118,9 @@ To take most advantage of this you must insert in your report a parameter and ch
 >**Parameter Value**
 
 >For any parameter you can pass a default value in this text box.
+
+**Permission Rules:**
+
+Here you can choose who can access your report at the report level. This rules are combined with the rules of the frappe framework. 
+In this way you can give doctype access to Jasper Reports in frappe, then here you can complement access at the report/document level.
+
