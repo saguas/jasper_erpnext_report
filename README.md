@@ -158,13 +158,21 @@ This hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"],
 
 `{
 	fortype: fortype,// "doctype" or "query-report"
-	report_name: data.jr_name, 
-	doctype:"Jasper Reports", 
-	cur_doctype: cur_doctype, 
+	
+	report_name: data.jr_name,
+	 
+	doctype:"Jasper Reports",
+	 
+	cur_doctype: cur_doctype,
+	 
 	name_ids: docids, //ids (names) of the doctyp's to make Jasper Reports
+	
 	pformat: jr_format, //pdf, etc.
+	
 	params: params, //this is object with param/value
-	is_doctype_id: is_doctype_id, 
+	
+	is_doctype_id: is_doctype_id,
+	 
 	grid_data: {columns: columns, data: grid_data}//this is for query-report's of erpnext and frappe
 }`
 
