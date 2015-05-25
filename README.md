@@ -68,13 +68,13 @@ You can make reports for General/Global purpose leaving Doctype and Report box e
 You can also make reports for frappe doctype's or frappe report's choosing, respectively, Doctype or Report and select the correct document.
 After this, you must choose in `Report for` box between Form, List, General and Server Hooks.
 
->>**Form:** Choose this if the report has fields of some frappe Form/Doctype. This is the case when you want to make your custom report for, for instance, Quotation document.
+>**Form:** Choose this if the report has fields of some frappe Form/Doctype. This is the case when you want to make your custom report for, for instance, Quotation document.
 
->>**List:** Choose this if you want to make some list, for instance, of Quotations.
+>**List:** Choose this if you want to make some list, for instance, of Quotations.
 
->>**General:** Choose this if you want that the report to be global and don't depend of any fields of any doctype.
+>**General:** Choose this if you want that the report to be global and don't depend of any fields of any doctype.
 
->>**Server Hooks:** Choose this if you want to give the value of parameters in code. 
+>**Server Hooks:** Choose this if you want to give the value of parameters in code. 
 
 **NOTE:** When you enter a document in Doctype or Report the jasper report (upper-right corner) only appears when you are in that document. 
 If you leave it empty then it appears in upper-right corner of the desk.
@@ -97,24 +97,24 @@ For that you indicate in the `Type` box the type of the parameter.
 
 >**Type:**
 
->>**Is for copies:** If this parameter is for indicate in the document if is the Original, Duplicate or Triplicate.
+>**Is for copies:** If this parameter is for indicate in the document if is the Original, Duplicate or Triplicate.
 
->>**Is for where clause:** If this parameter is for the where clause of the database select. The system will create a where clause with this parameter.
+>**Is for where clause:** If this parameter is for the where clause of the database select. The system will create a where clause with this parameter.
 
->>**Is for page number:** It is not used at the moment.
+>**Is for page number:** It is not used at the moment.
 
->>**Is for server hook:** It will call you function for you to return in code the value of the parameter.
+>**Is for server hook:** It will call you function for you to return in code the value of the parameter.
 
->>**Is doctype id:** The system will use this parameter in the where clause but don't create a where clause.
+>**Is doctype id:** The system will use this parameter in the where clause but don't create a where clause.
 
->>**Other:** The system will ask for the value of the parameter to the user.
+>**Other:** The system will ask for the value of the parameter to the user.
 
 
 >**Report Number of Copies**
 
->>You can make in one request at most tree copies of the report. One if you choose Original in `Report Number of Copies` box, Two for Duplicate and tree for Triplicate.
+>You can make in one request at most tree copies of the report. One if you choose Original in `Report Number of Copies` box, Two for Duplicate and tree for Triplicate.
 To take most advantage of this you must insert in your report a parameter and choose the type **Is for copies**.
   
 >**Parameter Value**
 
->>For any parameter you can pass a default value in this text box.
+>For any parameter you can pass a default value in this text box.
