@@ -88,3 +88,33 @@ the select for you. This way is more time consuming than making the select to th
 When you check `Use For Custom Fields` the Jasper Reports ignore any database select inside the `jrxml` file. 
 You still has to indicate the fields in the xml field tag. The Jasperstudio make that automatically when you insert fields in the report in design mode.
 When you use this option you can insert static fields from other doctype's in the report. For that name the field like this: doctype:docname:field. 
+If you only use field for name then Jasper Reports will use the doctype you indicated and the docname you select inside that doctype.
+
+**Parameters:**
+
+You can insert parameters inside your report `jrxml` file. Then you must tell the purpose of each parameter. 
+For that you indicate in the `Type` box the type of the parameter.
+
+**Type:**
+
+**Is for copies:** If this parameter is for indicate in the document if is the Original, Duplicate or Triplicate.
+
+**Is for where clause:** If this parameter is for the where clause of the database select. The system will create a where clause with this parameter.
+
+**Is for page number:** It is not used at the moment.
+
+**Is for server hook:** It will call you function for you to return in code the value of the parameter.
+
+**Is doctype id:** The system will use this parameter in the where clause but don't create a where clause.
+
+**Other:** The system will ask for the value of the parameter to the user.
+
+
+**Report Number of Copies**
+
+You can make in one request at most tree copies of the report. One if you choose Original in `Report Number of Copies` box, Two for Duplicate and tree for Triplicate.
+To take most advantage of this you must insert in your report a parameter and choose the type **Is for copies**.
+  
+**Parameter Value**
+
+For any parameter you can pass a default value in this text box.
