@@ -245,7 +245,7 @@ The system call for hook named `jasper_before_get_report` with arguments `(data)
 The system call for hook named `jasper_after_get_report` with arguments `(file_name, content, url, filepath)`.
 
 
-List:
+List of hooks:
 
 `on_jasper_params`
 
