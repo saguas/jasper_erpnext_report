@@ -64,7 +64,7 @@ Report Configurations
 **In Jasper Reports doctype configuration:**
 (See the image above)
 
->You can make reports for General/Global purpose leaving Doctype and Report box empty.
+You can make reports for General/Global purpose leaving Doctype and Report box empty.
 You can also make reports for frappe doctype's or frappe report's choosing, respectively, Doctype or Report and select the correct document.
 After this, you must choose in `Report for` box between Form, List, General and Server Hooks.
 
