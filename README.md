@@ -146,13 +146,13 @@ To take most advantage of this you must insert in your report a parameter and ch
 
 **Hooks:**
 
-`Report for` of type **Server Hooks**
+`Report for` of type: **Server Hooks**
 
-The system call for hook named `on_jasper_params_ids` with parametesr `doc, method, data, params`. 
-Doc is the Jasper Report document, method is the name of the hook in this case `on_jasper_params_ids`, data is the data that was sent from the client and params are the params declared for the report.
-You must check if this call is for the report you want with doc.name. You can change everything in data.
+The system call for hook named `on_jasper_params_ids` with parameters `(method, data, params)`. 
+`method` is the name of the hook in this case `on_jasper_params_ids`, `data` is the data that was sent from the client and `params` are the params attributes declared for the report.
+You must check if this call is for the report you want with `data.report_name`. You can change everything in `data`.
 
-This hook must return a dict with this fields: 
+This hook must return a dict with two fields: 
 
 `{"ids": ["name_id1", "name_id2"], "report_type": "List/Form"}`
 
@@ -178,6 +178,11 @@ This hook must return a dict with this fields:
 	grid_data: {columns: columns, data: grid_data}//this is for query-report's of erpnext and frappe
 	}
 
+**Parameters Hooks:**
+
+The system call for hook named `on_jasper_params` with parameters `(method, data, params)`. 
+
+Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where attrs is the param attributes.
 
 **Permission Rules:**
 
