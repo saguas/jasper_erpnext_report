@@ -8,7 +8,12 @@ So you can use Jasper Erpnext Report in tree ways:
  - With JasperReports® Server mode - you need to install it.
  - Standalone mode.
  - Standalone and JasperReports® Server mode.
- 
+
+Any questions?
+
+[![Join the chat at https://gitter.im/saguas/jasper_erpnext_report](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/saguas/jasper_erpnext_report?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
 JasperReports® Server
 =======
 You make your reports in Jaspersoft Studio and put them in JasperReports Server. This way your reports are centralized. From Jasper Erpnext Report you get the reports that you want. After configure it you can send it to the JasperReports Server and get it back in pdf, docx,  xls, odds, dot and rtf. 
