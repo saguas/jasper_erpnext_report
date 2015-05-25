@@ -62,7 +62,7 @@ def do_doctype_from_jasper(data, reports, force=False):
 			doc.set(t,data.get(t))
 
 		if "double" in uri.lower():
-			doc.jasper_report_number_copies = "Duplicated"
+			doc.jasper_report_number_copies = "Duplicate"
 		elif "triple" in uri.lower():
 			doc.jasper_report_number_copies = "Triplicate"
 		else:

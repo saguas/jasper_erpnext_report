@@ -167,7 +167,7 @@ To take most advantage of this you must insert in your report a parameter and ch
 
 `Report for` of type: **Server Hooks**
 
-The system call for hook named `on_jasper_params_ids` with parameters `(data, params)`. 
+The system call for hook named `on_jasper_params_ids` with arguments `(data, params)`. 
 `data` is the data that was sent from the client and `params` are the params attributes declared for the report.
 You must check if this call is for the report you want with `data.report_name`. You can change everything in `data`.
 
@@ -199,7 +199,7 @@ This hook must return a dict with two fields:
 
 **Parameters Hooks:**
 
-The system call for hook named `on_jasper_params` with parameters `(data, params)`. 
+The system call for hook named `on_jasper_params` with arguments `(data, params)`. 
 
 Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where attrs is the param attributes.
 
@@ -220,6 +220,29 @@ Params is a list of `{"name":pname, 'value': pvalue, "attrs": param}`, where att
 		#a.append({"name": params[0].get("name"), "value":345})
 
 		return a
+
+**Others Hooks**
+
+The system call for hook named `jasper_before_run_report` with arguments `(data)` where `data` is the data that was sent from the client.
+
+The system call for hook named `jasper_before_sendmail` with arguments `(data, file_name, output, url, doctype=doctype, name=name, content=content, 
+subject=subject, sent_or_received=sent_or_received,
+sender=sender, recipients=recipients, print_html=print_html, print_format=print_format, attachments=attachments,
+send_me_a_copy=send_me_a_copy)`
+
+The system call for hook named `jasper_after_sendmail` with arguments `(data, url, file_name, file_path)`
+
+The system call for hook named `jasper_before_list_for_all` without arguments. Before get the list of all available reports. 
+
+The system call for hook named `jasper_after_list_for_all"` with arguments `(list)`. Argument is the list of all reports.
+
+The system call for hook named `jasper_before_list_for_doctype` with arguments `(doctype, docnames, report)`. Before get the list of all reports for some doctype or report.
+
+The system call for hook named `jasper_after_list_for_doctype` with arguments `(doctype, docnames, report, list)`. Last argument is the list of all reports for that doctype or report.
+
+The system call for hook named `jasper_before_get_report` with arguments `(data)` where `data` is the data that was sent from the client.
+
+The system call for hook named `jasper_after_get_report` with arguments `(file_name, content, url, filepath)`.
 
 **Permission Rules:**
 
