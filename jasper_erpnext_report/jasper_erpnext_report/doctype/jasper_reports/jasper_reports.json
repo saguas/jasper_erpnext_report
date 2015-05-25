@@ -148,7 +148,7 @@
    "fieldname": "jasper_report_number_copies", 
    "fieldtype": "Select", 
    "label": "Report Number of Copies", 
-   "options": "Original\nDuplicated\nTriplicate", 
+   "options": "Original\nDuplicate\nTriplicate", 
    "permlevel": 0, 
    "precision": ""
   }, 
@@ -329,7 +329,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-05-20 22:39:40.659609", 
+ "modified": "2015-05-25 23:11:39.751028", 
  "modified_by": "Administrator", 
  "module": "Jasper Erpnext Report", 
  "name": "Jasper Reports", 
