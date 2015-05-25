@@ -55,6 +55,32 @@ In this mode you just need to make the reports in Jaspersoft Studio. The simples
 Then you need to import them into the framework. **See the `examples/` Folder**. The images must have, inside jrxml file, relative reference. So you must import them into Jaspersoft Studio when you are making your report - at the design time. Note that you still need to import them into the frappe framework after you finish the reports.
 The localization files don't need to be imported if they are in `Java path`.
 
-To import the report just go to `Jasper Erpnext Report -> Documents -> Jasper Reports` make a new report (you just need to give a name) and before you can import the files that make your report you need to save the document. After save it an upload button appears. Note that after all files are imported you need to save again to make it permanent and to check if every thing is ok and all files needed were uploaded.
+To import the report just go to `Jasper Erpnext Report -> Documents -> Jasper Reports` make a new report (you just need to give a name), select for `Choose Origin` **LocalServer** and before you can import the files that make your report you need to save the document. After save it an upload button appears. Note that after all files are imported you need to save again to make it permanent and to check if every thing is ok and all files needed were uploaded.
 Again, you need to configure each doctype Jasper Reports document and then save them to take effect.
 ![enter image description here](readmeimg/jasper_new_report.png)
+
+Reports Configurations
+---------------
+**In Jasper Reports doctype configuration:**
+(See the image above)
+
+You can make reports for General/Global purpose leaving Doctype and Report box empty.
+You can also make reports for frappe doctype's or frappe report's choosing, respectively, Doctype or Report and select the correct document.
+After this, you must choose in `Report for` box between Form, List, General and Server Hooks.
+
+**Form:** Choose this if the report has fields of some frappe Form/Doctype. This is the case when you want to make your custom report for, for instance, Quotation document.
+
+**List:** Choose this if you want to make some list, for instance, of Quotations.
+
+**General:** Choose this if you want that the report to be global and don't depend of any fields of any doctype.
+
+**Server Hooks:** Choose this if you want to give the value of parameters in code. 
+
+**NOTE:** When you enter a document in Doctype or Report the jasper report (upper-right corner) only appears when you are in that document. 
+If you leave it empty then it appears in upper-right corner of the desk.
+
+The most common case, and the preferred way, when you make a jasper report is to automatically embed a querystring with a database select - In most cases Jaspersoft Studio make that for you.   
+If you don't want or don't know how to make the database select then, in the case the report is for some doctype/Form or doctype/List, you can check `Use For Custom Fields` and the Jasper Report make
+the select for you. This way is more time consuming than making the select to the database.
+
+
