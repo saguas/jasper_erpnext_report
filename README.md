@@ -234,7 +234,7 @@ The system call for hook named `jasper_after_sendmail` with arguments `(data, ur
 
 The system call for hook named `jasper_before_list_for_all` without arguments. Before get the list of all available reports. 
 
-The system call for hook named `jasper_after_list_for_all"` with arguments `(list)`. Argument is the list of all reports.
+The system call for hook named `jasper_after_list_for_all` with arguments `(list)`. Argument is the list of all reports.
 
 The system call for hook named `jasper_before_list_for_doctype` with arguments `(doctype, docnames, report)`. Before get the list of all reports for some doctype or report.
 
@@ -243,6 +243,24 @@ The system call for hook named `jasper_after_list_for_doctype` with arguments `(
 The system call for hook named `jasper_before_get_report` with arguments `(data)` where `data` is the data that was sent from the client.
 
 The system call for hook named `jasper_after_get_report` with arguments `(file_name, content, url, filepath)`.
+
+
+List:
+
+`on_jasper_params`
+
+`on_jasper_params_ids`
+
+`jasper_before_run_report` 
+
+`jasper_before_sendmail` and `jasper_after_sendmail`
+
+`jasper_before_list_for_all` and `jasper_after_list_for_all`
+
+`jasper_before_list_for_doctype` and `jasper_after_list_for_doctype
+
+`jasper_before_get_report` and `jasper_after_get_report`
+
 
 **Permission Rules:**
 
