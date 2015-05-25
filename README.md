@@ -165,7 +165,7 @@ This hook must return a dict with this fields: {"ids": ["name_id1", "name_id2"],
 	 
 	cur_doctype: cur_doctype,
 	 
-	name_ids: docids, //ids (names) of the doctyp's to make Jasper Reports
+	name_ids: docids, //ids (names) of the doctype's to make Jasper Reports
 	
 	pformat: jr_format, //pdf, etc.
 	
