@@ -13,7 +13,8 @@ How to for frappe V5:
 11. Import localizationdemo.properties.
 12. Save again.
 13. Reload/Refresh.
-14. Go to Setup -> User -> Select a user in <<User List>> or click in one to go to the form.
-15. Click in the icon of jasper in the upper-right corner.
-16. Select the report you just created clicking on pdf icon for instance to make a pdf version.
-17. That's all.
+14. Go to section 3. <<Parameters:>> and click in parameter <<is_name>> and choose <<Is for where clause>>.
+15. Go to Setup -> User -> Select a user in <<User List>> or click in one to go to the form.
+16. Click in the icon of jasper in the upper-right corner.
+17. Select the report you just created clicking on pdf icon for instance to make a pdf version.
+18. That's all.
