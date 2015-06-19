@@ -168,7 +168,8 @@ class JasperServer(Jb.JasperBase):
 				docs = utils.do_doctype_from_jasper(data, reports, force=True)
 				utils.import_all_jasper_remote_reports(docs, force)
 				return
-			frappe.msgprint(_("There is no report to import, check the path."), raise_exception=True)
+			frappe.msgprint(_("There is no report to import.\n Check if the path to JasperReports Server folder is correct.\n "
+			                  "Click with right mouse button in the folder to see the uri, check below the 'Path:' name."), raise_exception=True)
 
 	@_jasperserver
 	def get_reports_list_from_server(self, force=False):
