@@ -30,8 +30,8 @@ def do_doctype_from_jasper(data, reports, force=False):
 					ignore = True
 					break
 				else:
-					#no need to change if the same date or was changed locally by Administrator. Use force to force update and lose the changes
-					time_diff = frappe.utils.time_diff_in_seconds(obj.get('modified'), mydict.get("updateDate"))
+					#no need to change if the same date or if was changed locally by Administrator. Use force to force update and lose the changes
+					time_diff = frappe.utils.time_diff_in_seconds(obj.get('modified'), mydict.get("updateDate").replace("T", " "))
 					if time_diff >= 0 and not force:
 						ignore = True
 					else:
