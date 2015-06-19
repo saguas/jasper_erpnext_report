@@ -164,8 +164,11 @@ class JasperServer(Jb.JasperBase):
 	def import_all_jasper_reports(self, data, force=True):
 		if self.is_login:
 			reports = self.get_reports_list_from_server(force=force)
-			docs = utils.do_doctype_from_jasper(data, reports, force=True)
-			utils.import_all_jasper_remote_reports(docs, force)
+			if reports:
+				docs = utils.do_doctype_from_jasper(data, reports, force=True)
+				utils.import_all_jasper_remote_reports(docs, force)
+				return
+			frappe.msgprint(_("There is no report to import, check the path."), raise_exception=True)
 
 	@_jasperserver
 	def get_reports_list_from_server(self, force=False):
