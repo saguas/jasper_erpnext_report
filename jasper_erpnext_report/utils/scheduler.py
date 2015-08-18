@@ -142,9 +142,11 @@ def clear_all_jasper_reports(force=True):
 
 		if deleted:
 			intern_reqid = m.get("reqid")
-			try:
-				if "local_report_" not in reqId:
+
+			if "local_report_" not in reqId:
 					continue
+			
+			try:
 
 				if not data:
 					d = frappe.db.sql("select * from tabJasperReqids where reqid='{0}'".format(reqId), as_dict=True)
