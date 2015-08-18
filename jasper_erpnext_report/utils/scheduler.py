@@ -141,11 +141,12 @@ def clear_all_jasper_reports(force=True):
 			deleted = _f(data)
 
 		if deleted:
-			intern_reqid = m.get("reqid")
 
 			if "local_report_" not in reqId:
 					continue
-			
+
+			intern_reqid = m.get("reqid")
+
 			try:
 
 				if not data:
