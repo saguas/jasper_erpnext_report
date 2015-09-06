@@ -2,10 +2,10 @@ __author__ = 'luissaguas'
 import frappe
 from frappe import _
 from jasper_erpnext_report.utils.utils import jaspersession_get_value,get_expiry_in_seconds,\
-	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion, add_to_time_str
+	get_jasper_data, get_jasper_session_expiry_seconds, getFrappeVersion
 
 from jasper_erpnext_report.utils.file import remove_directory
-import json
+
 
 #call from bench frappe --python session or
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.list_all_memcached_keys_v4
@@ -168,7 +168,7 @@ def clear_all_jasper_reports(force=True):
 					emailed_removed += 1
 
 			except:
-				print "Path does not exist!"
+				print _("Path does not exist!")
 
 			frappe.cache().delete_value("jasper:" + reqId)
 			frappe.cache().delete_value("jasper:" + intern_reqid)
@@ -179,7 +179,8 @@ def clear_all_jasper_reports(force=True):
 	if compiled_removed > 0:
 		print _("Was removed {0} file(s) from compiled path and {1} file(s) from reports path (emailed only).".format(compiled_removed, emailed_removed))
 	else:
-		print _("No file was removed.")
+		#print _("No file was removed.")
+		print "No file was removed."
 
 def _f(data):
 	deleted = False
