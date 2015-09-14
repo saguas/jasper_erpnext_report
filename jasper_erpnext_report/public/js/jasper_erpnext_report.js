@@ -189,7 +189,6 @@ $(window).on('hashchange', function() {
 		list = frappe.boot.jasper_reports_list;
 		callback = jasper.getOrphanReport;
 	}
-    
 	setJasperDropDown(list, callback);
 	
 });
@@ -213,7 +212,7 @@ setJasperDropDown = function(list, callback){
 		
 		var html = '<li class="dropdown jasper_report_list_menu">'
 			+ '<a class="dropdown-toggle" href="#" data-toggle="dropdown" title="Jasper Reports" onclick="return false;">'
-				+ '<span><img src="assets/jasper_erpnext_report/images/jasper_icon.png" style="max-width: 24px; max-height: 24px; margin: -2px 0px;">  </img></span>' 
+				+ '<span><img src="/assets/jasper_erpnext_report/images/jasper_icon.png" style="max-width: 24px; max-height: 24px; margin: -2px 0px;">  </img></span>'
 		 + '<span> <span class="badge" id="jrcount">' + size +'</span></span></span></a>'
 			+ '<ul class="dropdown-menu jrmenu">';
 

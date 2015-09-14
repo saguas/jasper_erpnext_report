@@ -46,7 +46,7 @@ doc_events = {
 }
 
 fixtures = [
-	["Custom Field",{"name":["File Data-attached_to_report_name"]}]
+	"Custom Field"
 ]
 
 # Scheduled Tasks
