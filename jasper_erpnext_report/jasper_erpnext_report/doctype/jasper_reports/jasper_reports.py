@@ -110,7 +110,7 @@ class JasperReports(Document):
 	@property
 	def jrxml_root_path(self):
 		root_path = None
-		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,
+		docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": self.name, "attached_to_doctype": self.doctype,
 				"attached_to_report_name":"root"})
 		try:
 			root_path = docs[0].file_url
@@ -126,7 +126,7 @@ def get_attachments(dn):
 		return
 	attachments = []
 	for f in frappe.db.sql("""select name, file_name, file_url, attached_to_report_name from
-		`tabFile Data` where attached_to_name=%s and attached_to_doctype=%s""",
+		`tabFile` where attached_to_name=%s and attached_to_doctype=%s""",
 			(dn, "Jasper Reports"), as_dict=True):
 		attachments.append({
 			'name': f.name,
@@ -163,7 +163,7 @@ def check_for_report_images(xmldoc, doc):
 	if not images:
 		return
 	parent = xmldoc.getProperty("jasperId")
-	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
+	docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
 						"attached_to_report_name":parent})
 
 	for image in images:
@@ -189,7 +189,7 @@ def check_for_report_xPath(xmldoc, xmlname, doc):
 
 	xmlname = xmlname + ".xml"
 	parent = xmldoc.getProperty("jasperId")
-	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
+	docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
 						"attached_to_report_name":parent})
 	for f in docs:
 		if xmlname == f.file_url.split("compiled/",1)[1]:

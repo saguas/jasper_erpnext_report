@@ -40,7 +40,7 @@ has_permission = {
 # Hook on document methods and events
 
 doc_events = {
-    "File Data":{
+    "File":{
 		"on_trash": "jasper_erpnext_report.utils.jasper_file_jrxml.delete_file_jrxml"
     }
 }

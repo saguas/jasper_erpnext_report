@@ -74,7 +74,7 @@ def delete_from_doc(dt, dn, field, value, where_field):
 	frappe.db.sql("""delete from `tab%s` where %s=%s and %s=%s""" % (dt, field, '%s',  where_field,'%s'),(value, dn), auto_commit=1)
 
 def delete_from_FileData(dt, dn, file_url):
-	frappe.db.sql("""delete from `tabFile Data` where attached_to_doctype=%s and attached_to_name=%s and file_url=%s""",(dt, dn, file_url), auto_commit=1)
+	frappe.db.sql("""delete from `tabFile` where attached_to_doctype=%s and attached_to_name=%s and file_url=%s""",(dt, dn, file_url), auto_commit=1)
 
 def remove_directory(path, ignore_errors=True):
 	import shutil

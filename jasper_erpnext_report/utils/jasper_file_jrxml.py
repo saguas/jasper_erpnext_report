@@ -34,7 +34,7 @@ class WriteFileJrxml(object):
 		content_hash = get_content_hash(self.content)
 
 		file_data.update({
-			"doctype": "File Data",
+			"doctype": "File",
 			"attached_to_report_name": self.parent,
 			"attached_to_doctype": self.dt,
 			"attached_to_name": dn,
@@ -51,7 +51,7 @@ class WriteFileJrxml(object):
 				self.make_content_jrxml(f.name)
 
 		except frappe.DuplicateEntryError:
-			return frappe.get_doc("File Data", f.duplicate_entry)
+			return frappe.get_doc("File", f.duplicate_entry)
 		return f
 
 	def process(self, dn=None):
@@ -71,13 +71,13 @@ class WriteFileJrxml(object):
 			if self.ext == "jrxml":
 				self.compile()
 		except:
-			frappe.delete_doc("File Data", f.name)
+			frappe.delete_doc("File", f.name)
 			print "Remove this doc: doctype {} docname {}".format(f.doctype, f.name)
 
 		return f
 
 	def process_childs(self):
-		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.dn, "attached_to_doctype": self.dt, "name": self.parent})
+		docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": self.dn, "attached_to_doctype": self.dt, "name": self.parent})
 		if not docs:
 			frappe.msgprint(_("Add a report first."), raise_exception=True)
 		for doc in docs:
@@ -116,7 +116,7 @@ class WriteFileJrxml(object):
 		self.file_path = self.path_join(jrxml_path, self.fname)
 
 		#check if the parent has this jrxml as child
-		docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": self.dn, "attached_to_doctype": self.dt, "name": self.parent})
+		docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": self.dn, "attached_to_doctype": self.dt, "name": self.parent})
 		if docs:
 			xmldoc = JasperXmlReport(self.path_join(jrxml_path, docs[0].file_name))
 			for sub in xmldoc.subreports:
@@ -172,7 +172,7 @@ def jasper_compile_jrxml(fname, file_path, compiled_path):
 
 def check_if_jrxml_exists_db(dt, dn, fname, parent=None):
 
-	docs = frappe.get_all("File Data", fields=["file_name"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "name": parent})
+	docs = frappe.get_all("File", fields=["file_name"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "name": parent})
 	for doc in docs:
 		jrxml_ext = get_extension(doc.file_name)
 		if not (jrxml_ext == "jrxml"):
@@ -181,14 +181,14 @@ def check_if_jrxml_exists_db(dt, dn, fname, parent=None):
 	return None
 
 def check_root_exists(dt, dn):
-	docs = frappe.get_all("File Data", fields=["file_name"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "attached_to_report_name": "root"})
+	docs = frappe.get_all("File", fields=["file_name"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "attached_to_report_name": "root"})
 	return len(docs) > 0
 
 
 def get_jrxml_root(dt,dn):
 	furl = None
 	fname = None
-	docs = frappe.get_all("File Data", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "attached_to_report_name": "root"})
+	docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt, "attached_to_report_name": "root"})
 	if docs:
 		fname = docs[0].file_name
 		furl = docs[0].file_url
@@ -239,7 +239,7 @@ def delete_jrxml_child_file(path, jasper_all_sites):
 
 #delete all images associated to jrxml file
 def delete_jrxml_images(dt, dn, jasper_all_sites = False):
-	images = frappe.get_all("File Data", fields=["file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt})
+	images = frappe.get_all("File", fields=["file_url"], filters={"attached_to_name": dn, "attached_to_doctype": dt})
 	for image in images:
 		file_path = image.get('file_url')
 		ext = check_extension(file_path)
