@@ -11,7 +11,6 @@ jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "ic
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
     $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
-    //$banner.show();
     timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
 
     frappe.call({
