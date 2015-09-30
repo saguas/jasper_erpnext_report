@@ -10,6 +10,10 @@ jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "ic
 
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
+    $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
+    //$banner.show();
+    timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
+
     frappe.call({
 	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
 	       args:{
@@ -20,13 +24,9 @@ jasper.run_jasper_report = function(method, data, doc){
                if (response_data && response_data.message){
                    var msg = response_data.message;
                    if (msg[0].status === "ready"){
-                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."))
-                       timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.pending_reports.push(msg);
                        setTimeout(jasper.jasper_report_ready, 1000*10, msg, $banner, timeout);
                    }else{
-                       $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."))
-                       timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
                        jasper.polling_report(msg, $banner, timeout);
                    }
                }
