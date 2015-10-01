@@ -123,6 +123,9 @@ jasper.getReport = function(msg){
 };
 
 jasper.getListOnly = function(page, doctype, docnames){
+
+	if (!docnames)
+		docnames = [];
 	method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 	data = {doctype: doctype, docnames: docnames, report: null};
 	jasper.jasper_make_request(method, data,function(response_data){
