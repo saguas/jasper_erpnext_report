@@ -122,6 +122,14 @@ jasper.getReport = function(msg){
     
 };
 
+jasper.getListOnly = function(page, doctype, docnames){
+	method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
+	data = {doctype: doctype, docnames: docnames, report: null};
+	jasper.jasper_make_request(method, data,function(response_data){
+		jasper.pages[page] = response_data.message;
+	})
+}
+
 jasper.getList = function(page, doctype, docnames){
 	var jpage = frappe.pages[page];
 	if(jpage && jasper.pages[page]){
@@ -246,52 +254,55 @@ jasper.getOrphanReport = function(data, ev){
 	var route = frappe.get_route();
 	var len = route.length;
 	var docids;
-    var docname;
+    var docname = data.doctype_type;
     var fortype = "doctype";
     var grid_data = null;
     var columns = null;
     var rtype = "General";
-    var cur_doctype = null;
+    var cur_doctype = data.doctype;
 
+	var docids = data.docids;
 	//if (len > 1 && route[0] === "List"){
 	//	var doctype = route[1];
 	//	var page = [route[0], doctype].join("/");
 	//	docids = jasper.getCheckedNames(page);
-	docids = jasper.getIdsFromList();
-	if(docids){
-        docname = route[0];
-		if (docids.length === 0)
-		{
-			msgprint(__("Please, select at least one name."), __("Jasper Report"));
-			return;
-		};
-		cur_doctype = route[1];
-	}else{ //if(len > 2 && route[0] === "Form"){
-		docids = jasper.getIdsFromForm();
-		//if (cur_frm){
-		if (docids){
-			docids = [docids];
-		//	docids = [cur_frm.doc.name];
-         	docname = route[0];
-         	cur_doctype = route[1];
-		//}else{
-		//	msgprint(__("To print this document you must be in a form."), __("Jasper Report"));
-		//	return;
-		//}
-		}else if((len > 1 && (route[0] === "query-report" || route[0] === "Report")) || (len === 1 && route[0] !== "")){
-			fortype = "query-report";
-			columns = jasper.query_report_columns();
-			grid_data = jasper.query_report_data();
-			if (len === 1){
-				docname = route[0];
-			}else{
-				docname = route[1];
+	if (!docids){
+		docids = jasper.getIdsFromList();
+		if(docids){
+	        docname = route[0];
+			if (docids.length === 0)
+			{
+				msgprint(__("Please, select at least one name."), __("Jasper Report"));
+				return;
+			};
+			cur_doctype = route[1];
+		}else{ //if(len > 2 && route[0] === "Form"){
+			docids = jasper.getIdsFromForm();
+			//if (cur_frm){
+			if (docids){
+				docids = [docids];
+			//	docids = [cur_frm.doc.name];
+	            docname = route[0];
+	            cur_doctype = route[1];
+			//}else{
+			//	msgprint(__("To print this document you must be in a form."), __("Jasper Report"));
+			//	return;
+			//}
+			}else if((len > 1 && (route[0] === "query-report" || route[0] === "Report")) || (len === 1 && route[0] !== "")){
+				fortype = "query-report";
+				columns = jasper.query_report_columns();
+				grid_data = jasper.query_report_data();
+				if (len === 1){
+					docname = route[0];
+				}else{
+					docname = route[1];
+				}
+				cur_doctype = docname;
 			}
-			cur_doctype = docname;
 		}
 	}
     var params;
-    jasper.check_for_ask_param(data.jr_name, function(obj){
+    jasper.check_for_ask_param(data.jr_name, data.page, function(obj){
         if (!obj || obj && obj.abort === true)
             return;
         var jr_format = data.jr_format;

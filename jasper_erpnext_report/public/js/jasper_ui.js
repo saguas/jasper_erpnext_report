@@ -32,8 +32,8 @@ show_banner_message = function(msg, where_ok, where_cancel, bckcolor, callback){
     };
 }
 
-jasper.check_for_ask_param = function(rname, callback){
-    var robj = jasper.get_jasperdoc_from_name(rname);
+jasper.check_for_ask_param = function(rname, page, callback){
+    var robj = jasper.get_jasperdoc_from_name(rname, page);
     var ret;
     if (robj.locale === "Ask" || (robj.params && robj.params.length > 0)){
         ret = jasper.make_dialog(robj, rname + " parameters", callback);

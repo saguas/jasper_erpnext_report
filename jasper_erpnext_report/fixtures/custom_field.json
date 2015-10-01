@@ -1,5 +1,5 @@
 [
- {
+{
   "allow_on_submit": 0,
   "default": null,
   "depends_on": null,
@@ -15,9 +15,9 @@
   "in_list_view": 1,
   "insert_after": "file_url",
   "label": "Attached To Report Name",
-  "modified": "2015-09-13 14:54:53.846982",
+  "modified": "2015-10-01 17:20:19.032730",
   "name": "File-attached_to_report_name",
-  "no_copy": 0,
+  "no_copy": 0, 
   "options": null,
   "permlevel": 0,
   "precision": null,
