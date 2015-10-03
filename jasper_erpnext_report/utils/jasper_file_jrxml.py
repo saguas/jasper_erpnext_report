@@ -110,8 +110,12 @@ class WriteFileJrxml(object):
 	def process_jrxmls(self):
 		rname = check_if_jrxml_exists_db(self.dt, self.dn, self.fname, self.parent)
 		if rname or check_root_exists(self.dt, self.dn):
-			frappe.msgprint(_("Remove first the file (%s) associated with this document or (%s) is a wrong parent." % (rname, rname)),
-				raise_exception=True)
+			if rname:
+				frappe.msgprint(_("Remove first the file (%s) associated with this document or (%s) is a wrong parent." % (rname, rname)),
+					raise_exception=True)
+			else:
+				frappe.msgprint(_("Only one root must exist."), raise_exception=True)
+				
 		jrxml_path = get_jrxml_path(self.jasper_path, self.dn)
 		self.file_path = self.path_join(jrxml_path, self.fname)
 
