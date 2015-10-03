@@ -124,6 +124,8 @@ jasper.getReport = function(msg){
 
 jasper.getListOnly = function(page, doctype, docnames){
 
+	var dfd = jQuery.Deferred();
+
 	if (!docnames)
 		docnames = [];
 	
@@ -131,7 +133,10 @@ jasper.getListOnly = function(page, doctype, docnames){
 	data = {doctype: doctype, docnames: docnames, report: null};
 	jasper.jasper_make_request(method, data,function(response_data){
 		jasper.pages[page] = response_data.message;
+		dfd.resolve();
 	})
+
+	return dfd.promise();
 }
 
 jasper.getList = function(page, doctype, docnames){
