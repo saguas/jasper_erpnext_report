@@ -7,7 +7,8 @@ def jasper_compile(jrxml, destFileName):
 		compiler = jr.ReportCompiler()
 		compiler.compile(jrxml,destFileName)
 	except Exception as e:
-		if jr.pyjnius == False:
+		import jasper_erpnext_report as jer
+		if jer.pyjnius == False:
 			frappe.throw(_("Please install pyjnius python module."))
 			return
 		frappe.throw(_("Error while compiling report %s, error is: %s." % (jrxml, e)))
