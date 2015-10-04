@@ -8,6 +8,17 @@ jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "ic
 						/*ppt:"icon-file-powerpoint", pptx:"icon-file-powerpoint",*/ odt: "icon-file-openoffice", ods: "icon-libreoffice",
 	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
 
+myasyncfunc = function(data){
+	console.log("subscribe data ", data);
+	//jasper.pending_reports.push(msg);
+    //setTimeout(jasper.jasper_report_ready, 1000*10, msg, $banner, timeout);
+}
+
+myqueuedfunc = function(data){
+	console.log("queued data ", data);
+	frappe.socket.subscribe("Local-" + data.task_id, {callback:myasyncfunc});
+}
+
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
     $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
@@ -15,6 +26,7 @@ jasper.run_jasper_report = function(method, data, doc){
 
     frappe.call({
 	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
+	       queued:myqueuedfunc,
 	       args:{
                data: data,
 	           docdata: doc
@@ -22,6 +34,13 @@ jasper.run_jasper_report = function(method, data, doc){
 	       callback: function(response_data){
                if (response_data && response_data.message){
                    var msg = response_data.message;
+                   var task_id = response_data.task_id;
+
+                   console.log("run report message ", response_data, task_id, frappe.socket.open_tasks[task_id]);
+                   //var status = response_data.status;
+                   //jasper.get_task_status(task_id);
+                   //frappe.socket.subscribe("local_" + task_id, {success:myasyncfunc});
+                   //frappe.realtime.on("task_status_change", myasyncfunc);
                    if (msg[0].status === "ready"){
                        jasper.pending_reports.push(msg);
                        setTimeout(jasper.jasper_report_ready, 1000*10, msg, $banner, timeout);
@@ -34,6 +53,21 @@ jasper.run_jasper_report = function(method, data, doc){
      
      return df;
 };
+
+jasper.get_task_status = function(task_id){
+
+	frappe.call({
+	       "method": "frappe.async.get_task_status",
+	       args:{
+               task_id: task_id,
+	       },
+	       callback: function(response_data){
+               //if (response_data && response_data.message){
+               console.log(response_data);
+               //}
+            }
+	});
+}
 
 jasper.polling_report = function(data, $banner, timeout){
     var reqids = [];

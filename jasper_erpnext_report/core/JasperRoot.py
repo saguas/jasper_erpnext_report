@@ -270,6 +270,7 @@ class JasperRoot(Jb.JasperBase):
 		#check if this requestId is older than last timeout
 		self.validate_ticket(data)
 		d = self.get_jasper_reqid_data(data.get('requestId'))
+		print "get_report_server %s" % d
 		report_name = d['data'].get("report_name")
 		if not d:
 			frappe.throw(_("Report Not Found."))
@@ -291,6 +292,7 @@ class JasperRoot(Jb.JasperBase):
 				"""
 				for id in ids:
 					report = self.get_jasper_reqid_data(id)
+					print "get_report_server id report %s" % report
 					rdata = report.get('data').get('result')
 					reqId = [rdata.get("requestId")]
 					expId = rdata.get("ids")

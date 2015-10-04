@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 from frappe import _
 import frappe
+import frappe.async
 import json
 from urllib2 import unquote
 import time
@@ -83,6 +84,8 @@ def report_polling(data):
 def get_report(data):
 	if not data:
 		frappe.throw(_("There is no data for this Report."))
+
+	print "get_report %s" % data
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
 	pformat = data.get("pformat")
@@ -150,13 +153,15 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 
 	return file_name, output
 
-@frappe.whitelist()
+#@frappe.whitelist()
+@frappe.async.handler
 def run_report(data, docdata=None):
 	if not data:
 		frappe.throw("No data for this Report!!!")
 	if isinstance(data, basestring):
 		data = json.loads(data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
+	print "run report %s" % data
 	return jsr.run_report(data, docdata=docdata)
 
 @frappe.whitelist()

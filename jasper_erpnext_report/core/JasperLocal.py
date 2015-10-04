@@ -37,6 +37,8 @@ class JasperLocal(Jb.JasperBase):
 			frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 
 	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		from jasper_erpnext_report.core.FrappeTask import FrappeTask
+
 		data = data or {}
 		hashmap = jr.HashMap()
 		pram, pram_server, copies = self.do_params(data, params, pformat)
@@ -59,7 +61,9 @@ class JasperLocal(Jb.JasperBase):
 
 		if not frappe.local.batch:
 			batch = frappe._dict({})
+
 			batch.batchReport = jr.BatchReport()
+
 			batch.reportName = self.getFileName(path)
 			batch.jasper_path = get_jasper_path(for_all_sites)
 			batch.compiled_path = get_compiled_path(batch.jasper_path, data.get("report_name"))
@@ -76,6 +80,8 @@ class JasperLocal(Jb.JasperBase):
 			res["status"] = None
 			res["report_name"] = data.get("report_name")
 			resp.append(res)
+			frappe_task = FrappeTask(frappe.local.task_id, None)
+			batch.batchReport.setTaskHandler(frappe_task)
 			result = {"fileName": batch.reportName + "." + pformat, "uri":batch.outputPath + os.sep + batch.reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(batch.sessionId)}
 			self.insert_jasper_reqid_record(batch.sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 
@@ -118,7 +124,7 @@ class JasperLocal(Jb.JasperBase):
 			mparams.put("numberPattern", frappe.db.get_default("number_format"))
 			mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-			self._export_report(mparams, data.get("report_name"), data.get("grid_data", None), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
+			self._export_report(mparams, data.get("report_name"), data.get("grid_data"), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
 			if pram_copy_index != -1 and ncopies > 1:
 				hashmap = jr.HashMap()
 				self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
