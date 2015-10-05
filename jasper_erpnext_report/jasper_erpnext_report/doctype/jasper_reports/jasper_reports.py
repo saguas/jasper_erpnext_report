@@ -144,7 +144,7 @@ def getSubReportsQuery(xmlroot, doc):
 	jasper_path = get_jasper_path(doc.jasper_all_sites_report)
 	subreports = xmlroot.subreports
 	for path_name in subreports:
-		report_path = path_name[:-6] + "jrxml"
+		report_path = path_name[:-7] + ".jrxml"
 		file_path = frappe.utils.get_path(doc.name, report_path, base=jasper_path)
 		try:
 			xmldoc = JasperXmlReport(file_path)
