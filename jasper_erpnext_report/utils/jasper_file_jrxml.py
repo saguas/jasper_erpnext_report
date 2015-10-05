@@ -27,6 +27,7 @@ class WriteFileJrxml(object):
 		self.path_join = os.path.join
 		self.scriptlet = None
 		self.save_path = None
+		self.subreport = False
 
 	def insert_report_doc(self, dn=None):
 		file_data = {}
@@ -132,6 +133,9 @@ class WriteFileJrxml(object):
 
 			if not xmldoc.subreports:
 				frappe.msgprint(_("The report %s is not a subreport of %s."  % (self.fname[:-6], docs[0].file_name[:-6])),raise_exception=True)
+
+			#self.subreport = True
+			#self.file_path = self.path_join(jrxml_path, docs[0].file_name)
 
 	def make_content_jrxml(self, name):
 

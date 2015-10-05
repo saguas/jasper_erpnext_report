@@ -18,7 +18,8 @@ class JasperXmlReport():
 		self._fieldNames = []
 		self._subreports = []
 		self._datasets = []
-		self._jasper_prefix = "compiled/"
+		#self._jasper_prefix = "compiled/"
+		self._jasper_prefix = ""
 		self._name = self.get_attrib("name")
 		self.get_query_from_xml()
 		self.get_xml_subreports()
