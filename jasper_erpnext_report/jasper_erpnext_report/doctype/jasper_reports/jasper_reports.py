@@ -144,7 +144,7 @@ def getSubReportsQuery(xmlroot, doc):
 	jasper_path = get_jasper_path(doc.jasper_all_sites_report)
 	subreports = xmlroot.subreports
 	for path_name in subreports:
-		report_path = path_name.split("/",1)[1][:-6] + "jrxml"
+		report_path = path_name[:-6] + "jrxml"
 		file_path = frappe.utils.get_path(doc.name, report_path, base=jasper_path)
 		try:
 			xmldoc = JasperXmlReport(file_path)
@@ -175,8 +175,14 @@ def check_for_report_images(xmldoc, doc):
 			fimage = image.text
 
 		report_image_name = get_image_name(fimage)
-		for img in docs:
-			if report_image_name == img.file_url.split("compiled/",1)[1]:
+		for f in docs:
+			list_img_name = f.file_url.split("compiled/",1)
+			if len(list_img_name) > 1:
+				img = list_img_name[1]
+			else:
+				img = list_img_name[0]
+
+			if report_image_name == img:
 				found = True
 				report_images_count = report_images_count + 1
 				break
@@ -193,7 +199,12 @@ def check_for_report_xPath(xmldoc, xmlname, doc):
 	docs = frappe.get_all("File", fields=["file_name", "file_url"], filters={"attached_to_name": doc.name, "attached_to_doctype": doc.doctype,
 						"attached_to_report_name":parent})
 	for f in docs:
-		if xmlname == f.file_url.split("compiled/",1)[1]:
+		list_file_name = f.file_url.split("compiled/",1)
+		if len(list_file_name) > 1:
+			file_name = list_file_name[1]
+		else:
+			file_name = list_file_name[0]
+		if xmlname == file_name:
 			return True
 
 """
