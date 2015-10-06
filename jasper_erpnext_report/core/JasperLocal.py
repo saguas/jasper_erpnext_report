@@ -118,7 +118,7 @@ class JasperLocal(Jb.JasperBase):
 			mparams.put("numberPattern", frappe.db.get_default("number_format"))
 			mparams.put("datePattern", frappe.db.get_default("date_format") + " HH:mm:ss")
 
-			self._export_report(mparams, data.get("report_name"), data.get("grid_data", None), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
+			self._export_report(mparams, data.get("report_name"), data.get("grid_data"), frappe.local.batch.sessionId, cur_doctype, custom, ids, frappe.local.fds)
 			if pram_copy_index != -1 and ncopies > 1:
 				hashmap = jr.HashMap()
 				self.populate_hashmap(pram, hashmap, doc.jasper_report_name)

@@ -312,6 +312,7 @@ def clear_expired(force=False):
 	clear_expired_jasper_reports(force=force)
 	clear_expired_jasper_sessions(force=force)
 	clear_expired_jasper_error(force=force)
+	print "clear expired"
 	#clear_expired_jasper_cache_local_reports(force=force)
 
 #to be called from terminal: bench frappe --execute jasper_erpnext_report.utils.scheduler.clear_jasper to force clear cache
