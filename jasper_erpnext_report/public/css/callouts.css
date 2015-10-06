@@ -1,6 +1,13 @@
+.jrmenu {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
 .dropdown-submenu {
     position:relative;
 }
+
 .dropdown-submenu>.dropdown-menu {
     top:0;
     left:100%;
@@ -176,3 +183,4 @@
 	padding: 7px;
 	z-index: 1;
 }
+

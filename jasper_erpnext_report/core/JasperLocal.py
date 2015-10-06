@@ -28,15 +28,20 @@ class JasperLocal(Jb.JasperBase):
 		super(JasperLocal, self).__init__(doc, "local")
 
 	def run_local_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+		from jasper_erpnext_report.core.FrappeTask import FrappeTask
 
 		try:
+			self.frappe_task = FrappeTask(frappe.local.task_id, None)
 			cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
-			cresp["origin"] = "local"
+			#cresp["origin"] = "local"
+			#cresp["pformat"] = pformat
+			#self.frappe_task.setResult([cresp])
 			return [cresp]
 		except Exception as e:
 			frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
 
 	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
+
 		data = data or {}
 		hashmap = jr.HashMap()
 		pram, pram_server, copies = self.do_params(data, params, pformat)
@@ -59,7 +64,9 @@ class JasperLocal(Jb.JasperBase):
 
 		if not frappe.local.batch:
 			batch = frappe._dict({})
+
 			batch.batchReport = jr.BatchReport()
+
 			batch.reportName = self.getFileName(path)
 			batch.jasper_path = get_jasper_path(for_all_sites)
 			batch.compiled_path = get_compiled_path(batch.jasper_path, data.get("report_name"))
@@ -76,6 +83,8 @@ class JasperLocal(Jb.JasperBase):
 			res["status"] = None
 			res["report_name"] = data.get("report_name")
 			resp.append(res)
+
+			batch.batchReport.setTaskHandler(self.frappe_task)
 			result = {"fileName": batch.reportName + "." + pformat, "uri":batch.outputPath + os.sep + batch.reportName + "." + pformat, "last_updated": res.get("reqtime"), 'session_expiry': utils.get_expiry_period(batch.sessionId)}
 			self.insert_jasper_reqid_record(batch.sessionId, {"data":{"result":result, "report_name": data.get("report_name"), "last_updated": frappe.utils.now(),'session_expiry': utils.get_expiry_period()}})
 

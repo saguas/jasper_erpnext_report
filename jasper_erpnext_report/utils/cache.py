@@ -47,7 +47,9 @@ def redis_transation(data, watch):
 def insert_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}, in_transation=True):
+def insert_list_all_memcache_db(data, cachename="report_list_all", fields=None, in_transation=True):
+
+	fields = fields or {}
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	for k,v in fields.iteritems():
@@ -64,7 +66,9 @@ def insert_list_all_memcache_db(data, cachename="report_list_all", fields={}, in
 def update_jasper_list_all(data, cachename="report_list_all"):
 		jaspersession_set_value(cachename, data)
 
-def update_list_all_memcache_db(data, cachename="report_list_all", fields={}, in_transation=True):
+def update_list_all_memcache_db(data, cachename="report_list_all", fields=None, in_transation=True):
+
+	fields = fields or {}
 	data['session_expiry'] = get_expiry_period(sessionId=cachename)
 	data['last_updated'] = frappe.utils.now()
 	old_data = frappe._dict(jaspersession_get_value(cachename) or {})

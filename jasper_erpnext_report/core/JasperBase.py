@@ -24,6 +24,7 @@ class JasperBase(object):
 			self.doc = frappe._dict(doc)
 		self.user = frappe.local.session["user"]
 		self.sid = frappe.local.session["sid"]
+		self.frappe_task = None
 		self.reset_data_session()
 		self.report_html_path = None
 		self.html_hash = None
@@ -316,6 +317,7 @@ class JasperBase(object):
 		frappe.db.commit()
 
 	def get_jasper_reqid_data(self, reqId):
+		print "reqId %s" % reqId
 		data = utils.get_jasper_data(reqId, get_from_db=self.get_jasper_reqid_data_from_db, args=[reqId])
 		if not data:
 			utils.delete_jasper_session(reqId, "tabJasperReqids where reqid='%s'" % reqId)
@@ -360,12 +362,20 @@ class JasperBase(object):
 
 		if self.report_origin == "local":
 			resps = resps[:1]
+			cresp = self.prepareCollectResponse(resps)
+			cresp["origin"] = "local"
+			cresp["pformat"] = pformat
+			self.frappe_task.setResult([cresp])
 			frappe.local.batch.batchReport.export()
 			if frappe.local.batch.outtype == 7:#html file
 				content = get_file(frappe.local.batch.outputPath + os.sep + frappe.local.batch.reportName + ".html")
 				self.copy_images(content, frappe.local.batch.outputPath + os.sep, frappe.local.batch.reportName, data.get("report_name"), frappe.local.site)
-
-		cresp = self.prepareCollectResponse(resps)
+		else:
+			cresp = self.prepareCollectResponse(resps)
+			cresp["origin"] = "server"
+			cresp["pformat"] = pformat
+			self.frappe_task.setResult([cresp])
+			self.frappe_task.setReadyTask()
 		return cresp
 
 	#Override by descendents: JasperServer and JasperLocal
