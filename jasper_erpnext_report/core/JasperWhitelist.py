@@ -85,9 +85,15 @@ def get_report(data):
 	if not data:
 		frappe.throw(_("There is no data for this Report."))
 
-	print "get_report %s" % data
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
+
+	if data.get("origin") == "local":
+		list_data = frappe.call(report_polling, data)
+		if not list_data:
+			frappe.throw("Your report was not found!. Please try again.")
+		data = list_data[0]
+
 	pformat = data.get("pformat")
 	fileName, content, report_name = _get_report(data)
 	return make_pdf(fileName, content, pformat, report_name, reqId=data.get("requestId"))
@@ -161,7 +167,6 @@ def run_report(data, docdata=None):
 	if isinstance(data, basestring):
 		data = json.loads(data)
 	jsr = jasper_session_obj or Jr.JasperRoot()
-	print "run report %s" % data
 	return jsr.run_report(data, docdata=docdata)
 
 @frappe.whitelist()
