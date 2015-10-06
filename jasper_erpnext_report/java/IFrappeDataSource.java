@@ -1,5 +1,3 @@
-/* File name : Animal.java */
-
 interface IFrappeDataSource {
 
    public void moveFirst();

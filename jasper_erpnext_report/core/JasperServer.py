@@ -202,8 +202,11 @@ class JasperServer(Jb.JasperBase):
 		return ret
 
 	def run_remote_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1):
+		from jasper_erpnext_report.core.FrappeTask import FrappeTask
+
+		self.frappe_task = FrappeTask(frappe.local.task_id, None)
 		cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=0)
-		cresp["origin"] = "server"
+		#cresp["origin"] = "server"
 		return [cresp]
 
 	#run reports with http POST and run async and sync

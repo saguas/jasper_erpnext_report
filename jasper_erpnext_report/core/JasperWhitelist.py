@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'luissaguas'
 from frappe import _
 import frappe
+import frappe.async
 import json
 from urllib2 import unquote
 import time
@@ -83,8 +84,16 @@ def report_polling(data):
 def get_report(data):
 	if not data:
 		frappe.throw(_("There is no data for this Report."))
+
 	if isinstance(data, basestring):
 		data = json.loads(unquote(data))
+
+	if data.get("origin") == "local":
+		list_data = frappe.call(report_polling, data)
+		if not list_data:
+			frappe.throw("Your report was not found!. Please try again.")
+		data = list_data[0]
+
 	pformat = data.get("pformat")
 	fileName, content, report_name = _get_report(data)
 	return make_pdf(fileName, content, pformat, report_name, reqId=data.get("requestId"))
@@ -150,7 +159,8 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 
 	return file_name, output
 
-@frappe.whitelist()
+#@frappe.whitelist()
+@frappe.async.handler
 def run_report(data, docdata=None):
 	if not data:
 		frappe.throw("No data for this Report!!!")

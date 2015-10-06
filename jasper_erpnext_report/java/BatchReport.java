@@ -12,21 +12,27 @@ public class BatchReport
 	private String upasswd;
 	private boolean encrypt;
 	private List<JasperPrint> jasperPrintList;
+	private IFrappeTask Task;
 	
 	
 	public BatchReport(){
 		this.jasperPrintList = new ArrayList<JasperPrint>();
 	}
 	
-	public BatchReport(int type, String outputPathName){
+	public BatchReport(int type, String outputPathName, IFrappeTask task){
 		this.jasperPrintList = new ArrayList<JasperPrint>();
 		this.type = type;
 		this.encrypt = false;
 		this.opasswd = "pdf";
 		this.upasswd = "pdf";
 		this.outputPathName = outputPathName;
+		this.Task = task;
 	}
-	
+
+	public void setTaskHandler(IFrappeTask task){
+		this.Task = task;
+	}
+
 	public void setType(int type){
 		this.type = type;
 	}
@@ -60,6 +66,7 @@ public class BatchReport
 	public void export(){
 		MakeReport mr = new MakeReport(this.jasperPrintList, this.encrypt, this.opasswd, this.upasswd);
 		mr.makeReport(this.type, this.outputPathName, this.fileName);
+		this.Task.setReadyTask();
 	}
 	
 }

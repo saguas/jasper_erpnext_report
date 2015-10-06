@@ -4,36 +4,82 @@ jasper.pending_reports = [];
 
 jasper.poll_count = 0;
 
+pending_banner = [];
+
 jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "icon-file-word", xls:"icon-file-excel", xlsx:"icon-file-excel", 
 						/*ppt:"icon-file-powerpoint", pptx:"icon-file-powerpoint",*/ odt: "icon-file-openoffice", ods: "icon-libreoffice",
 	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
+
+async_func_callback = function(data){
+	console.log("subscribe data ", data);
+	var banner_data = pending_banner.pop()
+	var $banner = banner_data.banner;
+	var timeout = banner_data.timeout;
+
+	var result = data.result;
+	if (result.origin === "local"){
+		var reqids = [];
+	    for(var i=0; i<result.length; i++){
+	        reqids.push(result[i].requestId);
+	    };
+	    var poll_data = [{reqIds: reqids, reqtime: result[0].reqtime, pformat: result[0].pformat, origin: result[0].origin}]
+		jasper.pending_reports.push(result);
+		//setTimeout(jasper.jasper_report_ready, 1000*10, poll_data, $banner, timeout);
+		jasper.jasper_report_ready(poll_data, $banner, timeout);
+	}else{
+		if (result.status === "ready"){
+           jasper.pending_reports.push(result);
+           setTimeout(jasper.jasper_report_ready, 1000*10, result, $banner, timeout);
+        }else{
+           jasper.polling_report(result, $banner, timeout);
+        }
+     }
+	delete frappe.socket.open_tasks[data.task_id];
+}
+
+queued_func_callback = function(data){
+	console.log("queued data ", data);
+	frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
+}
 
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
     $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
     timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
+    pending_banner.push({banner:$banner, timeout:timeout});
 
     frappe.call({
 	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
+	       queued: queued_func_callback,
 	       args:{
                data: data,
 	           docdata: doc
-	       },
+	       }/*,
 	       callback: function(response_data){
                if (response_data && response_data.message){
                    var msg = response_data.message;
-                   if (msg[0].status === "ready"){
-                       jasper.pending_reports.push(msg);
-                       setTimeout(jasper.jasper_report_ready, 1000*10, msg, $banner, timeout);
-                   }else{
-                       jasper.polling_report(msg, $banner, timeout);
-                   }
+                   var task_id = response_data.task_id;
                }
-		   }
+		    }*/
      });
      
      return df;
 };
+
+jasper.get_task_status = function(task_id){
+
+	frappe.call({
+	       "method": "frappe.async.get_task_status",
+	       args:{
+               task_id: task_id,
+	       },
+	       callback: function(response_data){
+               //if (response_data && response_data.message){
+               console.log(response_data);
+               //}
+            }
+	});
+}
 
 jasper.polling_report = function(data, $banner, timeout){
     var reqids = [];
@@ -68,6 +114,8 @@ jasper.polling_report = function(data, $banner, timeout){
                            jasper.close_banner($banner);
                            if (what === "ok"){
                                var ptime = parseInt(frappe.boot.jasper_reports_list && frappe.boot.jasper_reports_list.jasper_polling_time);
+                               var $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
+                               var timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
 							   jasper.polling_report(data, $banner, timeout);
                            }
                        });
