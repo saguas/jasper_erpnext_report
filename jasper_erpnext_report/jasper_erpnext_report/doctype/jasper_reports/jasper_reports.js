@@ -69,7 +69,7 @@ cur_frm.cscript.refresh = function(doc){
         cs.update_upload(doc);
 	}
 
-	var locals = ["Do not Ask","Ask"];
+	var locals = ["Do Not Ask","Ask"];
 	locals.push.apply(locals, jasper.make_country_list());
 	if (doc.jasper_report_origin === "LocalServer"){
 		cur_frm.set_df_property("jasper_locale", "options", locals);
