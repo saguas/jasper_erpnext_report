@@ -33,9 +33,6 @@ class JasperLocal(Jb.JasperBase):
 		try:
 			self.frappe_task = FrappeTask(frappe.local.task_id, None)
 			cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
-			#cresp["origin"] = "local"
-			#cresp["pformat"] = pformat
-			#self.frappe_task.setResult([cresp])
 			return [cresp]
 		except Exception as e:
 			frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))

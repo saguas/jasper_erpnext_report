@@ -54,13 +54,13 @@ jasper.run_jasper_report = function(method, data, doc){
 	       args:{
                data: data,
 	           docdata: doc
-	       },
+	       }/*,
 	       callback: function(response_data){
                if (response_data && response_data.message){
                    var msg = response_data.message;
                    var task_id = response_data.task_id;
                }
-		    }
+		    }*/
      });
      
      return df;

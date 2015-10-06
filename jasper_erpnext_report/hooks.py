@@ -6,7 +6,7 @@ app_icon = "icon-file-text"
 app_color = "black"
 app_email = "luisfmfernandes@gmail.com"
 app_url = "http://localhost"
-app_version = "0.0.1"
+app_version = "0.1.0"
 
 
 
@@ -17,7 +17,6 @@ after_install = "jasper_erpnext_report.utils.install.after_install"
 boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 
 app_include_css = ["/assets/jasper_erpnext_report/css/style.min.css", "/assets/css/jasper_erpnext_report.css"]
-#app_include_css = ["/assets/jasper_erpnext_report/css/style.min.css", "/assets/jasper_erpnext_report/css/callouts.css", "/assets/jasper_erpnext_report/css/iconFont.css"]
 
 #app_include_js = ["/assets/js/jasper_erpnext_report.js"]
 app_include_js = ["/assets/jasper_erpnext_report/js/jstree.min.js",
