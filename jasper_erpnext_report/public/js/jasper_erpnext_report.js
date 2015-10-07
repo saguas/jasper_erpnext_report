@@ -375,7 +375,7 @@ jasper.getOrphanReport = function(data, ev){
 			params.locale = jasper.get_alpha3(params.locale);
 		}else {
 			var doc = data.list[data.jr_name];
-			if(doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
+			if(doc && doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
 				params.locale = jasper.get_alpha3(doc.locale);
 			}
 		}
