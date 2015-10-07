@@ -319,10 +319,6 @@ jasper.getOrphanReport = function(data, ev){
     var cur_doctype = data.doctype;
 
 	var docids = data.docids;
-	//if (len > 1 && route[0] === "List"){
-	//	var doctype = route[1];
-	//	var page = [route[0], doctype].join("/");
-	//	docids = jasper.getCheckedNames(page);
 	if (!docids){
 		docids = jasper.getIdsFromList();
 		if(docids){
@@ -333,18 +329,12 @@ jasper.getOrphanReport = function(data, ev){
 				return;
 			};
 			cur_doctype = route[1];
-		}else{ //if(len > 2 && route[0] === "Form"){
+		}else{
 			docids = jasper.getIdsFromForm();
-			//if (cur_frm){
 			if (docids){
 				docids = [docids];
-			//	docids = [cur_frm.doc.name];
 	            docname = route[0];
 	            cur_doctype = route[1];
-			//}else{
-			//	msgprint(__("To print this document you must be in a form."), __("Jasper Report"));
-			//	return;
-			//}
 			}else if((len > 1 && (route[0] === "query-report" || route[0] === "Report")) || (len === 1 && route[0] !== "")){
 				fortype = "query-report";
 				columns = jasper.query_report_columns();
