@@ -365,15 +365,17 @@ jasper.getOrphanReport = function(data, ev){
 
         if (!data.list){
 			data.list = frappe.boot.jasper_reports_list;
+			if (!data.list[data.jr_name]){
+				data.list = jasper.pages[data.page];
+			}
 		}
         var jr_format = data.jr_format;
 		var params = obj.values || {};
 		if (params.locale !== undefined && params.locale !== null){
 			params.locale = jasper.get_alpha3(params.locale);
 		}else {
-			var jr_name = data.jr_name;
-			var doc = data.list[jr_name];
-			if(doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
+			var doc = data.list[data.jr_name];
+			if(doc && doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
 				params.locale = jasper.get_alpha3(doc.locale);
 			}
 		}
