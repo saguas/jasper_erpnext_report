@@ -34,6 +34,7 @@ class JasperCustomDataSourceDefault(object):
 		docname = self.docname
 
 		na = field.split(":")
+		print "split custom datasource %s" % na
 		l = len(na)
 		if l > 2:
 			doctype = na[0]

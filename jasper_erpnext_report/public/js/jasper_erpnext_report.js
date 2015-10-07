@@ -362,6 +362,10 @@ jasper.getOrphanReport = function(data, ev){
     jasper.check_for_ask_param(data.jr_name, data.page, function(obj){
         if (!obj || obj && obj.abort === true)
             return;
+
+        if (!data.list){
+			data.list = frappe.boot.jasper_reports_list;
+		}
         var jr_format = data.jr_format;
 		var params = obj.values || {};
 		if (params.locale !== undefined && params.locale !== null){
