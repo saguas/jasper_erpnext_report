@@ -170,13 +170,44 @@ jasper.getReport = function(msg){
     
 };
 
+
+jasper.get_jasper_report = function(request_data, callback){
+	var data = request_data;
+
+	if (data && data.doctype){
+		data.page = data.doctype_type +  "/" + data.doctype;
+		var list_reports = jasper.getListOnly(data.page, data.doctype);
+		list_reports.done(function(){
+			jasper.getOrphanReport(data);
+			if (callback)
+				callback();
+		});
+
+	}else if(data){
+		if (!data.docids)
+			data.docids = [];
+		jasper.getOrphanReport(data);
+		if (callback)
+			callback();
+	}else{
+		if (callback)
+			callback("error! you need to provide argument with data.");
+	}
+
+	//{jr_name: "Cherry Local", jr_format: "pdf", page: "testName", doctype_type:"Form", params: {idade: "45"}, doctype:"User", docids:["luisfmfernandes@gmail.com", "Administrator"]}
+}
+
 jasper.getListOnly = function(page, doctype, docnames){
 
 	var dfd = jQuery.Deferred();
 
 	if (!docnames)
 		docnames = [];
-	
+
+	if (jasper.pages[page]){
+		return {done: function(f){f()}}
+	}
+
 	method = "jasper_erpnext_report.core.JasperWhitelist.get_reports_list";
 	data = {doctype: doctype, docnames: docnames, report: null};
 	jasper.jasper_make_request(method, data,function(response_data){
@@ -350,9 +381,10 @@ jasper.getOrphanReport = function(data, ev){
 	}
     var params;
     jasper.check_for_ask_param(data.jr_name, data.page, function(obj){
-        if (!obj || obj && obj.abort === true)
+        if (!obj || obj.abort === true)
             return;
 
+		console.log("param values ", obj);
         if (!data.list){
 			data.list = frappe.boot.jasper_reports_list;
 			if (!data.list[data.jr_name]){
@@ -360,10 +392,11 @@ jasper.getOrphanReport = function(data, ev){
 			}
 		}
         var jr_format = data.jr_format;
-		var params = obj.values || {};
+		var params = obj.values || data.params || {};
 		if (params.locale !== undefined && params.locale !== null){
 			params.locale = jasper.get_alpha3(params.locale);
 		}else {
+			console.log("in get_report ", data);
 			var doc = data.list[data.jr_name];
 			if(doc && doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
 				params.locale = jasper.get_alpha3(doc.locale);
