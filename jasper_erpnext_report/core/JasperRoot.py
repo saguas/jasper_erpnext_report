@@ -180,7 +180,6 @@ class JasperRoot(Jb.JasperBase):
 		data = {}
 		dirt = utils.jaspersession_get_value("report_list_dirt_doc")
 		if not dirt:
-
 			data = utils.get_jasper_session_data_from_cache("report_list_doctype")
 
 		if not data or not self.check_docname(data, doctype, report):

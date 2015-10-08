@@ -22,7 +22,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 	#get all report names
 	rnames = frappe.get_all("Jasper Reports", debug=False, filters=filters_report, fields=["name","jasper_doctype", "report", "jasper_print_all", "jasper_print_docx", "jasper_report_origin",
 													"jasper_print_xls", "jasper_print_ods", "jasper_print_odt", "jasper_print_rtf", "jasper_print_pdf","jasper_dont_show_report",
-													"jasper_param_message", "jasper_report_type", "jasper_email", "jasper_locale"])
+													"jasper_param_message", "jasper_report_type", "jasper_email", "jasper_locale", "jasper_dont_ask_for_params"])
 	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",
 													"`tabJasper Parameter`.jasper_param_name as name", "`tabJasper Parameter`.jasper_param_action",
 													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description",
@@ -36,7 +36,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 			if jasper_report_origin in report_from.get(origin) and not r.jasper_dont_show_report:
 				ret[r.name] = {"Doctype name": r.jasper_doctype, "report": r.report, "formats": jasper_print_formats(r),"params":[], "perms":[], "message":r.jasper_param_message,
 							   "jasper_report_type":r.jasper_report_type, "jasper_report_origin": r.jasper_report_origin, "email": r.jasper_email, "locale":r.jasper_locale\
-								if jasper_report_origin=="localserver" else "not Ask"}
+								if jasper_report_origin=="localserver" else "not Ask", "show_params_dialog": not r.jasper_dont_ask_for_params}
 				size += 1
 				for report in with_param:
 						name = report.parent
