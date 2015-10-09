@@ -211,7 +211,7 @@ class JasperBase(object):
 
 		return value
 
-	def do_params(self, data, params, pformat):
+	def do_params(self, data, params, pformat, doc):
 		pram = []
 		copies = {}
 		pram_server = []
@@ -246,6 +246,27 @@ class JasperBase(object):
 				value = utils.get_default_param_value(param, error=False)
 				pram_server.append({"name":p, 'value': value, "attrs": param})
 				continue
+			elif is_copy == "is doctype id":
+				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
+				if not values:
+					field_name = param.jasper_field_doctype.strip()
+					f = field_name.split(":")
+					if len(f) > 2:
+						doctype = f[0]
+						docname = f[1]
+						field = f[2]
+					elif len(f) > 1:
+						doctype = f[0]
+						field = f[1]
+						docname = data.get('ids', [])[0]
+					else:
+						doctype = doc.jasper_doctype
+						docname = data.get('ids', [])[0]
+						field = f[0]
+					frappe_doc = frappe.get_doc(doctype, docname)
+					values = getattr(frappe_doc, field)
+
+				value = self.get_param_values(values)
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
 				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
