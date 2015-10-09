@@ -436,7 +436,10 @@ jasper.getOrphanReport = function(data, ev){
 			}
 		}
         var jr_format = data.jr_format;
-		var params = obj.values || data.params || {};
+		var params = obj.values || {};
+		for (key in data.params){
+			params[key] = data.params[key];
+		}
 		if (params.locale !== undefined && params.locale !== null){
 			params.locale = jasper.get_alpha3(params.locale);
 		}else {

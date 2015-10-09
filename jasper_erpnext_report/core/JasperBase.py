@@ -248,8 +248,8 @@ class JasperBase(object):
 				continue
 			elif is_copy == "is doctype id":
 				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
-				if not values:
-					field_name = param.jasper_field_doctype.strip()
+				if not values or len(values.split(":")) > 1:
+					field_name = values or param.jasper_field_doctype.strip()
 					f = field_name.split(":")
 					if len(f) > 2:
 						doctype = f[0]
