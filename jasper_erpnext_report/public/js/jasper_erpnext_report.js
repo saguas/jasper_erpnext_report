@@ -174,11 +174,12 @@ jasper.getReport = function(msg){
 jasper.get_jasper_report = function(request_data, callback){
 	var data = request_data;
 
+	var route = frappe.get_route();
+
 	if (data && !data.doctype){
-		if (cur_frm){
+		if (route[0] === "Form"){
 			data.doctype = cur_frm.doctype;
 		}else{
-			var route = frappe.get_route();
 			if (route[0] === "List"){
 				data.doctype = route[1];
 				console.log("Is List ", data.doctype);
@@ -187,12 +188,13 @@ jasper.get_jasper_report = function(request_data, callback){
 	}
 
 	if(data && (!data.docids || data.docids.length === 0)){
-		if (cur_frm){
+		if (route[0] === "Form"){
 			data.docids = [cur_frm.docname];
 		}else{
 			var route = frappe.get_route();
 			if (route[0] === "List"){
 				data.docids = jasper.getIdsFromList();
+				console.log("docids ", data.docids);
 				if (data.docids.length === 0){
 					frappe.msgprint("You must check at least one element to proceed!", "Reports");
 					return;
@@ -202,7 +204,7 @@ jasper.get_jasper_report = function(request_data, callback){
 	}
 
 	if (data && !data.doctype_type){
-		if (cur_frm){
+		if (route[0] === "Form"){
 			data.doctype_type = "Form";
 		}else{
 			var route = frappe.get_route();
