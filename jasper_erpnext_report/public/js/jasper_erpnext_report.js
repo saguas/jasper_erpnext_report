@@ -174,7 +174,49 @@ jasper.getReport = function(msg){
 jasper.get_jasper_report = function(request_data, callback){
 	var data = request_data;
 
+	var route = frappe.get_route();
+
+	if (data && !data.doctype){
+		if (route[0] === "Form"){
+			data.doctype = cur_frm.doctype;
+		}else{
+			if (route[0] === "List"){
+				data.doctype = route[1];
+				console.log("Is List ", data.doctype);
+			}
+		}
+	}
+
+	if(data && (!data.docids || data.docids.length === 0)){
+		if (route[0] === "Form"){
+			data.docids = [cur_frm.docname];
+		}else{
+			var route = frappe.get_route();
+			if (route[0] === "List"){
+				data.docids = jasper.getIdsFromList();
+				console.log("docids ", data.docids);
+				if (data.docids.length === 0){
+					frappe.msgprint("You must check at least one element to proceed!", "Reports");
+					return;
+				}
+			}
+		}
+	}
+
+	if (data && !data.doctype_type){
+		if (route[0] === "Form"){
+			data.doctype_type = "Form";
+		}else{
+			var route = frappe.get_route();
+			if (route[0] === "List"){
+				data.doctype_type = "List";
+			}
+		}
+	}
+
 	if (data && data.doctype){
+		if (!data.docids)
+			data.docids = [];
 		data.page = data.doctype_type +  "/" + data.doctype;
 		var list_reports = jasper.getListOnly(data.page, data.doctype);
 		list_reports.done(function(){
@@ -194,7 +236,10 @@ jasper.get_jasper_report = function(request_data, callback){
 			callback("error! you need to provide argument with data.");
 	}
 
-	//{jr_name: "Cherry Local", jr_format: "pdf", page: "testName", doctype_type:"Form", params: {idade: "45"}, doctype:"User", docids:["luisfmfernandes@gmail.com", "Administrator"]}
+	//Example: inside doctype List or Form you can use:
+	//jasper.get_jasper_report({jr_name: "Cherry Local", jr_format: "pdf"})
+	//Example: outside doctype User List or Form use this:
+	//jasper.get_jasper_report({jr_name: "Cherry Local", jr_format: "pdf", doctype_type:"Form", params: {idade: "45"}, doctype:"User", docids:["luisfmfernandes@gmail.com", "Administrator"]})
 }
 
 jasper.getListOnly = function(page, doctype, docnames){
@@ -384,7 +429,6 @@ jasper.getOrphanReport = function(data, ev){
         if (!obj || obj.abort === true)
             return;
 
-		console.log("param values ", obj);
         if (!data.list){
 			data.list = frappe.boot.jasper_reports_list;
 			if (!data.list[data.jr_name]){
@@ -392,12 +436,14 @@ jasper.getOrphanReport = function(data, ev){
 			}
 		}
         var jr_format = data.jr_format;
-		var params = obj.values || data.params || {};
+		var params = obj.values || {};
+		for (key in data.params){
+			params[key] = data.params[key];
+		}
 		if (params.locale !== undefined && params.locale !== null){
 			params.locale = jasper.get_alpha3(params.locale);
 		}else {
-			console.log("in get_report ", data);
-			var doc = data.list[data.jr_name];
+			var doc = data.list && data.list[data.jr_name];
 			if(doc && doc.jasper_report_origin === "LocalServer" && doc.locale !== "not Ask" && doc.locale !== "Do Not Use"){
 				params.locale = jasper.get_alpha3(doc.locale);
 			}

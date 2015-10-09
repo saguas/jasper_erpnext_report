@@ -26,7 +26,7 @@ def jasper_report_names_from_db(origin="both", filters_report=None, filters_para
 	with_param = frappe.get_all("Jasper Parameter", filters=filters_param, fields=["`tabJasper Parameter`.parent as parent", "`tabJasper Parameter`.name as p_name",
 													"`tabJasper Parameter`.jasper_param_name as name", "`tabJasper Parameter`.jasper_param_action",
 													"`tabJasper Parameter`.jasper_param_type", "`tabJasper Parameter`.jasper_param_value", "`tabJasper Parameter`.jasper_param_description",
-													"`tabJasper Parameter`.is_copy"])
+													"`tabJasper Parameter`.is_copy", "`tabJasper Parameter`.jasper_field_doctype"])
 	with_perm_role = frappe.get_all("Jasper PermRole", filters=filters_permrole, fields=["`tabJasper PermRole`.parent as parent", "`tabJasper PermRole`.name as p_name" ,"`tabJasper PermRole`.jasper_role", "`tabJasper PermRole`.jasper_can_read"])
 	if rnames:
 		ret = {}

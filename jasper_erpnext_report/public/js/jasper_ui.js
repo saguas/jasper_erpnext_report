@@ -68,6 +68,7 @@ jasper.make_dialog = function(doc, title, callback){
     var fields = [];
 	var params = doc.params;
 	var docids = null;
+	var doctype_id_fields = {};
 	//Only one doctype_id field. Means, this parameters has the name (id) of open document (Form) or the ids of the selected documents in List view
 	var is_doctype_id = false;
 
@@ -75,15 +76,21 @@ jasper.make_dialog = function(doc, title, callback){
 		var param = doc.params[i];
 		if (param.is_copy === "Is doctype id"){
 			is_doctype_id = true;
-			docids = jasper.getIdsFromList();
-			if(!docids)
-				docids = cur_frm && cur_frm.doc.name;
+			if (param.jasper_field_doctype.trim() === ""){
+				docids = jasper.getIdsFromList();
+				if(!docids)
+					docids = cur_frm && cur_frm.doc.name;
+			}else{
+				if (cur_frm){
+					docids = cur_frm.doc[param.jasper_field_doctype];
+				}
+			}
 		};
 		fields.push({label:param.name, fieldname:param.name, fieldtype:param.jasper_param_type==="String"? "Data": param.jasper_param_type,
-		 	description:param.jasper_param_description || "", default:param.jasper_param_value || docids});
+		 	description:param.jasper_param_description || "", default: docids || param.jasper_param_value});
 	};
 
-	if(doc.jasper_report_origin === "LocalServer"){
+	if(doc.jasper_report_origin === "LocalServer" && doc.locale !== "Do Not Use" && doc.locale !== "not Ask"){
 		var lang_default = frappe.defaults.get_user_default("lang");
 		var country = jasper.get_country_from_alpha3(lang_default);
 		fields.push({label:__("Locale"), fieldname:"locale", fieldtype: "Select",
@@ -100,6 +107,12 @@ jasper.make_dialog = function(doc, title, callback){
             callback({abort: true});
         }
 	};
+
+	/*if (fields.length == 0){
+		if (callback)
+			callback({values: doctype_id_fields, abort: false, is_doctype_id: is_doctype_id});
+		return;
+	}*/
 
 	var d = jasper.ask_dialog(title, doc.message, fields, ifyes, ifno);
 	return d;

@@ -1,25 +1,48 @@
 frappe.provide("jasper");
 
+
+cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc, t,p){
+	var cur_grid_doc = cur_frm.cur_grid.doc;
+	if (cur_grid_doc.is_copy === "Is doctype id"){
+		cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 0;
+	}else{
+		cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 1;
+	}
+
+	refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
+}
+
 frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 	var row = locals[doctype][name];
+	console.log("Jasper Parameter name ", name, row, doctype, frm);
 	switch(row.is_copy){
 		case "Is for where clause":
 			row.param_expression = "In";
 			refresh_field("param_expression", name,"jasper_parameters");
 			row.jasper_param_action = "Automatic";
 			refresh_field("jasper_param_action",name,"jasper_parameters");
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
 			break;
 		case "Is for page number":
 		case "Is for copies":
 		case "Is for server hook":
 			row.param_expression = "";
 			row.jasper_param_action = "Automatic";
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
 			refresh_field("param_expression", name,"jasper_parameters");
 			refresh_field("jasper_param_action",name,"jasper_parameters");
+			break;
+		case "Is for field doctype":
+		case "Is doctype id":
+			//unhide_field(["jasper_field_doctype"]);
+			//cur_frm.set_df_property("jasper_field_doctype", "hidden", false);
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",1)
+			//refresh_field("jasper_field_doctype",name,"jasper_parameters");
 			break;
 		default:
 			row.param_expression = "";
 			row.jasper_param_action = "Ask";
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
 			refresh_field("jasper_param_action", name,"jasper_parameters");
 			refresh_field("param_expression", name,"jasper_parameters");
 	}
@@ -40,7 +63,7 @@ frappe.ui.form.on("Jasper Parameter", "jasper_param_action", function(frm, docty
 	var row = locals[doctype][name];
 	if (row.is_copy === "Is for server hook" || row.is_copy === "Is for page number" || row.is_copy === "Is for copies"){
 		row.jasper_param_action = "Automatic";
-	}else if (row.is_copy === "Other" || row.is_copy === "Is doctype id"){
+	}else if (row.is_copy === "Other"){
 		row.jasper_param_action = "Ask";
 	}else if (row.is_copy === "Is for where clause" && frm.doc.jasper_report_type !== "General"){
 		row.jasper_param_action = "Automatic";

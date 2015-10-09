@@ -41,7 +41,7 @@ class JasperLocal(Jb.JasperBase):
 
 		data = data or {}
 		hashmap = jr.HashMap()
-		pram, pram_server, copies = self.do_params(data, params, pformat)
+		pram, pram_server, copies = self.do_params(data, params, pformat, doc)
 		pram_copy_index = copies.get("pram_copy_index", -1)
 		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
 
