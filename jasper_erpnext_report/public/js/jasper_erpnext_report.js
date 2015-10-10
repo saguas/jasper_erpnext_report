@@ -11,7 +11,6 @@ jasper_report_formats = {pdf:"icon-file-pdf", "docx": "icon-file-word", doc: "ic
 	 					rtf:"fontello-icon-doc-text", email: "icon-envelope-alt", submenu:"icon-grid"};
 
 async_func_callback = function(data){
-	console.log("subscribe data ", data);
 	var banner_data = pending_banner.pop()
 	var $banner = banner_data.banner;
 	var timeout = banner_data.timeout;
@@ -38,7 +37,6 @@ async_func_callback = function(data){
 }
 
 queued_func_callback = function(data){
-	console.log("queued data ", data);
 	frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
 }
 
@@ -54,18 +52,13 @@ jasper.run_jasper_report = function(method, data, doc){
 	       args:{
                data: data,
 	           docdata: doc
-	       }/*,
-	       callback: function(response_data){
-               if (response_data && response_data.message){
-                   var msg = response_data.message;
-                   var task_id = response_data.task_id;
-               }
-		    }*/
+	       }
      });
      
      return df;
 };
 
+/*
 jasper.get_task_status = function(task_id){
 
 	frappe.call({
@@ -79,7 +72,7 @@ jasper.get_task_status = function(task_id){
                //}
             }
 	});
-}
+}*/
 
 jasper.polling_report = function(data, $banner, timeout){
     var reqids = [];
@@ -176,13 +169,16 @@ jasper.get_jasper_report = function(request_data, callback){
 
 	var route = frappe.get_route();
 
+	if (data && !data.jr_format){
+		data.jr_format = "pdf";
+	}
+
 	if (data && !data.doctype){
 		if (route[0] === "Form"){
 			data.doctype = cur_frm.doctype;
 		}else{
 			if (route[0] === "List"){
 				data.doctype = route[1];
-				console.log("Is List ", data.doctype);
 			}
 		}
 	}
@@ -194,7 +190,6 @@ jasper.get_jasper_report = function(request_data, callback){
 			var route = frappe.get_route();
 			if (route[0] === "List"){
 				data.docids = jasper.getIdsFromList();
-				console.log("docids ", data.docids);
 				if (data.docids.length === 0){
 					frappe.msgprint("You must check at least one element to proceed!", "Reports");
 					return;
@@ -233,7 +228,7 @@ jasper.get_jasper_report = function(request_data, callback){
 			callback();
 	}else{
 		if (callback)
-			callback("error! you need to provide argument with data.");
+			callback("error! you need to provide argument with data value.");
 	}
 
 	//Example: inside doctype List or Form you can use:
