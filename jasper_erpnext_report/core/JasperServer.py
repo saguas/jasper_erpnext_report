@@ -212,7 +212,7 @@ class JasperServer(Jb.JasperBase):
 	#run reports with http POST and run async and sync
 	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 		data = data or {}
-		pram, pram_server, copies = self.do_params(data, params, pformat)
+		pram, pram_server, copies = self.do_params(data, params, pformat, doc)
 		pram_copy_index = copies.get("pram_copy_index", -1)
 		pram_copy_page_index = copies.get("pram_copy_page_index", -1)
 		resp = []
