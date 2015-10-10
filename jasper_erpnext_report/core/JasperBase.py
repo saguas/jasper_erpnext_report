@@ -141,10 +141,14 @@ class JasperBase(object):
 
 	def get_param_hook(self, doc, data, pram_server):
 		"""
+		Set a 'on_jasper_params' hook for each report that you want to set parameters of type 'Is for server hook', like this one:
+		on_jasper_params = {
+			"Cherry Local": "jasper_erpnext_report.utils.utils.testHookReport"
+		}
 		HOOK: Must return a list of objects.
 		Some examples are:
 
-		def on_jasper_params(self, data=None, params=None):
+		def on_jasper_params(doc, data=None, params=None):
 			a = []
 			for param in params:
 				if param.get("name") == "idade":
@@ -161,7 +165,8 @@ class JasperBase(object):
 			return a
 		"""
 		pram = []
-		res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
+		#res = utils.call_hook_for_param(doc, "on_jasper_params", data, pram_server) if pram_server else []
+		res = utils.call_hook_for_param_with_default(doc, "on_jasper_params", data, pram_server) if pram_server else []
 		if res is None:
 			frappe.throw(_("Error in report %s, there is no value for parameter in server hook: on_jasper_params." % (doc.jasper_report_name)))
 		for param in res:

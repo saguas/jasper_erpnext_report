@@ -129,6 +129,22 @@ def call_hook_for_param(doc, method, *args):
 	ret = doc.run_method(method, *args)
 	return ret
 
+#call hooks for params set as "Is for server hook"
+def call_hook_for_param_with_default(doc, hook_name, *args):
+	method = jasper_run_method_once_with_default(hook_name, doc.name, None)
+	if method:
+		ret = method(doc, *args)
+	else:
+		ret = call_hook_for_param(doc, hook_name, *args)
+	return ret
+
+"""
+def testHookReport(doc, args1, args2):
+	a = []
+	a.append({"name": "idade", "value": 35.6})
+	return a
+"""
+
 def jasper_run_method(hook_name, *args, **kargs):
 	for method in JasperHooks(hook_name):
 		method(hook_name, *args, **kargs)
