@@ -14,7 +14,6 @@ cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc){
 
 frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 	var row = locals[doctype][name];
-	console.log("Jasper Parameter name ", name, row, doctype, frm);
 	switch(row.is_copy){
 		case "Is for where clause":
 			row.param_expression = "In";
@@ -98,7 +97,7 @@ cur_frm.cscript.refresh = function(doc){
 		cur_frm.set_df_property("jasper_locale", "options", locals);
 		unhide_field(["jasper_locale","report", "jasper_custom_fields"]);
 		if (doc.__islocal === 1 || doc.jasper_locale.trim() === ""){
-			doc.jasper_locale = "Ask";
+			doc.jasper_locale = "Do Not Use";
 		}
     }else{
 		hide_field(["jasper_locale", "jasper_custom_fields"]);
