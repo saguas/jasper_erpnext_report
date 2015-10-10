@@ -132,9 +132,6 @@ cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
         cur_frm.set_value("jasper_report_path", "/");
         unhide_field(["report", "jasper_custom_fields", "jasper_locale", "jasper_virtualizer"]);
     }else{
-    	//var locals = ["Ask"];
-		//locals.push.apply(locals, jasper.make_country_list());
-		//cur_frm.set_df_property("jasper_locale", "options", locals);
         unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_locale", "report", "jasper_custom_fields"]);
         hide_field(["jasper_report_path"]);
     }
