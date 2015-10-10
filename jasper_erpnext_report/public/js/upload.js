@@ -1,5 +1,6 @@
 frappe.provide("jasper");
 
+
 jasper.dialog_upload = frappe.ui.form.ControlData.extend({
 	init: function(opts) {
 		this.docname = opts.docname;
@@ -12,7 +13,7 @@ jasper.dialog_upload = frappe.ui.form.ControlData.extend({
 		var me = this;
 		this.$value = $('<div style="margin-top: 5px;">\
 			<div class="text-ellipsis" style="display: inline-block; width: 90%;">\
-				<i class="icon-paper-clip"></i> \
+				<i class="icon-paper-clip"></i>\
 				<a class="attached-file" target="_blank"></a>\
 			</div>\
 			<a class="close">&times;</a></div>')
@@ -138,7 +139,7 @@ jasper.dialog_upload = frappe.ui.form.ControlData.extend({
 });
 
 
-jasper.dialog_upload_tree =	frappe.ui.form.Control.extend({
+jasper.dialog_upload_tree = frappe.ui.form.Control.extend({
 
 	init: function(opts) {
 		this._super(opts);
