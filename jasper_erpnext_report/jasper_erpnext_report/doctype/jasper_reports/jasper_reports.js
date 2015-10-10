@@ -21,14 +21,14 @@ frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 			refresh_field("param_expression", name,"jasper_parameters");
 			row.jasper_param_action = "Automatic";
 			refresh_field("jasper_param_action",name,"jasper_parameters");
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			break;
 		case "Is for page number":
 		case "Is for copies":
 		case "Is for server hook":
 			row.param_expression = "";
 			row.jasper_param_action = "Automatic";
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			refresh_field("param_expression", name,"jasper_parameters");
 			refresh_field("jasper_param_action",name,"jasper_parameters");
 			break;
@@ -36,17 +36,17 @@ frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 		case "Is doctype id":
 			//unhide_field(["jasper_field_doctype"]);
 			//cur_frm.set_df_property("jasper_field_doctype", "hidden", false);
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",1)
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",1);
 			//refresh_field("jasper_field_doctype",name,"jasper_parameters");
 			break;
 		default:
 			row.param_expression = "";
 			row.jasper_param_action = "Ask";
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0)
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			refresh_field("jasper_param_action", name,"jasper_parameters");
 			refresh_field("param_expression", name,"jasper_parameters");
 	}
-})
+});
 
 frappe.ui.form.on("Jasper Parameter", "param_expression", function(frm, doctype, name){
 	var row = locals[doctype][name];
@@ -57,7 +57,7 @@ frappe.ui.form.on("Jasper Parameter", "param_expression", function(frm, doctype,
 		row.param_expression = "In";
 		refresh_field("param_expression", name,"jasper_parameters");
 	}
-})
+});
 
 frappe.ui.form.on("Jasper Parameter", "jasper_param_action", function(frm, doctype, name){
 	var row = locals[doctype][name];
@@ -70,14 +70,14 @@ frappe.ui.form.on("Jasper Parameter", "jasper_param_action", function(frm, docty
 	}
 
 	refresh_field("jasper_param_action", name,"jasper_parameters");
-})
+});
 
 cur_frm.cscript.refresh = function(doc){
     var cs = cur_frm.cscript;
     
     cs.show_fields(doc);
     
-    var query = doc.query != undefined? doc.query:""
+    var query = doc.query != undefined? doc.query:"";
     var code = '<div class="panel panel-default">'
                  + '<div class="panel-heading">'
                     + '<h3 class="panel-title">SQL</h3>'
@@ -85,9 +85,9 @@ cur_frm.cscript.refresh = function(doc){
                  + '<div class="panel-body">'
                         + '<pre class="bs-callout-bg bs-callout-warning-bg">' + query + '</pre>'
                  + '</div>'
-             + '</div>'
+             + '</div>';
 
-    cur_frm.fields_dict.query_html.$wrapper.html(code)
+    cur_frm.fields_dict.query_html.$wrapper.html(code);
     if(doc.__islocal !== 1){
         cs.update_upload(doc);
 	}
@@ -106,7 +106,7 @@ cur_frm.cscript.refresh = function(doc){
 
 	cur_frm.cscript.setServerType(doc);
 	cur_frm.cscript.report_fields(doc);
-}
+};
 
 cur_frm.cscript["jasper_locale"] = function(doc){
 	var page;
@@ -117,7 +117,7 @@ cur_frm.cscript["jasper_locale"] = function(doc){
 	if (robj){
 		robj.locale = doc.jasper_locale;
 	}
-}
+};
 
 cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
     var origin = doc.jasper_report_origin;
@@ -135,7 +135,7 @@ cur_frm.cscript["jasper_report_origin"] = function(doc, dt, dn){
         unhide_field(["jasper_upload_jrxml_file", "jasper_upload_btn", "jasper_virtualizer", "jasper_locale", "report", "jasper_custom_fields"]);
         hide_field(["jasper_report_path"]);
     }
-}
+};
 
 cur_frm.cscript.show_fields = function(doc){
     var origin = doc.jasper_report_origin;
@@ -152,7 +152,7 @@ cur_frm.cscript.show_fields = function(doc){
 
 cur_frm.cscript.report = function(doc){
 	cur_frm.cscript.report_fields(doc);
-}
+};
 
 cur_frm.cscript.setServerType = function(doc){
 	var server_type = jasper.server_type() || "";
@@ -165,7 +165,7 @@ cur_frm.cscript.setServerType = function(doc){
 	}else{
 		cur_frm.set_df_property("jasper_report_origin", "options", [""]);
 	}
-}
+};
 
 cur_frm.cscript.report_fields = function(doc){
 	if (doc.report && doc.report.trim() !== ""){
@@ -179,7 +179,7 @@ cur_frm.cscript.report_fields = function(doc){
 	}else{
 		cur_frm.set_df_property("jasper_report_type", "options", ["Form", "List", "General", "Server Hooks"]);
 	}
-}
+};
 
 $(document).on("save", function(ev, doc){
 	var cs = cur_frm.cscript;
@@ -199,7 +199,7 @@ cur_frm.cscript.onload = function(doc){
 		$('#jasper_upload_tree').jstree("destroy").empty();
 		$('#jasper_upload_tree').remove();
 	}
-}
+};
 
 cur_frm.cscript.jasper_upload_btn = function(doc){
 	var cs = cur_frm.cscript;
@@ -209,7 +209,7 @@ cur_frm.cscript.jasper_upload_btn = function(doc){
 		cs.upload = new jasper.dialog_upload_tree(opts);
 	}
     cs.upload.show();
-}
+};
 
 cur_frm.cscript.update_upload = function(doc){
 	var cs = cur_frm.cscript;
