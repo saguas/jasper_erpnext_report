@@ -309,16 +309,15 @@ jasper.dialog_upload_tree = frappe.ui.form.Control.extend({
 jasper.upload = {
 	make: function(opts) {
 		if(!opts.args) opts.args = {};
-		var $upload = $('<div class="file-upload">\
-			<p class="small"><a class="action-attach disabled" href="#"><i class="icon-upload"></i> '
-				+ __('Upload a file') + '</a></p>\
-			<div class="action-attach-input">\
-				<input class="alert alert-info" style="padding: 7px; margin: 7px 0px;" \
-					type="file" name="filedata" />\
-			</div>\
-			<button class="btn btn-info btn-upload"><i class="icon-upload"></i> ' +__('Upload')
-				+'</button></div>').appendTo(opts.parent);
-
+		var $upload = $('<div class="file-upload">' +
+			'<p class="small"><a class="action-attach disabled" href="#"><i class="icon-upload"></i> ' +
+				__('Upload a file') + '</a></p>' +
+			'<div class="action-attach-input">' +
+				'<input class="alert alert-info" style="padding: 7px; margin: 7px 0px;" type="file" name="filedata" />' +
+			'</div>' +
+			'<button class="btn btn-info btn-upload"><i class="icon-upload"></i> ' +__('Upload') + '</button>' +
+			'</div>')
+			.appendTo(opts.parent);
 		$upload.find(".action-attach").click(function() {
 			$upload.find(".action-link").removeClass("disabled");
 			$upload.find(".action-attach").addClass("disabled");
