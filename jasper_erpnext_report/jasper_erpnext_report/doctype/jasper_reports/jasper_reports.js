@@ -1,8 +1,8 @@
 frappe.provide("jasper");
 
 
-cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc, t,p){
-	var cur_grid_doc = cur_frm.cur_grid.doc;
+cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc){
+	var cur_grid_doc = cur_frm.cur_grid && cur_frm.cur_grid.doc;
 	if (cur_grid_doc.is_copy === "Is doctype id"){
 		cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 0;
 	}else{
@@ -10,7 +10,7 @@ cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc, t,p){
 	}
 
 	refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
-}
+};
 
 frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 	var row = locals[doctype][name];
