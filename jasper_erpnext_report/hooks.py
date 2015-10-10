@@ -41,6 +41,12 @@ has_permission = {
 	"Jasper Reports": "jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.has_jasper_permission",
 }
 
+"""
+on_jasper_params = {
+	"Cherry Local": "jasper_erpnext_report.utils.utils.testHookReport"
+}
+"""
+
 # Document Events
 # ---------------
 # Hook on document methods and events
