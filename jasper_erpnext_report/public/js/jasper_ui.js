@@ -76,12 +76,13 @@ jasper.make_dialog = function(doc, title, callback){
 		var param = doc.params[i];
 		if (param.is_copy === "Is doctype id"){
 			is_doctype_id = true;
-			if (param.jasper_field_doctype.trim() === ""){
+			if (param.jasper_field_doctype.trim() === "" && param.jasper_param_value.trim() === ""){
 				docids = jasper.getIdsFromList();
 				if(!docids)
 					docids = cur_frm && cur_frm.doc.name;
 			}else{
-				if (cur_frm){
+				var route = frappe.get_route();
+				if (route[0] === "Form" && param.jasper_field_doctype.trim() !== ""){
 					docids = cur_frm.doc[param.jasper_field_doctype];
 				}
 			}
@@ -107,12 +108,6 @@ jasper.make_dialog = function(doc, title, callback){
             callback({abort: true});
         }
 	};
-
-	/*if (fields.length == 0){
-		if (callback)
-			callback({values: doctype_id_fields, abort: false, is_doctype_id: is_doctype_id});
-		return;
-	}*/
 
 	var d = jasper.ask_dialog(title, doc.message, fields, ifyes, ifno);
 	return d;
