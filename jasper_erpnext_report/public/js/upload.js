@@ -140,7 +140,6 @@ jasper.dialog_upload = frappe.ui.form.ControlData.extend({
 
 
 jasper.dialog_upload_tree = frappe.ui.form.Control.extend({
-
 	init: function(opts) {
 		this._super(opts);
 		this.maked = false;
