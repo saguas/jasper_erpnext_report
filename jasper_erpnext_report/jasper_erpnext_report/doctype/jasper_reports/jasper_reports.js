@@ -4,23 +4,19 @@ frappe.provide("jasper");
 cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc){
 	var cur_grid_doc = cur_frm.cur_grid && cur_frm.cur_grid.doc;
 
-	//cur_frm.cur_grid.fields_dict.param_expression.df.hidden = 1;
 	cur_frm.cur_grid.fields_dict.param_expression.toggle(0);
 	refresh_field("param_expression", cur_frm.cur_grid.doc.name, "jasper_parameters");
 
-	//cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 1;
 	cur_frm.cur_grid.fields_dict.jasper_field_doctype.toggle(0);
 	refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
 
 	if (cur_grid_doc.is_copy === "Is doctype id"){
-		//cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 0;
 		cur_frm.cur_grid.fields_dict.jasper_field_doctype.toggle(1);
 		refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
 		cur_frm.cur_grid.refresh();
 		return;
 	}else if (cur_grid_doc.is_copy === "Is for where clause"){
 		console.log("Is for where clause in global ");
-		//cur_frm.cur_grid.fields_dict.param_expression.df.hidden = 0;
 		cur_frm.cur_grid.fields_dict.param_expression.toggle(1);
 		refresh_field("param_expression", cur_frm.cur_grid.doc.name, "jasper_parameters");
 		cur_frm.cur_grid.refresh();
