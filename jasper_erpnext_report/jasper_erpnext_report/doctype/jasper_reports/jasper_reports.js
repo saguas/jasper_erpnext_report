@@ -16,7 +16,6 @@ cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc){
 		cur_frm.cur_grid.refresh();
 		return;
 	}else if (cur_grid_doc.is_copy === "Is for where clause"){
-		console.log("Is for where clause in global ");
 		cur_frm.cur_grid.fields_dict.param_expression.toggle(1);
 		refresh_field("param_expression", cur_frm.cur_grid.doc.name, "jasper_parameters");
 		cur_frm.cur_grid.refresh();
@@ -30,7 +29,6 @@ frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 	frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("param_expression",0);
 	refresh_field("param_expression", name,"jasper_parameters");
 	frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
-	console.log("Is for where clause in is_copy event ");
 
 	switch(row.is_copy){
 		case "Is for where clause":
