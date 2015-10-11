@@ -3,45 +3,62 @@ frappe.provide("jasper");
 
 cur_frm.cscript["jasper_parameters_on_form_rendered"] = function(doc){
 	var cur_grid_doc = cur_frm.cur_grid && cur_frm.cur_grid.doc;
+
+	//cur_frm.cur_grid.fields_dict.param_expression.df.hidden = 1;
+	cur_frm.cur_grid.fields_dict.param_expression.toggle(0);
+	refresh_field("param_expression", cur_frm.cur_grid.doc.name, "jasper_parameters");
+
+	//cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 1;
+	cur_frm.cur_grid.fields_dict.jasper_field_doctype.toggle(0);
+	refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
+
 	if (cur_grid_doc.is_copy === "Is doctype id"){
-		cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 0;
-	}else{
-		cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 1;
+		//cur_frm.cur_grid.fields_dict.jasper_field_doctype.df.hidden = 0;
+		cur_frm.cur_grid.fields_dict.jasper_field_doctype.toggle(1);
+		refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
+		cur_frm.cur_grid.refresh();
+		return;
+	}else if (cur_grid_doc.is_copy === "Is for where clause"){
+		console.log("Is for where clause in global ");
+		//cur_frm.cur_grid.fields_dict.param_expression.df.hidden = 0;
+		cur_frm.cur_grid.fields_dict.param_expression.toggle(1);
+		refresh_field("param_expression", cur_frm.cur_grid.doc.name, "jasper_parameters");
+		cur_frm.cur_grid.refresh();
+		return;
 	}
 
-	refresh_field("jasper_field_doctype", cur_frm.cur_grid.doc.name, "jasper_parameters");
 };
 
 frappe.ui.form.on("Jasper Parameter", "is_copy", function(frm, doctype, name){
 	var row = locals[doctype][name];
+	frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("param_expression",0);
+	refresh_field("param_expression", name,"jasper_parameters");
+	frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
+	console.log("Is for where clause in is_copy event ");
+
 	switch(row.is_copy){
 		case "Is for where clause":
+			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("param_expression",1);
 			row.param_expression = "In";
 			refresh_field("param_expression", name,"jasper_parameters");
 			row.jasper_param_action = "Automatic";
 			refresh_field("jasper_param_action",name,"jasper_parameters");
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			break;
 		case "Is for page number":
 		case "Is for copies":
 		case "Is for server hook":
 			row.param_expression = "";
 			row.jasper_param_action = "Automatic";
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			refresh_field("param_expression", name,"jasper_parameters");
 			refresh_field("jasper_param_action",name,"jasper_parameters");
 			break;
 		case "Is for field doctype":
 		case "Is doctype id":
-			//unhide_field(["jasper_field_doctype"]);
-			//cur_frm.set_df_property("jasper_field_doctype", "hidden", false);
 			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",1);
-			//refresh_field("jasper_field_doctype",name,"jasper_parameters");
 			break;
 		default:
 			row.param_expression = "";
 			row.jasper_param_action = "Ask";
-			frm.fields_dict["jasper_parameters"].grid.grid_rows_by_docname[name].toggle_display("jasper_field_doctype",0);
 			refresh_field("jasper_param_action", name,"jasper_parameters");
 			refresh_field("param_expression", name,"jasper_parameters");
 	}
