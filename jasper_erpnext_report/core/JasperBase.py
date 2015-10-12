@@ -253,7 +253,7 @@ class JasperBase(object):
 				continue
 			elif is_copy == "is doctype id":
 				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
-				if not values or len(values.split(":")) > 1:
+				if not values or (isinstance(values, basestring) and len(values.split(":")) > 1):
 					field_name = values or param.jasper_field_doctype.strip()
 					f = field_name.split(":")
 					if len(f) > 2:
@@ -272,10 +272,16 @@ class JasperBase(object):
 					values = getattr(frappe_doc, field)
 
 				value = self.get_param_values(values)
+
 			else:
 				#value sent take precedence from value in doctype jasper_param_value
 				values = data.get("params", {}).get(p) or param.jasper_param_value or ""
 				value = self.get_param_values(values)
+
+			if param.jasper_param_type == "Int":
+				from jasper_erpnext_report.jasper_reports import Integer
+				for idx, val in enumerate(value):
+					value[idx] = Integer(val)
 
 			pram.append({"name":p, 'value':value})
 
