@@ -18,18 +18,7 @@ boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 
 app_include_css = ["/assets/jasper_erpnext_report/css/style.min.css", "/assets/css/jasper_erpnext_report.css"]
 
-#app_include_js = ["/assets/js/jasper_erpnext_report.js"]
-
-
-app_include_js = [
- 	"/assets/jasper_erpnext_report/js/jstree.min.js",
-	"/assets/jasper_erpnext_report/js/utils.js",
-	"/assets/jasper_erpnext_report/js/jasper_ui.js",
-	"/assets/jasper_erpnext_report/js/upload.js",
-	"/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js",
-	"/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"
-
-]
+app_include_js = ["/assets/js/jasper_erpnext_report.js"]
 
 
 permission_query_conditions = {
