@@ -23,7 +23,7 @@ HOOKS:
 		jasper_before_run_report(data=None, docdata=None);
 """
 
-param_type_java_conversion = {"BigDecimal": "Int", "Integer": "Int", "String": "String"}
+param_type_java_conversion = {"BigDecimal": "Float", "Integer": "Int", "String": "String", "Double": "Float", "Float": "Float", "Long": "Int", "Character":"String", "Boolean": "String", "Date": "Date"}
 
 class JasperReports(Document):
 
