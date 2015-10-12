@@ -8,7 +8,8 @@ import json
 
 class JasperXmlReport():
 	def __init__(self, xmlfile=''):
-		self.xmldoc = etree.parse(xmlfile)
+		parser = etree.XMLParser(strip_cdata=False)
+		self.xmldoc = etree.parse(xmlfile, parser)
 		self.ns = 'http://jasperreports.sourceforge.net/jasperreports'
 		self.nss = {'jr': self.ns}
 		self._language = 'xpath'
@@ -136,7 +137,7 @@ class JasperXmlReport():
 			else:
 				continue
 			new_path = self._jasper_prefix + rname
-			subreportExpression.text = json.dumps(frappe.utils.escape_html(new_path))
+			subreportExpression.text = etree.CDATA(json.dumps(frappe.utils.escape_html(new_path)))
 			self._subreports.append(new_path)
 
 	def get_xml_subdataset_query(self):
@@ -178,7 +179,7 @@ class JasperXmlReport():
 			except:
 				txt = frappe.utils.strip(image.text)
 			if txt.startswith("/"):
-				image.text = json.dumps(txt[1:])
+				image.text = etree.CDATA(json.dumps(txt[1:]))
 		return images
 
 	def get_images(self):

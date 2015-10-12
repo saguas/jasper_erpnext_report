@@ -30,12 +30,11 @@ class WriteFileJrxml(object):
 		self.subreport = False
 
 
-	def get_original_query(self):
-		import re
-		queryString = re.search("<queryString>(.*?)</queryString>", self.content, re.S | re.M)
-		if queryString:
-			self.queryString = queryString.group(1)
-			print "queryString Report %s" % self.queryString
+	#def get_original_query(self):
+	#	import re
+		#queryString = re.search("<queryString>(.*?)</queryString>", self.content, re.S | re.M)
+		#if queryString:
+		#	self.queryString = queryString.group(1)
 
 	def insert_report_doc(self, dn=None):
 		file_data = {}
@@ -65,11 +64,10 @@ class WriteFileJrxml(object):
 
 	def process(self, dn=None):
 
-		print "process report dn %s" % dn
 		if self.ext != "jrxml":
 			self.process_childs()
 		else:
-			self.get_original_query()
+			#self.get_original_query()
 			self.process_jrxmls()
 
 		self.rel_path = os.path.relpath(self.file_path, self.jasper_path)
@@ -147,8 +145,7 @@ class WriteFileJrxml(object):
 			#self.file_path = self.path_join(jrxml_path, docs[0].file_name)
 
 	def make_content_jrxml(self, name):
-		import re
-
+		#import re
 		xmldoc = JasperXmlReport(BytesIO(self.content))
 		xmldoc.change_subreport_expression_path()
 		self.scriptlet = xmldoc.get_attrib("scriptletClass")
@@ -161,7 +158,7 @@ class WriteFileJrxml(object):
 		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
-		self.content = re.sub("<queryString>(.*?)</queryString>", "<queryString>%s</queryString>" % self.queryString, self.content, count=1, flags=re.S|re.M)
+		#self.content = re.sub("<queryString>(.*?)</queryString>", "<queryString>%s</queryString>" % self.queryString, self.content, count=1, flags=re.S|re.M)
 
 	def save(self):
 		self.save_path = write_file(self.content, self.file_path)
