@@ -56,7 +56,7 @@ class JasperLocal(Jb.JasperBase):
 		copies = [_("Original"), _("Duplicate"), _("Triplicate")]
 		conn = ""
 		if doc.query:
-			conn = "jdbc:mariadb://" + (frappe.conf.db_host or 'localhost') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
+			conn = "jdbc:mysql://" + (frappe.conf.db_host or '127.0.0.1') + ":" + (frappe.conf.db_port or "3306") + "/" + frappe.conf.db_name + "?user="+ frappe.conf.db_name +\
 				"&password=" + frappe.conf.db_password
 
 		if not frappe.local.batch:

@@ -114,11 +114,9 @@ public class ExportReport
 	  
 	  this.setParams();
 	  this.setQueryType();
-	  
 	  if(this.tables == null && this.queryType == "SQL"){
 	  	this.connect();
 		this.getJasperPrint(this.connection);
-		//System.out.println("The report is sql query! " + this.query.getText() + " params " + this.params.size());
 	  }else if(this.tables == null && !this.queryType.equalsIgnoreCase("XPATH")){
 	  	this.dataSource = new JREmptyDataSource();
 		this.getJasperPrint(this.dataSource);
@@ -207,8 +205,6 @@ public class ExportReport
 		  JRParameter[] reportParameters = report.getParameters();
 	      for( int j=0; j < reportParameters.length; j++ ){
 	          JRParameter jparam = reportParameters[j];
-
-			  //System.out.format("Params %s %s %b", jparam.getName(),  this.params.get(jparam.getName()), jparam.getValueClassName().equals( "java.lang.Integer"));
 			  if( jparam.getValueClassName().equals( "java.lang.BigDecimal" )){
 			      //Object param = this.params.get( jparam.getName());
 			      this.params.put(jparam.getName(), new BigDecimal( (Double) this.params.get(jparam.getName())));
