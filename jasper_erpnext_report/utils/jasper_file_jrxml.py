@@ -29,6 +29,14 @@ class WriteFileJrxml(object):
 		self.save_path = None
 		self.subreport = False
 
+
+	def get_original_query(self):
+		import re
+		queryString = re.search("<queryString>(.*?)</queryString>", self.content, re.S | re.M)
+		if queryString:
+			self.queryString = queryString.group(1)
+			print "queryString Report %s" % self.queryString
+
 	def insert_report_doc(self, dn=None):
 		file_data = {}
 		file_size = check_max_file_size(self.content)
@@ -61,6 +69,7 @@ class WriteFileJrxml(object):
 		if self.ext != "jrxml":
 			self.process_childs()
 		else:
+			self.get_original_query()
 			self.process_jrxmls()
 
 		self.rel_path = os.path.relpath(self.file_path, self.jasper_path)
@@ -138,6 +147,7 @@ class WriteFileJrxml(object):
 			#self.file_path = self.path_join(jrxml_path, docs[0].file_name)
 
 	def make_content_jrxml(self, name):
+		import re
 
 		xmldoc = JasperXmlReport(BytesIO(self.content))
 		xmldoc.change_subreport_expression_path()
@@ -151,6 +161,8 @@ class WriteFileJrxml(object):
 		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
+		re.sub("<queryString>(.*?)</queryString>", self.queryString, self.content, flags=re.S | re.M)
+		print "queryString substituition %s" % self.content
 
 
 	def save(self):

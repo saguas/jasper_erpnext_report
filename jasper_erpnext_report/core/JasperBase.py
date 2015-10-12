@@ -209,7 +209,7 @@ class JasperBase(object):
 			else:
 				value = [values]
 		else:
-			if len(values)>1:
+			if isinstance(values, (list, tuple)) and len(values)>1:
 				value = values
 			else:
 				value = [values]
