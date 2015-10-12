@@ -161,8 +161,7 @@ class WriteFileJrxml(object):
 		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
-		self.content = re.sub("<queryString>(.*?)</queryString>", "<queryString>%s</queryString>" % self.queryString, self.content, flags=re.S|re.M)
-
+		self.content = re.sub("<queryString>(.*?)</queryString>", "<queryString>%s</queryString>" % self.queryString, self.content, count=1, flags=re.S|re.M)
 
 	def save(self):
 		self.save_path = write_file(self.content, self.file_path)
