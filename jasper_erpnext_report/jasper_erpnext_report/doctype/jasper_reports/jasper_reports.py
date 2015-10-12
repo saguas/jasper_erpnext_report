@@ -23,6 +23,7 @@ HOOKS:
 		jasper_before_run_report(data=None, docdata=None);
 """
 
+param_type_java_conversion = {"BigDecimal": "Int", "Integer": "Int", "String": "String"}
 
 class JasperReports(Document):
 
@@ -98,7 +99,9 @@ class JasperReports(Document):
 				if check_queryString_param(xmldoc.queryString, pname[0]):
 					is_copy = "Is for where clause"
 					action_type = "Automatic"
-				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":ptype[c].lower().capitalize(),
+
+				param_type = param_type_java_conversion.get(ptype[c])
+				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":param_type,#.lower().capitalize()
 						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name": self.name + "_" + pname[0]})
 			self.query = rootquery + self.query
 
