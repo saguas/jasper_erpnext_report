@@ -161,8 +161,7 @@ class WriteFileJrxml(object):
 		xmldoc.setProperty("jasperId", name)
 
 		self.content = xmldoc.toString()
-		re.sub("<queryString>(.*?)</queryString>", self.queryString, self.content, flags=re.S | re.M)
-		print "queryString substituition %s" % self.content
+		self.content = re.sub("<queryString>(.*?)</queryString>", "<queryString>%s</queryString>" % self.queryString, self.content, flags=re.S|re.M)
 
 
 	def save(self):
