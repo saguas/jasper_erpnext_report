@@ -23,7 +23,7 @@ HOOKS:
 		jasper_before_run_report(data=None, docdata=None);
 """
 
-param_type_java_conversion = {"BigDecimal": "Float", "Integer": "Int", "String": "String", "Double": "Float", "Float": "Float", "Long": "Int", "Character":"String", "Boolean": "String", "Date": "Date"}
+#param_type_java_conversion = {"BigDecimal": "Float", "Integer": "Int", "String": "String", "Double": "Float", "Float": "Float", "Long": "Int", "Character":"String", "Boolean": "String", "Date": "Date"}
 
 class JasperReports(Document):
 
@@ -100,8 +100,8 @@ class JasperReports(Document):
 					is_copy = "Is for where clause"
 					action_type = "Automatic"
 
-				param_type = param_type_java_conversion.get(ptype[c])
-				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type":param_type,#.lower().capitalize()
+				#param_type = param_type_java_conversion.get(ptype[c])
+				self.append("jasper_parameters", {"__islocal": True, "jasper_param_name":pname[0], "jasper_param_type": ptype[c],#.lower().capitalize()
 						"jasper_param_action": action_type, "param_expression":"In", "is_copy":is_copy, "name": self.name + "_" + pname[0]})
 			self.query = rootquery + self.query
 

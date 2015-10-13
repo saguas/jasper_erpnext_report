@@ -205,10 +205,10 @@ public class ExportReport
 		  JRParameter[] reportParameters = report.getParameters();
 	      for( int j=0; j < reportParameters.length; j++ ){
 	          JRParameter jparam = reportParameters[j];
-			  if( jparam.getValueClassName().equals( "java.lang.BigDecimal" )){
+			  /*if( jparam.getValueClassName().equals( "java.lang.BigDecimal" )){
 			      //Object param = this.params.get( jparam.getName());
 			      this.params.put(jparam.getName(), new BigDecimal( (Double) this.params.get(jparam.getName())));
-			  }
+			  }*/
 
 		  };
 	  }
