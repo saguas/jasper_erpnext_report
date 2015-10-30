@@ -267,3 +267,32 @@ def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
 		f = wobj.process(dn=dn)
 
 		return f
+
+def onload(doc, method=None):
+	print "File doc was load!!! %s" % doc.file_name
+
+
+def get_number_weekday_in_month(year, month, weekday, local=None):
+	import calendar
+	import locale
+
+
+	if local:
+		default_local = locale.getlocale(locale.LC_ALL)
+		locale.setlocale(locale.LC_ALL, local)
+
+	if isinstance(month, basestring):
+		month = list(calendar.month_name).index(month.capitalize())
+
+	first_weekday = calendar.firstweekday()
+	calendar.setfirstweekday(calendar.MONDAY)
+	weekday_number = getattr(calendar, weekday.upper())
+
+	number = len([1 for i in calendar.monthcalendar(year, month) if i[weekday_number] != 0])
+
+	if local:
+		locale.setlocale(locale.LC_ALL, default_local[0])
+
+	calendar.setfirstweekday(first_weekday)
+
+	return number

@@ -36,6 +36,27 @@ class JasperCustomDataSourceDefault(object):
 		na = field.split(":")
 		print "split custom datasource %s" % na
 		l = len(na)
+		"""
+		if l>2 and field.startswith(":table"):
+			#doc table
+			values = na[2:]
+			table_name = values[0]
+			if values > 4:
+				doctype = values[1]
+				docname = values[2]
+				field = values[3]
+			elif values > 2:
+				docname = values[1]
+				field = values[2]
+
+			doc = frappe.get_doc(doctype, docname)
+			table = doc.get(table_name)
+			if self.currididx < len(table):
+				value = doc.get(table_name)[self.currididx].get(field, "")
+			else:
+				value = ""
+		else:
+		"""
 		if l > 2:
 			doctype = na[0]
 			docname = na[1]

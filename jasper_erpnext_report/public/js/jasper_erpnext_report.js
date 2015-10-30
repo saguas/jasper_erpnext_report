@@ -472,3 +472,6 @@ $(document).on( 'app_ready', function(){
 });
 
 
+frappe.ui.form.on("Salary Slip", "net_pay", function(frm, doctype, name){
+	console.log("gross_apy ", doctype);
+});

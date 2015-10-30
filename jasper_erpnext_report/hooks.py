@@ -57,7 +57,8 @@ on_jasper_params = {
 
 doc_events = {
     "File":{
-		"on_trash": "jasper_erpnext_report.utils.jasper_file_jrxml.delete_file_jrxml"
+		"on_trash": "jasper_erpnext_report.utils.jasper_file_jrxml.delete_file_jrxml",
+		"onload": "jasper_erpnext_report.utils.jasper_file_jrxml.onload"
     }
 }
 

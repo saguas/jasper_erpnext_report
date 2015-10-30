@@ -197,6 +197,7 @@ def jasper_server_login(doc):
 def checkJasperRestLib():
 	from jasper_erpnext_report import jasperserverlib
 
+	#TODO check for jasperserverlib folder in env
 	if not jasperserverlib:
 		pipInstall()
 

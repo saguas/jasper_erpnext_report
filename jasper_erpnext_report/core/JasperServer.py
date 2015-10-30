@@ -95,7 +95,7 @@ class JasperServer(Jb.JasperBase):
 		return session
 
 	def resume_connection(self):
-		self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url"), resume=True)
+		self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url").strip(), resume=True)
 		if self.session:
 			self.session.resume(self.data['data']['cookie'])
 			self.is_login = True
@@ -109,7 +109,7 @@ class JasperServer(Jb.JasperBase):
 			if not self.doc:
 				self.get_jasperconfig_from_db()
 
-			self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url"), self.doc.get("jasper_username"), self.doc.get("jasper_server_password"))
+			self.session = frappe.local.jasper_session = jasper.session(self.doc.get("jasper_server_url").strip(), self.doc.get("jasper_username"), self.doc.get("jasper_server_password"))
 
 			self.update_cookie()
 			self.is_login = True
@@ -143,7 +143,7 @@ class JasperServer(Jb.JasperBase):
 			self.logout()
 			self.login()
 		except:
-			_logger.error(_("_login: JasperServerSession Error while timeout and login"))
+			_logger.error(_("_login: JasperServerSession Error while timeout and login."))
 
 		_logger.info("_timeout JasperServerSession login successfuly {0}".format(self.doc))
 
@@ -175,7 +175,7 @@ class JasperServer(Jb.JasperBase):
 	def get_reports_list_from_server(self, force=False):
 		ret = {}
 		s = Search(self.session)
-		result = s.search(path=self.doc.get("jasper_report_root_path"), type="reportUnit")
+		result = s.search(path=self.doc.get("jasper_report_root_path").strip(), type="reportUnit")
 		reports = result.getDescriptor().json_descriptor()
 		for report in reports:
 			ics = []

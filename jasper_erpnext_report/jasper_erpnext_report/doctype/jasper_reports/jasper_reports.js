@@ -256,5 +256,3 @@ cur_frm.cscript.update_upload = function(doc){
      });
 
 };
-
-
