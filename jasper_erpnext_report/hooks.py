@@ -7,6 +7,7 @@ app_color = "black"
 app_email = "luisfmfernandes@gmail.com"
 app_url = "http://localhost"
 app_version = "0.1.0"
+app_license = "MIT"
 
 
 

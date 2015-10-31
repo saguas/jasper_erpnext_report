@@ -1,0 +1,7 @@
+jasper_erpnext_report.core.FrappeTask
+jasper_erpnext_report.core
+jasper_erpnext_report.core.JasperBase
+jasper_erpnext_report.core.JasperLocal
+jasper_erpnext_report.core.JasperRoot
+jasper_erpnext_report.core.JasperServer
+jasper_erpnext_report.core.JasperWhitelist

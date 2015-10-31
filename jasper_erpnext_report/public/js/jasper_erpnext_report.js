@@ -470,8 +470,3 @@ jasper.jasper_make_request = function(method, data, callback){
 $(document).on( 'app_ready', function(){
 	$(window).trigger('hashchange');
 });
-
-
-frappe.ui.form.on("Salary Slip", "net_pay", function(frm, doctype, name){
-	console.log("gross_apy ", doctype);
-});

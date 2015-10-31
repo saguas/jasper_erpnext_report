@@ -1,0 +1,266 @@
+<!-- title: Jasper Parameter -->
+
+
+
+
+
+<div class="dev-header">
+
+<a class="btn btn-default btn-sm" disabled style="margin-bottom: 10px;">
+	Version 0.0.0</a>
+
+
+	<a class="btn btn-default btn-sm" href="https://github.com/saguas/jasper_erpnext_report.git/tree/develop/jasper_erpnext_report/jasper_erpnext_report/doctype/jasper_parameter"
+		target="_blank" style="margin-left: 10px; margin-bottom: 10px;"><i class="octicon octicon-mark-github"></i> Source</a>
+
+</div>
+
+
+<span class="label label-info">Child Table</span>
+
+
+    <p><b>Table Name:</b> <code>tabJasper Parameter</code></p>
+
+
+
+
+<h3>Fields</h3>
+
+<table class="table table-bordered" style="table-layout: fixed;">
+    <thead>
+        <tr>
+            <th style="width: 5%">Sr</th>
+            <th style="width: 25%">Fieldname</th>
+            <th style="width: 20%">Type</th>
+            <th style="width: 25%">Label</th>
+            <th style="width: 25%">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr >
+            <td>1</td>
+            <td ><code>jasper_param_name</code></td>
+            <td >
+                Data</td>
+            <td >
+                Parameter Name
+                <p class="text-muted small">
+                    Name of the parameter</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>2</td>
+            <td ><code>jasper_param_type</code></td>
+            <td >
+                Select</td>
+            <td >
+                Parameter Type
+                <p class="text-muted small">
+                    Parameter data type.</p>
+            </td>
+            <td>
+                <pre>Byte
+Boolean
+Integer
+String
+Character
+Double
+Float
+Long
+Short
+BigDecimal
+BigInteger
+Check
+Code
+Currency
+Data
+Date
+Datetime
+HTML
+Image
+Int
+Long Text
+Password
+Percent
+Select
+Time</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>3</td>
+            <td ><code>jasper_param_action</code></td>
+            <td >
+                Select</td>
+            <td >
+                Parameter Action
+                <p class="text-muted small">
+                    What Erpnext do with this parameter. Ask means to ask for the value of the parameter before make the report.
+Automatic means that Erpnext will fill it for you.</p>
+            </td>
+            <td>
+                <pre>Automatic
+Ask</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>4</td>
+            <td ><code>jasper_field_doctype</code></td>
+            <td >
+                Data</td>
+            <td class="text-muted" title="Hidden">
+                Field Doctype Value
+                <p class="text-muted small">
+                    Put here the field of the doctype you want associate this parameter value with. The doctype is the doctype selected in report creation and docname is the doc where you call the report.
+OR,
+You can also use the Parameter value box to set the role. Like this: Put doctype:docname:docfield in Parameter value to associate the parameter value with docfield of doctype and docname. If you don't want hardcode the value you can pass this in params argument in jasper.get_jasper_report function. This role is for use as in the following example.
+Example:
+jasper.get_jasper_report({jr_name: "Cherry Local", jr_format: "pdf", doctype_type:"Form", params: {language: "System Settings:language"}, doctype:"User", docids:["luisfmfernandes@gmail.com"]}). In this way you are getting in the System Settings doctype the field language of the system to use as the value for this parameter and show him in the Cherry Local report that has information on the user luisfmfernandes@gmail.com.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>5</td>
+            <td ><code>column_break_3</code></td>
+            <td class="info">
+                Column Break</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>6</td>
+            <td ><code>is_copy</code></td>
+            <td >
+                Select</td>
+            <td >
+                Type
+                <p class="text-muted small">
+                    1) Is for copies: To set Original, Duplicated or Triplicate in the document.
+2) Is for where clause: Is for SQL selects of type:"select x,y from $P!{param}". The System will create the where clause for the document.
+3) Is doctype id: The value(s) of this parameter will be used in SQL select, but the system will not create a where clause. The where clause already exist in Jasper Report.
+4) Is for server hook: The system will ask for the value(s) of the parameter on the server side. This could be the whole sql if in "queryString tag" of Jasper Reports only is $P!{param}.
+5) If you select "Other" you must give the value or it will be ignored.</p>
+            </td>
+            <td>
+                <pre>Is for copies
+Is for where clause
+Is for page number
+Is for server hook
+Is doctype id
+Other</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>7</td>
+            <td ><code>jasper_param_description</code></td>
+            <td >
+                Small Text</td>
+            <td >
+                Description
+                <p class="text-muted small">
+                    Describe this parameter. The description will be used if the parameter is of action 'Ask' to describe the parameter.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>8</td>
+            <td ><code>section_break_8</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>9</td>
+            <td ><code>param_expression</code></td>
+            <td >
+                Select</td>
+            <td >
+                Parameter Expression
+                <p class="text-muted small">
+                    Choose the expression to use: 
+'In' - to include all the selected ids.
+'Not in' - to exclude the selected ids.</p>
+            </td>
+            <td>
+                <pre>
+In
+Not In</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>10</td>
+            <td ><code>column_break_8</code></td>
+            <td class="info">
+                Column Break</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>11</td>
+            <td ><code>section_break_9</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>12</td>
+            <td ><code>jasper_param_value</code></td>
+            <td >
+                Small Text</td>
+            <td >
+                Parameter Value
+                <p class="text-muted small">
+                    Set the default value for the parameter. This value will be used if no other value is given. If  you need to pass multiple values then separate them with comma. Ex. Administrator, Guest or pass the values as an array/List.  Ex. ["Administrator", "Guest"].</p>
+            </td>
+            <td></td>
+        </tr>
+        
+    </tbody>
+</table>
+
+
+    
+    
+    <h4>Child Table Of</h4>
+    <ul>
+    
+        <li>
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/jasper_erpnext_report/jasper_reports">Jasper Reports</a>
+
+</li>
+    
+    </ul>
+    
+
+
+<!-- autodoc -->
+<!-- jinja -->
+<!-- static -->

@@ -1,0 +1,675 @@
+<!-- title: jasper_erpnext_report.core.JasperBase --><div class="dev-header">
+
+<a class="btn btn-default btn-sm" disabled style="margin-bottom: 10px;">
+	Version 0.0.0</a>
+
+
+	<a class="btn btn-default btn-sm" href="https://github.com/saguas/jasper_erpnext_report.git/blob/develop/jasper_erpnext_report/core/JasperBase.py"
+		target="_blank" style="margin-left: 10px; margin-bottom: 10px;"><i class="octicon octicon-mark-github"></i> Source</a>
+
+</div>
+
+
+
+
+
+	
+        
+	<h3 style="font-weight: normal;">Class <b>JasperBase</b></h3>
+    
+    <p style="padding-left: 30px;"><i>Inherits from __builtin__.object</i></h4>
+    
+    <div class="docs-attr-desc"><p></p>
+</div>
+    <div style="padding-left: 30px;">
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="__init__" href="#__init__" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>__init__</b>
+        <i class="text-muted">(self, doc=None, origin=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="_run_report_async" href="#_run_report_async" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>_run_report_async</b>
+        <i class="text-muted">(self, path, doc, data=None, params=None, pformat=pdf, ncopies=1, for_all_sites=0)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="check_docname" href="#check_docname" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>check_docname</b>
+        <i class="text-muted">(self, data, doctype, report)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="check_ids_in_hooks" href="#check_ids_in_hooks" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>check_ids_in_hooks</b>
+        <i class="text-muted">(self, doc, data, params)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="copy_images" href="#copy_images" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>copy_images</b>
+        <i class="text-muted">(self, content, outputPath, fileName, report_name, localsite)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="createJasperSession" href="#createJasperSession" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>createJasperSession</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="delete_jasper_session" href="#delete_jasper_session" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>delete_jasper_session</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="do_params" href="#do_params" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>do_params</b>
+        <i class="text-muted">(self, data, params, pformat, doc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="doc_filter_perm_roles" href="#doc_filter_perm_roles" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>doc_filter_perm_roles</b>
+        <i class="text-muted">(self, doctype, data, docnames)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="filter_perm_roles" href="#filter_perm_roles" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>filter_perm_roles</b>
+        <i class="text-muted">(self, data)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_ask_params" href="#get_ask_params" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_ask_params</b>
+        <i class="text-muted">(self, data)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_html_path" href="#get_html_path" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_html_path</b>
+        <i class="text-muted">(self, report_name, localsite=None, content=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_jasper_reqid_data" href="#get_jasper_reqid_data" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_jasper_reqid_data</b>
+        <i class="text-muted">(self, reqId)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_jasper_reqid_data_from_db" href="#get_jasper_reqid_data_from_db" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_jasper_reqid_data_from_db</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_jasper_session_data" href="#get_jasper_session_data" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_jasper_session_data</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_jasperconfig_from_db" href="#get_jasperconfig_from_db" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_jasperconfig_from_db</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_param_hook" href="#get_param_hook" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_param_hook</b>
+        <i class="text-muted">(self, doc, data, pram_server)</i>
+    </p>
+	<div class="docs-attr-desc"><p>Set a 'on<em>jasper</em>params' hook for each report that you want to set parameters of type 'Is for server hook', like this one:
+on<em>jasper</em>params = {
+    "Cherry Local": "jasper<em>erpnext</em>report.utils.utils.testHookReport"
+}
+HOOK: Must return a list of objects.
+Some examples are:</p>
+
+<p>def on<em>jasper</em>params(doc, data=None, params=None):
+    a = []
+    for param in params:
+        if param.get("name") == "idade":
+            a.append({"name": param.get("name"), "value": 35.6})
+        else:
+            #a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com'], "param_type": "is for where clause"})
+            a.append({"name": param.get("name"), "value":['luisfmfernandes@gmail.com']})</p>
+
+<p><strong>Parameters:</strong></p>
+
+<pre><code>    #a.append({"name":param.get("name"), "value": ["Administrator", "luisfmfernandes@gmail.com"], "param_type": "Is for where clause"})
+
+#a.append({"name": params[0].get("name"), "value":'select name, email from tabUser where name in ("luisfmfernandes@gmail.com")'})
+#a.append({"name": params[0].get("name"), "value":['Administrator', 'Guest'], "param_type": "is for where clause"})
+#a.append({"name": params[0].get("name"), "value":['Guest', 'Administrator']})
+#a.append({"name": params[0].get("name"), "value":345})
+
+return a
+</code></pre>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_param_values" href="#get_param_values" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_param_values</b>
+        <i class="text-muted">(self, values)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_query_jrxmlFile_from_server" href="#get_query_jrxmlFile_from_server" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_query_jrxmlFile_from_server</b>
+        <i class="text-muted">(self, file_content)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_report_origin" href="#get_report_origin" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_report_origin</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_reports_list_from_db" href="#get_reports_list_from_db" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_reports_list_from_db</b>
+        <i class="text-muted">(self, filters_report=None, filters_param=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_session_from_db" href="#get_session_from_db" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_session_from_db</b>
+        <i class="text-muted">(self, tab=tabJasperClientHtmlDocs)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="get_where_clause_value" href="#get_where_clause_value" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>get_where_clause_value</b>
+        <i class="text-muted">(self, value, param, error=False)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="in_jasper_session" href="#in_jasper_session" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>in_jasper_session</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="insert_jasper_reqid_record" href="#insert_jasper_reqid_record" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>insert_jasper_reqid_record</b>
+        <i class="text-muted">(self, reqId, data)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="insert_jasper_session_record" href="#insert_jasper_session_record" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>insert_jasper_session_record</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="make_internal_reqId" href="#make_internal_reqId" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>make_internal_reqId</b>
+        <i class="text-muted">(self, reqids, status, report_name)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="make_pdf" href="#make_pdf" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>make_pdf</b>
+        <i class="text-muted">(self, fileName, content, pformat, merge_all=True, pages=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="polling" href="#polling" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>polling</b>
+        <i class="text-muted">(self, reqId)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="prepareCollectResponse" href="#prepareCollectResponse" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>prepareCollectResponse</b>
+        <i class="text-muted">(self, resps)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="prepareResponse" href="#prepareResponse" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>prepareResponse</b>
+        <i class="text-muted">(self, detail, reqId)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="prepare_report_async" href="#prepare_report_async" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>prepare_report_async</b>
+        <i class="text-muted">(self, path, doc, data=None, params=None, pformat=pdf, ncopies=1, for_all_sites=0)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="report_polling_base" href="#report_polling_base" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>report_polling_base</b>
+        <i class="text-muted">(self, reqId, report_name)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="reset_data_session" href="#reset_data_session" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>reset_data_session</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="resume" href="#resume" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>resume</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="run_report_async" href="#run_report_async" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>run_report_async</b>
+        <i class="text-muted">(self, doc, data=None, params=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="save_html_cache" href="#save_html_cache" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>save_html_cache</b>
+        <i class="text-muted">(self, report_name, reportPath)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="send_email" href="#send_email" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>send_email</b>
+        <i class="text-muted">(self, body, subject, user=no_reply@gmail.com)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="update" href="#update" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>update</b>
+        <i class="text-muted">(self, force_cache=False, force_db=False)</i>
+    </p>
+	<div class="docs-attr-desc"><p>extend session expiry</p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="update_data_cache" href="#update_data_cache" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>update_data_cache</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="update_jasper_reqid_record" href="#update_jasper_reqid_record" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>update_jasper_reqid_record</b>
+        <i class="text-muted">(self, reqId, data)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="use_local" href="#use_local" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>use_local</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="use_server" href="#use_server" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>use_server</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="validate_ticket" href="#validate_ticket" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>validate_ticket</b>
+        <i class="text-muted">(self, data)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+    </div>
+    <hr>
+
+	
+
+
+
+<!-- autodoc -->

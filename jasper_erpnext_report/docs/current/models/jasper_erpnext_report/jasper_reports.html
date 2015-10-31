@@ -1,0 +1,764 @@
+<!-- title: Jasper Reports -->
+
+
+
+
+
+<div class="dev-header">
+
+<a class="btn btn-default btn-sm" disabled style="margin-bottom: 10px;">
+	Version 0.0.0</a>
+
+
+	<a class="btn btn-default btn-sm" href="https://github.com/saguas/jasper_erpnext_report.git/tree/develop/jasper_erpnext_report/jasper_erpnext_report/doctype/jasper_reports"
+		target="_blank" style="margin-left: 10px; margin-bottom: 10px;"><i class="octicon octicon-mark-github"></i> Source</a>
+
+</div>
+
+
+
+
+
+    <p><b>Table Name:</b> <code>tabJasper Reports</code></p>
+
+
+0
+
+<h3>Fields</h3>
+
+<table class="table table-bordered" style="table-layout: fixed;">
+    <thead>
+        <tr>
+            <th style="width: 5%">Sr</th>
+            <th style="width: 25%">Fieldname</th>
+            <th style="width: 20%">Type</th>
+            <th style="width: 25%">Label</th>
+            <th style="width: 25%">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr >
+            <td>1</td>
+            <td class="danger" title="Mandatory"><code>jasper_report_name</code></td>
+            <td >
+                Data</td>
+            <td >
+                Jasper Report Name
+                <p class="text-muted small">
+                    Name of the report.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>2</td>
+            <td ><code>jasper_doctype</code></td>
+            <td >
+                Link</td>
+            <td >
+                Doctype
+                <p class="text-muted small">
+                    Name of doctype document that this report is associated.</p>
+            </td>
+            <td>
+                
+                
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/core/doctype">DocType</a>
+
+
+                
+            </td>
+        </tr>
+        
+        <tr >
+            <td>3</td>
+            <td ><code>report</code></td>
+            <td >
+                Link</td>
+            <td >
+                Report
+                <p class="text-muted small">
+                    Name of erpnext report document that this report is associated.</p>
+            </td>
+            <td>
+                
+                
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/core/report">Report</a>
+
+
+                
+            </td>
+        </tr>
+        
+        <tr >
+            <td>4</td>
+            <td ><code>jasper_report_origin</code></td>
+            <td >
+                Select</td>
+            <td >
+                Choose Origin
+                <p class="text-muted small">
+                    Choose where to make this report. LocalServer means in the local machine without Jasper Server. You don't need Jasper Server to make this report.
+JasperServer means that you will need to install Jasper Server and get the report from there.</p>
+            </td>
+            <td>
+                <pre>JasperServer
+LocalServer</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>5</td>
+            <td class="danger" title="Mandatory"><code>jasper_report_path</code></td>
+            <td >
+                Data</td>
+            <td >
+                Jasper Report Path
+                <p class="text-muted small">
+                    Path where to locate the report in jasper server or if locally where in the local disk.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>6</td>
+            <td ><code>jasper_all_sites_report</code></td>
+            <td >
+                Check</td>
+            <td >
+                For all sites
+                <p class="text-muted small">
+                    Choose if this report is for all sites or just for current site.  This way you don't have to insert the same reports in all sites.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>7</td>
+            <td ><code>jasper_report_type</code></td>
+            <td >
+                Select</td>
+            <td >
+                Report for:
+                <p class="text-muted small">
+                    If this report  is for printing information about some doctype then choose Form. If this report is for printing a list of doctypes with some information, then choose List.
+If this report is for ask by server hooks which doctype's then choose Server Hooks. Choose General if this report does't require any doctype id and yet you want it in some doctype because of permissions.</p>
+            </td>
+            <td>
+                <pre>Form
+List
+Server Hooks
+General</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>8</td>
+            <td ><code>jasper_custom_fields</code></td>
+            <td >
+                Check</td>
+            <td >
+                Use For Custom Fields
+                <p class="text-muted small">
+                    Check this for jasper get value from the field name. This take more time than regular selects to database. Field name is of the form doctype:docname:field. If you don't give doctype and docname it will use the doctype and docname from where you call the report.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>9</td>
+            <td ><code>jasper_locale</code></td>
+            <td >
+                Select</td>
+            <td >
+                Locale
+                <p class="text-muted small">
+                    Select the language to use in report.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>10</td>
+            <td ><code>jasper_upload_jrxml_file</code></td>
+            <td >
+                HTML</td>
+            <td >
+                Upload JRXML File
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>11</td>
+            <td ><code>jasper_upload_btn</code></td>
+            <td >
+                Button</td>
+            <td >
+                Upload
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>12</td>
+            <td ><code>column_break_5</code></td>
+            <td class="info">
+                Column Break</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>13</td>
+            <td ><code>jasper_report_number_copies</code></td>
+            <td >
+                Select</td>
+            <td >
+                Report Number of Copies
+                <p class="text-muted small">
+                    The number of copies when print a report. Original for one, duplicated for two and triplicate for three.</p>
+            </td>
+            <td>
+                <pre>Original
+Duplicate
+Triplicate</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>14</td>
+            <td ><code>jasper_print_all</code></td>
+            <td >
+                Check</td>
+            <td >
+                All
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>15</td>
+            <td ><code>jasper_print_pdf</code></td>
+            <td >
+                Check</td>
+            <td >
+                PDF
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>16</td>
+            <td ><code>jasper_print_docx</code></td>
+            <td >
+                Check</td>
+            <td >
+                DOCX
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>17</td>
+            <td ><code>jasper_print_xls</code></td>
+            <td >
+                Check</td>
+            <td >
+                XLS
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>18</td>
+            <td ><code>jasper_print_ods</code></td>
+            <td >
+                Check</td>
+            <td >
+                ODS
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>19</td>
+            <td ><code>jasper_print_odt</code></td>
+            <td >
+                Check</td>
+            <td >
+                ODT
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>20</td>
+            <td ><code>jasper_print_rtf</code></td>
+            <td >
+                Check</td>
+            <td >
+                RTF
+                <p class="text-muted small">
+                    Choose the print type for document.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>21</td>
+            <td ><code>jasper_email</code></td>
+            <td >
+                Check</td>
+            <td >
+                Email?
+                <p class="text-muted small">
+                    Send by email. Permit send this report by email.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>22</td>
+            <td ><code>jasper_dont_show_report</code></td>
+            <td >
+                Check</td>
+            <td >
+                Don't Show report
+                <p class="text-muted small">
+                    Remove the report from the list of reports to print.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>23</td>
+            <td ><code>jasper_virtualizer</code></td>
+            <td >
+                Check</td>
+            <td >
+                Use Virtualizer
+                <p class="text-muted small">
+                    Because you may have a very large amount of data, the jasper print might be a very large file. This can lead to an Out Of Memory exception. Use Jasper Virtualizer in this case. Set in setup->JasperServerConfig the maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>24</td>
+            <td ><code>jasper_pdf_owner_passwd</code></td>
+            <td >
+                Data</td>
+            <td class="text-muted" title="Hidden">
+                Owner Password
+                <p class="text-muted small">
+                    Set Pdf Owner Password</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>25</td>
+            <td ><code>report_message:</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Report Message:
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>26</td>
+            <td ><code>jasper_param_message</code></td>
+            <td >
+                Text</td>
+            <td >
+                Message
+                <p class="text-muted small">
+                    Choose the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>27</td>
+            <td ><code>query_string</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Query String
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>28</td>
+            <td ><code>query</code></td>
+            <td >
+                Long Text</td>
+            <td class="text-muted" title="Hidden">
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>29</td>
+            <td ><code>query_html</code></td>
+            <td >
+                HTML</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>30</td>
+            <td ><code>jasper_dont_ask_for_params</code></td>
+            <td >
+                Check</td>
+            <td >
+                Don't Ask For Parameters
+                <p class="text-muted small">
+                    Check this if you want to provide the parameters by code and don't want to open the dialog to ask for parameters values. You still need to fill the Parameters Table.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>31</td>
+            <td ><code>parameters</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Parameters:
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>32</td>
+            <td ><code>jasper_parameters</code></td>
+            <td >
+                Table</td>
+            <td >
+                Jasper Parameters
+                
+            </td>
+            <td>
+                
+                
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/jasper_erpnext_report/jasper_parameter">Jasper Parameter</a>
+
+
+                
+            </td>
+        </tr>
+        
+        <tr class="info">
+            <td>33</td>
+            <td ><code>permission:</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Permission Rules:
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>34</td>
+            <td ><code>jasper_roles</code></td>
+            <td >
+                Table</td>
+            <td >
+                Roles
+                
+            </td>
+            <td>
+                
+                
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/jasper_erpnext_report/jasper_permrole">Jasper PermRole</a>
+
+
+                
+            </td>
+        </tr>
+        
+        <tr >
+            <td>35</td>
+            <td ><code>data_35</code></td>
+            <td >
+                Data</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+    </tbody>
+</table>
+
+
+    <hr>
+    <h3>Controller</h3>
+    <h4>jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports</h4>
+
+    
+
+
+
+	
+        
+	<h3 style="font-weight: normal;">Class <b>JasperReports</b></h3>
+    
+    <p style="padding-left: 30px;"><i>Inherits from frappe.model.document.Document</i></h4>
+    
+    <div class="docs-attr-desc"><p></p>
+</div>
+    <div style="padding-left: 30px;">
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="before_save" href="#before_save" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>before_save</b>
+        <i class="text-muted">(self, method=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="on_update" href="#on_update" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>on_update</b>
+        <i class="text-muted">(self, method=None)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+    </div>
+    <hr>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports._get_jrxml_root_path" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports._get_jrxml_root_path" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>_get_jrxml_root_path</b>
+        <i class="text-muted">(doc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_for_report_images" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_for_report_images" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>check_for_report_images</b>
+        <i class="text-muted">(xmldoc, doc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_for_report_xPath" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_for_report_xPath" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>check_for_report_xPath</b>
+        <i class="text-muted">(xmldoc, xmlname, doc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_if_xPath_exists" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_if_xPath_exists" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>check_if_xPath_exists</b>
+        <i class="text-muted">(xmldoc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_param_exists" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.check_param_exists" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>check_param_exists</b>
+        <i class="text-muted">(doc, pname)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.getSubReportsQuery" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.getSubReportsQuery" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>getSubReportsQuery</b>
+        <i class="text-muted">(xmlroot, doc)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    <p><span class="label label-info">Public API</span>
+        <br><code>/api/method/jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_attachments</code>
+    </p>
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_attachments" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_attachments" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>get_attachments</b>
+        <i class="text-muted">(dn)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_permission_query_conditions" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_permission_query_conditions" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>get_permission_query_conditions</b>
+        <i class="text-muted">(user)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.has_jasper_permission" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.has_jasper_permission" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>has_jasper_permission</b>
+        <i class="text-muted">(doc, ptype, user)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+	
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.ignore_jasper_perm" href="#jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.ignore_jasper_perm" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.<b>ignore_jasper_perm</b>
+        <i class="text-muted">()</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+	
+
+
+    
+    
+        <h4>Linked In:</h4>
+        <ul>
+        
+            <li>
+
+
+<a href="https://saguas.github.io/jasper_erpnext_report/current/models/jasper_erpnext_report/jasper_email_report">Jasper Email Report</a>
+
+</li>
+        
+        </ul>
+    
+
+
+<!-- autodoc -->
+<!-- jinja -->
+<!-- static -->

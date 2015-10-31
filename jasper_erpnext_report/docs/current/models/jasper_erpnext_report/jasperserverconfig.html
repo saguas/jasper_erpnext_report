@@ -1,0 +1,448 @@
+<!-- title: JasperServerConfig -->
+
+
+
+
+
+<div class="dev-header">
+
+<a class="btn btn-default btn-sm" disabled style="margin-bottom: 10px;">
+	Version 0.0.0</a>
+
+
+	<a class="btn btn-default btn-sm" href="https://github.com/saguas/jasper_erpnext_report.git/tree/develop/jasper_erpnext_report/jasper_erpnext_report/doctype/jasperserverconfig"
+		target="_blank" style="margin-left: 10px; margin-bottom: 10px;"><i class="octicon octicon-mark-github"></i> Source</a>
+
+</div>
+
+<span class="label label-info">Single</span>
+
+
+
+
+Set Jasper parameters.
+
+<h3>Fields</h3>
+
+<table class="table table-bordered" style="table-layout: fixed;">
+    <thead>
+        <tr>
+            <th style="width: 5%">Sr</th>
+            <th style="width: 25%">Fieldname</th>
+            <th style="width: 20%">Type</th>
+            <th style="width: 25%">Label</th>
+            <th style="width: 25%">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr >
+            <td>1</td>
+            <td ><code>use_jasper_server</code></td>
+            <td >
+                Select</td>
+            <td >
+                Use JasperServer / Local jrxml
+                <p class="text-muted small">
+                    Choose where the reports are stored. Choose JasperServer only if you only want reports from Jasper Server. Choose Local jrxml only if you only want reports from python local module and don't want reports from Jasper Server.</p>
+            </td>
+            <td>
+                <pre>JasperServer only
+Local jrxml only
+Both
+None</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>2</td>
+            <td ><code>jasper_server_url</code></td>
+            <td >
+                Data</td>
+            <td >
+                JasperServer URL
+                <p class="text-muted small">
+                    Enter the url where is located the Jasper Server, port included.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>3</td>
+            <td ><code>jasper_report_root_path</code></td>
+            <td >
+                Data</td>
+            <td >
+                Jasper Report Root Path
+                <p class="text-muted small">
+                    Enter the root path to where are the reports located in Jasper Server.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>4</td>
+            <td ><code>jasper_username</code></td>
+            <td >
+                Data</td>
+            <td >
+                Jasper User Name
+                <p class="text-muted small">
+                    Enter the username of the user with permissions to run reports on the Jasper Server.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>5</td>
+            <td ><code>jasper_server_password</code></td>
+            <td >
+                Data</td>
+            <td >
+                Password
+                <p class="text-muted small">
+                    Enter the Jasper Server Password.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>6</td>
+            <td ><code>jasper_connect_update_btn</code></td>
+            <td >
+                Button</td>
+            <td >
+                Connect/Update
+                <p class="text-muted small">
+                    Connect to Jasper Server and/or update data.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>7</td>
+            <td ><code>jasper_ignore_perm_roles</code></td>
+            <td >
+                Check</td>
+            <td >
+                Ignore Jasper Permission Roles
+                <p class="text-muted small">
+                    Check if you want to set permission at document level. Uncheck if you don't want to set permission at doctype level.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>8</td>
+            <td ><code>report_options</code></td>
+            <td class="info">
+                Column Break</td>
+            <td >
+                Report Options
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>9</td>
+            <td ><code>import_all_reports</code></td>
+            <td >
+                Check</td>
+            <td >
+                Import All Reports
+                <p class="text-muted small">
+                    Import all reports from root path given above.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>10</td>
+            <td ><code>import_only_new</code></td>
+            <td >
+                Check</td>
+            <td >
+                Import Only New Reports
+                <p class="text-muted small">
+                    Import only the new reports in server repository.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>11</td>
+            <td ><code>report_default_number_copies</code></td>
+            <td >
+                Select</td>
+            <td >
+                Report Default Number of Copies
+                <p class="text-muted small">
+                    The default number of copies when print a report. This can be changed by report.</p>
+            </td>
+            <td>
+                <pre>Original
+Duplicated
+Triplicate</pre>
+            </td>
+        </tr>
+        
+        <tr >
+            <td>12</td>
+            <td ><code>jasper_print_all</code></td>
+            <td >
+                Check</td>
+            <td >
+                All
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>13</td>
+            <td ><code>jasper_print_pdf</code></td>
+            <td >
+                Check</td>
+            <td >
+                PDF
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>14</td>
+            <td ><code>jasper_print_docx</code></td>
+            <td >
+                Check</td>
+            <td >
+                DOCX
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>15</td>
+            <td ><code>jasper_print_xls</code></td>
+            <td >
+                Check</td>
+            <td >
+                XLS
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>16</td>
+            <td ><code>jasper_print_ods</code></td>
+            <td >
+                Check</td>
+            <td >
+                ODS
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>17</td>
+            <td ><code>jasper_print_odt</code></td>
+            <td >
+                Check</td>
+            <td >
+                ODT
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>18</td>
+            <td ><code>jasper_print_rtf</code></td>
+            <td >
+                Check</td>
+            <td >
+                RTF
+                <p class="text-muted small">
+                    General print type. Choose the default print type for all documents.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>19</td>
+            <td ><code>jasper_virtualizer_pages</code></td>
+            <td >
+                Int</td>
+            <td >
+                Virtualizer Maximum Pages In RAM
+                <p class="text-muted small">
+                    The maximum number of report pages that will be stored in primary memory (RAM) before the sections of the report are store in virtual memory (DISK).</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>20</td>
+            <td ><code>report_message:</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Report Message:
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>21</td>
+            <td ><code>jasper_param_message</code></td>
+            <td >
+                Small Text</td>
+            <td >
+                Message
+                <p class="text-muted small">
+                    Put here the message that will be used in the dialog that appears when the report has parameters of action 'Ask'.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>22</td>
+            <td ><code>jasper_session_timeout</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Jasper Session Timeout Value
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>23</td>
+            <td ><code>jasper_server_timeout_html</code></td>
+            <td >
+                HTML</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr class="info">
+            <td>24</td>
+            <td ><code>server</code></td>
+            <td >
+                Section Break</td>
+            <td >
+                Server
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>25</td>
+            <td ><code>jasper_polling_time</code></td>
+            <td >
+                Int</td>
+            <td >
+                Jasper Polling Time:
+                <p class="text-muted small">
+                    Polling time in milliseconds.</p>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>26</td>
+            <td ><code>jasper_server_name</code></td>
+            <td >
+                Small Text</td>
+            <td class="text-muted" title="Hidden">
+                Name
+                
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr >
+            <td>27</td>
+            <td ><code>server_info_html</code></td>
+            <td >
+                HTML</td>
+            <td >
+                
+                
+            </td>
+            <td></td>
+        </tr>
+        
+    </tbody>
+</table>
+
+
+    <hr>
+    <h3>Controller</h3>
+    <h4>jasper_erpnext_report.jasper_erpnext_report.doctype.jasperserverconfig.jasperserverconfig</h4>
+
+    
+
+
+
+	
+        
+	<h3 style="font-weight: normal;">Class <b>JasperServerConfig</b></h3>
+    
+    <p style="padding-left: 30px;"><i>Inherits from frappe.model.document.Document</i></h4>
+    
+    <div class="docs-attr-desc"><p></p>
+</div>
+    <div style="padding-left: 30px;">
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="on_update" href="#on_update" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>on_update</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+        
+    
+    
+	<p class="docs-attr-name">
+        <a name="validate" href="#validate" class="text-muted small">
+            <i class="icon-link small" style="color: #ccc;"></i></a>
+		<b>validate</b>
+        <i class="text-muted">(self)</i>
+    </p>
+	<div class="docs-attr-desc"><p><span class="text-muted">No docs</span></p>
+</div>
+	<br>
+
+        
+    </div>
+    <hr>
+
+	
+
+
+    
+    
+
+
+<!-- autodoc -->
+<!-- jinja -->
+<!-- static -->
