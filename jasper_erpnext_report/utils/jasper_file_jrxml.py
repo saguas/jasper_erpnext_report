@@ -31,13 +31,6 @@ class WriteFileJrxml(object):
 		self.save_path = None
 		self.subreport = False
 
-
-	#def get_original_query(self):
-	#	import re
-		#queryString = re.search("<queryString>(.*?)</queryString>", self.content, re.S | re.M)
-		#if queryString:
-		#	self.queryString = queryString.group(1)
-
 	def insert_report_doc(self, dn=None):
 		file_data = {}
 		file_size = check_max_file_size(self.content)
@@ -49,14 +42,11 @@ class WriteFileJrxml(object):
 
 		file_url = os.sep + self.rel_path.replace('\\','/')
 		try:
-			im = Image.open(StringIO.StringIO(self.content)).verify()
+			Image.open(StringIO.StringIO(self.content)).verify()
 			file_url = os.sep + "files" + os.sep + self.rel_path.replace('\\','/')
-			#file_url_small = file_url.replace(file_name.split(".")[0], file_name.split(".")[0] + "_small")
-			#file_url_small = file_url.replace(file_name.split(".")[0], file_name.split(".")[0])
-			#file_url_small = file_url
 			image = True
-		except Exception, e:
-			print "error imgage not valid %s " %e
+		except Exception:
+			pass
 
 
 		file_data.update({
@@ -70,14 +60,11 @@ class WriteFileJrxml(object):
 			'file_url': file_url,
 		})
 
-		print "rel_path %s name %s file_url %s" % (self.rel_path, os.path.basename(self.rel_path), file_url)
-
 		f = frappe.get_doc(file_data)
 		f.flags.ignore_file_validate = True
 		if image:
-			#file_data.update({'folder': os.path.dirname(file_url)})
 			self.make_thumbnail(file_url, f, dn)
-			#f.folder = os.path.dirname(file_url.replace("/files", ""))
+
 		under = "Home/Attachments"
 		f.folder = under + os.path.dirname(file_url.replace("/files", ""))
 		self.create_new_folder(file_url, dn)
@@ -86,13 +73,6 @@ class WriteFileJrxml(object):
 			f.insert(ignore_permissions=True)
 			if self.ext == "jrxml":
 				self.make_content_jrxml(f.name)
-			#print "__file__ %s file_path %s rel_path %s site path %s" %(frappe.get_app_path("jasper_erpnext_report"), os.path.realpath(self.file_path), self.rel_path,
-			#															os.path.relpath(os.path.realpath(self.file_path), frappe.get_site_path()))
-			#path_to_file = os.path.join(os.path.realpath(frappe.get_site_path()), "public", "files", self.rel_path)
-			#if not os.path.exists(path_to_file):
-			#	print "os path to jasper %s" % path_to_file
-			#	frappe.create_folder(os.path.dirname(path_to_file))
-			#	os.symlink(os.path.realpath(self.file_path), path_to_file)
 		except frappe.DuplicateEntryError:
 			return frappe.get_doc("File", f.duplicate_entry)
 		return f
@@ -102,7 +82,6 @@ class WriteFileJrxml(object):
 		if self.ext != "jrxml":
 			self.process_childs()
 		else:
-			#self.get_original_query()
 			self.process_jrxmls()
 
 		self.rel_path = os.path.relpath(self.file_path, self.jasper_path)
@@ -216,7 +195,6 @@ class WriteFileJrxml(object):
 			Image.ANTIALIAS
 		)
 
-		#thumbnail_url = filename + "_small." + extn
 		thumbnail_url = filename + "." + extn
 
 		path = os.path.abspath(frappe.get_site_path("public", thumbnail_url.lstrip("/")))
@@ -237,10 +215,6 @@ class WriteFileJrxml(object):
 		filename, extn = file_url.rsplit(".", 1)
 
 		thumbnail_url = filename + "." + extn
-
-		path = os.path.abspath(frappe.get_site_path("public", thumbnail_url.lstrip("/")))
-
-		#frappe.create_folder(os.path.dirname(path))
 
 		under = "Home/Attachments"
 		for file_name in os.path.dirname(thumbnail_url.replace("/files/", "")).split("/"):
