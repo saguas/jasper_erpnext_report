@@ -65,7 +65,6 @@ class JasperReports(Document):
 			frappe.throw(_("You need to configure Jasper first."))
 			return
 
-		print "before_save!!! "
 
 		if check_root_exists(self.doctype, self.name):
 			rootquery = ''
@@ -130,11 +129,11 @@ def get_attachments(dn):
 		return
 	attachments = []
 	for f in frappe.db.sql("""select name, file_name, file_url, attached_to_report_name from
-		`tabFile` where attached_to_name=%s and attached_to_doctype=%s""",
+		`tabFile` where attached_to_name=%s and attached_to_doctype=%s and is_folder=0""",
 			(dn, "Jasper Reports"), as_dict=True):
 		attachments.append({
 			'name': f.name,
-			'file_url': f.file_url,
+			'file_url': "".join(f.file_url.split("/files")[-1]),#f.file_url,
 			'file_name': f.file_name,
 			'parent_report': f.attached_to_report_name
 		})

@@ -9,6 +9,8 @@ from jasper_erpnext_report.jasper_reports.compile_reports import jasper_compile
 from jasper_erpnext_report.utils.file import check_extension, get_jasper_path, get_extension, JasperXmlReport,\
 	write_file
 from frappe.utils.file_manager import check_max_file_size, get_content_hash
+import StringIO
+from PIL import Image, ImageOps
 
 
 class WriteFileJrxml(object):
@@ -41,6 +43,22 @@ class WriteFileJrxml(object):
 		file_size = check_max_file_size(self.content)
 		content_hash = get_content_hash(self.content)
 
+
+		file_name = os.path.basename(self.rel_path)
+		image = False
+
+		file_url = os.sep + self.rel_path.replace('\\','/')
+		try:
+			im = Image.open(StringIO.StringIO(self.content)).verify()
+			file_url = os.sep + "files" + os.sep + self.rel_path.replace('\\','/')
+			#file_url_small = file_url.replace(file_name.split(".")[0], file_name.split(".")[0] + "_small")
+			#file_url_small = file_url.replace(file_name.split(".")[0], file_name.split(".")[0])
+			#file_url_small = file_url
+			image = True
+		except Exception, e:
+			print "error imgage not valid %s " %e
+
+
 		file_data.update({
 			"doctype": "File",
 			"attached_to_report_name": self.parent,
@@ -48,16 +66,33 @@ class WriteFileJrxml(object):
 			"attached_to_name": dn,
 			"file_size": file_size,
 			"content_hash": content_hash,
-			'file_name': os.path.basename(self.rel_path),
-			'file_url': os.sep + self.rel_path.replace('\\','/'),
+			'file_name': file_name,
+			'file_url': file_url,
 		})
 
+		print "rel_path %s name %s file_url %s" % (self.rel_path, os.path.basename(self.rel_path), file_url)
+
 		f = frappe.get_doc(file_data)
+		f.flags.ignore_file_validate = True
+		if image:
+			#file_data.update({'folder': os.path.dirname(file_url)})
+			self.make_thumbnail(file_url, f, dn)
+			#f.folder = os.path.dirname(file_url.replace("/files", ""))
+		under = "Home/Attachments"
+		f.folder = under + os.path.dirname(file_url.replace("/files", ""))
+		self.create_new_folder(file_url, dn)
+
 		try:
 			f.insert(ignore_permissions=True)
 			if self.ext == "jrxml":
 				self.make_content_jrxml(f.name)
-
+			#print "__file__ %s file_path %s rel_path %s site path %s" %(frappe.get_app_path("jasper_erpnext_report"), os.path.realpath(self.file_path), self.rel_path,
+			#															os.path.relpath(os.path.realpath(self.file_path), frappe.get_site_path()))
+			#path_to_file = os.path.join(os.path.realpath(frappe.get_site_path()), "public", "files", self.rel_path)
+			#if not os.path.exists(path_to_file):
+			#	print "os path to jasper %s" % path_to_file
+			#	frappe.create_folder(os.path.dirname(path_to_file))
+			#	os.symlink(os.path.realpath(self.file_path), path_to_file)
 		except frappe.DuplicateEntryError:
 			return frappe.get_doc("File", f.duplicate_entry)
 		return f
@@ -92,7 +127,8 @@ class WriteFileJrxml(object):
 		for doc in docs:
 			jrxml_ext = get_extension(doc.file_name)
 			if jrxml_ext == "jrxml":
-				jrxml_os_path = self.path_join(self.jasper_path, doc.file_url[1:])
+				#jrxml_os_path = self.path_join(self.jasper_path, doc.file_url[1:])
+				jrxml_os_path = self.path_join(self.jasper_path, get_file_path(doc.file_url))
 				xmldoc = JasperXmlReport(jrxml_os_path)
 				if (self.ext!="properties" and self.ext != "xml"):
 					image_path = xmldoc.get_image_path_from_jrxml(self.fname)
@@ -166,6 +202,65 @@ class WriteFileJrxml(object):
 	def compile(self):
 		jasper_compile_jrxml(self.fname, self.file_path, self.compiled_path)
 
+	def make_thumbnail(self, file_url, doc, dn):
+		try:
+			image = Image.open(StringIO.StringIO(self.content))
+			filename, extn = file_url.rsplit(".", 1)
+		except IOError:
+				frappe.msgprint("Unable to read file format for {0}".format(os.path.realpath(self.file_path)))
+				return
+
+		thumbnail = ImageOps.fit(
+			image,
+			(300, 300),
+			Image.ANTIALIAS
+		)
+
+		#thumbnail_url = filename + "_small." + extn
+		thumbnail_url = filename + "." + extn
+
+		path = os.path.abspath(frappe.get_site_path("public", thumbnail_url.lstrip("/")))
+
+		frappe.create_folder(os.path.dirname(path))
+
+		try:
+			thumbnail.save(path)
+			doc.db_set("thumbnail_url", thumbnail_url)
+		except IOError:
+			frappe.msgprint("Unable to write file format for {0}".format(path))
+
+	def create_new_folder(self, file_url, dn):
+		""" create new folder under current parent folder """
+
+		if not file_url.startswith("/files/"):
+			file_url = "/files" + file_url
+		filename, extn = file_url.rsplit(".", 1)
+
+		thumbnail_url = filename + "." + extn
+
+		path = os.path.abspath(frappe.get_site_path("public", thumbnail_url.lstrip("/")))
+
+		#frappe.create_folder(os.path.dirname(path))
+
+		under = "Home/Attachments"
+		for file_name in os.path.dirname(thumbnail_url.replace("/files/", "")).split("/"):
+			try:
+				folder = under + "/" + file_name
+				print "new folder is 3 %s thumbnail %s file_name %s" % (folder, thumbnail_url, file_name)
+				file = frappe.db.sql("""select name from `tabFile`
+				where name=%s""", (folder,))
+				if not file:
+					file = frappe.new_doc("File")
+					file.file_name = file_name
+					file.is_folder = 1
+					file.folder = under
+					file.attached_to_doctype = self.dt
+					file.attached_to_name =  dn
+					file.insert()
+				under = under + "/" + file_name
+			except:
+				pass
+
 
 def get_compiled_path(dir_path, dn):
 	jrxml_path = get_jrxml_path(dir_path, dn)
@@ -210,26 +305,44 @@ def get_jrxml_root(dt,dn):
 
 
 def delete_file_jrxml(doc, event):
+	print "delete file_name %s attach to doctype %s attech to name %s" % (doc.file_name, doc.attached_to_doctype, doc.attached_to_name)
 	dt = doc.attached_to_doctype
 	if dt == "Jasper Reports":
-		dn = doc.attached_to_name
-		ext = get_extension(doc.file_name)
-		jasper_all_sites_report = frappe.db.get_value(dt, dn, 'jasper_all_sites_report')
-		file_path = os.path.join(get_jasper_path(jasper_all_sites_report), doc.file_url[1:])
-		path = os.path.normpath(os.path.join(file_path,".."))
+		if doc.is_folder:
+			import shutil
+			under = "Home/Attachments"
+			parent_folder = os.path.join(doc.folder, doc.file_name)
+			rel_path = os.path.relpath(parent_folder, under)
+			path = os.path.abspath(frappe.get_site_path("public", "files", rel_path))
+			print "removing directory %s" % path
+			try:
+				#os.remove(path)
+				shutil.rmtree(path)
+				return True
+			except Exception, e:
+				frappe.throw("Error: %s" % e)
 
-		#don't remove directory if it is a subreport
-		if ext == "jrxml":
-			file_root_name, file_root_url = get_jrxml_root(dt,dn)
-			if file_root_url == doc.file_url:
-				from .file import remove_directory
-				remove_directory(path)
-				frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
-				frappe.db.set_value(dt, dn, 'query', "")
 		else:
-			delete_jrxml_child_file(doc.file_url, jasper_all_sites_report)
+			dn = doc.attached_to_name
+			ext = get_extension(doc.file_name)
+			jasper_all_sites_report = frappe.db.get_value(dt, dn, 'jasper_all_sites_report')
+			#file_path = os.path.join(get_jasper_path(jasper_all_sites_report), doc.file_url[1:])
+			file_path = os.path.join(get_jasper_path(jasper_all_sites_report), get_file_path(doc.file_url))
+			path = os.path.normpath(os.path.join(file_path,".."))
 
+			#don't remove directory if it is a subreport
+			if ext == "jrxml":
+				file_root_name, file_root_url = get_jrxml_root(dt,dn)
+				if file_root_url == doc.file_url:
+					from .file import remove_directory
+					remove_directory(path)
+					frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
+					frappe.db.set_value(dt, dn, 'query', "")
+			else:
+				#delete_jrxml_child_file(doc.file_url.split("/files")[-1], jasper_all_sites_report)
+				delete_jrxml_child_file(get_file_path(doc.file_url), jasper_all_sites_report)
 
+"""
 def delete_file_jrxml_old(doc, event):
 	dt = doc.attached_to_doctype
 	if dt == "Jasper Reports":
@@ -240,14 +353,20 @@ def delete_file_jrxml_old(doc, event):
 		if os.path.exists(file_path) and ext == "jrxml":
 			os.remove(file_path)
 			delete_jrxml_images(dt, dn, jasper_all_sites_report)
-			frappe.db.sql("""delete from `tab%s` where %s=%s """ % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
+			frappe.db.sql("delete from `tab%s` where %s=%s " % ("Jasper Parameter", "parent", '%s'),(dn), auto_commit=1)
 			frappe.db.set_value(dt, dn, 'query', "")
 		else:
 			delete_jrxml_child_file(dt, jasper_all_sites_report)
-
+"""
 
 def delete_jrxml_child_file(path, jasper_all_sites):
-	file_path = os.path.join(get_jasper_path(jasper_all_sites),path[1:])
+	filename, extn = path.rsplit(".", 1)
+	thumbnail_url = filename + "." + extn
+	ppath = os.path.abspath(frappe.get_site_path("public", "files", thumbnail_url.lstrip("/")))
+	if os.path.exists(ppath):
+		os.remove(ppath)
+
+	file_path = os.path.join(get_jasper_path(jasper_all_sites),path)
 	if os.path.exists(file_path):
 		os.remove(file_path)
 
@@ -258,7 +377,8 @@ def delete_jrxml_images(dt, dn, jasper_all_sites = False):
 		file_path = image.get('file_url')
 		ext = check_extension(file_path)
 		if ext != "jrxml":
-			delete_jrxml_child_file(dt, jasper_all_sites)
+			#delete_jrxml_child_file(dt, jasper_all_sites)
+			delete_jrxml_child_file(file_path.split("/files")[-1][1:], jasper_all_sites)
 
 def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
 	dt = frappe.form_dict.doctype
@@ -268,10 +388,11 @@ def write_file_jrxml(fname, content, dn=None, content_type=None, parent=None):
 
 		return f
 
-def onload(doc, method=None):
-	print "File doc was load!!! %s" % doc.file_name
 
+def get_file_path(doc_file_path):
+	return "".join(doc_file_path.split("/files")[-1][1:])
 
+"""
 def get_number_weekday_in_month(year, month, weekday, local=None):
 	import calendar
 	import locale
@@ -296,3 +417,5 @@ def get_number_weekday_in_month(year, month, weekday, local=None):
 	calendar.setfirstweekday(first_weekday)
 
 	return number
+
+"""

@@ -289,20 +289,48 @@ jasper.dialog_upload_tree = frappe.ui.form.Control.extend({
 	delete_item: function(obj){
 		var me = this;
 		if(me.frm) {
-			for (var i=0; i < obj.children.length; i++){
+			var n_childs = obj.children.length;
+			/*
+			var n_childs = obj.children.length;
+			console.log("n_childs ", n_childs);
+			for (var i=0; i < n_childs; i++){
+				console.log("child is ", i);
 				var node = me.instance.get_node(obj.children[i]);
-				me.frm.attachments.remove_attachment_by_filename(node.text, function() {
+				console.log("deleting childrens ", obj, node.id);
+				me.frm.attachments.remove_attachment(node.id, function() {
 					me.parse_validate_and_set_in_model(null);
+					me.refresh();
 				});
 			};
-			me.frm.attachments.remove_attachment_by_filename(obj.text, function() {
+			//me.frm.attachments.remove_attachment_by_filename("/files" + obj.text, function() {
+			console.log("deleting one file ", obj);
+			me.frm.attachments.remove_attachment(obj.id, function() {
 				me.parse_validate_and_set_in_model(null);
-			});
+				me.refresh();
+			});*/
+			me.delete_recursive(me, obj, n_childs);
 		} else {
 			me.dataurl = null;
 			me.fileobj = null;
 		}
+	},
+	delete_recursive: function(me, obj, n){
+		var n = n - 1;
+		if(n >= 0){
+			var id = obj.children[n];
+			me.frm.attachments.remove_attachment(id, function() {
+				me.parse_validate_and_set_in_model(null);
+				me.refresh();
+				me.delete_recursive(me, obj, n);
+			});
+		}else{
+			me.frm.attachments.remove_attachment(obj.id, function() {
+				me.parse_validate_and_set_in_model(null);
+				me.refresh();
+			});
+		}
 	}
+
 });
 
 

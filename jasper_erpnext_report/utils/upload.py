@@ -48,7 +48,7 @@ def file_upload():
 	return {
 		"name": filedata.name,
 		"file_name": filedata.file_name,
-		"file_url": filedata.file_url,
+		"file_url": "".join(filedata.file_url.split("/files")[-1]),
 		"parent_report": parent,
 		"comment": comment.as_dict()
 	}
