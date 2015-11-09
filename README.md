@@ -3,7 +3,7 @@ Jasper Erpnext Report
 =============================
 This project is a module to work with frappe framework **version 6.4.5 and above**. It integrate [JasperReports](http://community.jaspersoft.com/project/jasperreports-library) with frappe framework.
 You can make your reports in [Jaspersoft Studio](http://community.jaspersoft.com/project/jaspersoft-studio) and import them in frappe with this module or send it to [JasperReports® Server](http://community.jaspersoft.com/project/jasperreports-server) and get it from there into the framework.
-So you can use Jasper Erpnext Report in tree ways:
+So you can use Jasper Erpnext Report in three ways:
 
  - With JasperReports® Server mode - you need to install it.
  - Standalone mode.
