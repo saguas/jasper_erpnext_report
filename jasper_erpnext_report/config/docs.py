@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+#from __future__ import unicode_literals
 
 
 source_link = "https://github.com/saguas/jasper_erpnext_report.git"
