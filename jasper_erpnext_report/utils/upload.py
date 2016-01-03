@@ -27,6 +27,7 @@ def save_uploaded(dn, parent):
 """
 Function called to upload files from client
 """
+@frappe.whitelist()
 def file_upload():
 	#only administrator can upload reports!!
 	comment = ""
