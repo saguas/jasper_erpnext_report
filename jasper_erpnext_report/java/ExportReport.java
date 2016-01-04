@@ -110,7 +110,7 @@ public class ExportReport
           
   }
   
-  private void make(){
+  private void make() throws JRException, ClassNotFoundException, SQLException{
 	  
 	  this.setParams();
 	  this.setQueryType();
@@ -147,7 +147,7 @@ public class ExportReport
 	  }
   }
   
-  private void make(FrappeDataSource fds){
+  private void make(FrappeDataSource fds) throws JRException, ClassNotFoundException, SQLException{
 	  
 	  this.setParams();
 	  this.getJasperPrint(fds);
@@ -157,14 +157,14 @@ public class ExportReport
 	  }
   }
   
-  public JasperPrint export(FrappeDataSource fds, Boolean batch)
+  public JasperPrint export(FrappeDataSource fds, Boolean batch) throws JRException, ClassNotFoundException, SQLException
   {
 	 this.batch = batch;
 	 this.make(fds);
 	 return this.jasperPrint;
   }
   
-  public JasperPrint export(String[][] data, String[] cols, FrappeDataSource fds, Boolean batch){
+  public JasperPrint export(String[][] data, String[] cols, FrappeDataSource fds, Boolean batch) throws JRException, ClassNotFoundException, SQLException{
 	  this.tables = data;
 	  this.columns = cols;
 	  this.batch = batch;
@@ -178,17 +178,17 @@ public class ExportReport
 	  
   }
   
-  public JasperPrint export(Boolean batch)
+  public JasperPrint export(Boolean batch) throws JRException, ClassNotFoundException, SQLException
   {
 	 this.batch = batch;
 	 this.make();
 	 return this.jasperPrint;
   }
   
-  public void setParams(){
+  public void setParams() throws JRException{
 	  JasperReport report = null;
 	  
-	  try{
+	  //try{
 		  if (this.virtua > 0){
 			  JRFileVirtualizer fileVirtua = new JRFileVirtualizer(this.virtua, this.path_jasper_file);
 			  this.params.put(JRParameter.REPORT_VIRTUALIZER, fileVirtua);
@@ -211,17 +211,17 @@ public class ExportReport
 			  }*/
 
 		  };
-	  }
+	  /*}
       catch (JRException e)
       {
         e.printStackTrace();
-      }
+      }*/
 	
   }
   
-  public void makeReport(){
+  public void makeReport() throws JRException{
       
-	  try{
+	  //try{
 		  switch(this.type){
 		      case 0:
 		          JRDocxExporter docxexporter = new JRDocxExporter();
@@ -294,47 +294,47 @@ public class ExportReport
 		          pdfexporter.exportReport();
 		          break;
 		  }
-	  }
+	  /*}
       catch (JRException e)
       {
         e.printStackTrace();
-      }
+      }*/
 		
   }
 
-	public void connect(){
+	public void connect() throws ClassNotFoundException, SQLException{
   		
-	    try
-	    {
+	    //try
+	    //{
 			Class.forName("org.mariadb.jdbc.Driver");
 			this.connection = DriverManager.getConnection(this.conn);
-		}
-	    catch (ClassNotFoundException e){
+		//}
+	    /*catch (ClassNotFoundException e){
 	        e.printStackTrace();
 	    }
 		catch (SQLException e){
 		      e.printStackTrace();
-		}
+		}*/
   }
   
-	public void getJasperPrint(Connection connection){
-	 try{
+	public void getJasperPrint(Connection connection) throws JRException{
+	 //try{
 		this.jasperPrint = JasperFillManager.fillReport(this.jasper_path, this.params, connection);
-	  }
+	  /*}
       catch (JRException e)
       {
         e.printStackTrace();
-      }
+      }*/
   	}
   
-	public void getJasperPrint(JRDataSource dataSource){
+	public void getJasperPrint(JRDataSource dataSource) throws JRException{
 		
-	 try{
+	 //try{
 		this.jasperPrint = JasperFillManager.fillReport(this.jasper_path, this.params, dataSource);
-	  }
+	  /*}
 	    catch (JRException e)
 	    {
 	      e.printStackTrace();
-	    }
+	    }*/
 	}
 }

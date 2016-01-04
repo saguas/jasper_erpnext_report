@@ -2,6 +2,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRException;
+import java.sql.SQLException;
 
 public class BatchReport
 {
@@ -57,13 +59,13 @@ public class BatchReport
 		this.outputPathName = outputPathName;
 	}
 	
-	public void addToBatch(HashMap args, String[][] data, String[] cols, FrappeDataSource fds){
+	public void addToBatch(HashMap args, String[][] data, String[] cols, FrappeDataSource fds) throws JRException, ClassNotFoundException, SQLException{
 		ExportReport exporter = new ExportReport(args);
 		JasperPrint jasperPrint =  exporter.export(data, cols, fds, true);
 		this.jasperPrintList.add(jasperPrint);
 	}
 	
-	public void export(){
+	public void export() throws JRException {
 		MakeReport mr = new MakeReport(this.jasperPrintList, this.encrypt, this.opasswd, this.upasswd);
 		mr.makeReport(this.type, this.outputPathName, this.fileName);
 		this.Task.setReadyTask();

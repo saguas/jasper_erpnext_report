@@ -70,3 +70,4 @@ jasper_erpnext_report/core/MyCamelRouteBuilder.py
 jasper_erpnext_report/java/FileCopierWithCamel.java
 jasper_erpnext_report/java/lib/MyCamelJar.jar
 target/
+MyCamelJar.jar

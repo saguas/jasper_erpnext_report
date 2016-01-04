@@ -23,6 +23,7 @@ rel_path = os.path.relpath(os.path.join(parent_path, "java"),dirname(__file__))
 rel_path_curr = os.path.relpath(parent_path, os.getcwd())
 try:
 	os.environ['CLASSPATH'] = norm_path(join_path(parent_path,"java/lib/*")) + ":.:" + os.environ.get('CLASSPATH',"")
+	print "CLASSPATH {}".format(os.environ['CLASSPATH'])
 except:
 	print "Error in setting java classpath."
 

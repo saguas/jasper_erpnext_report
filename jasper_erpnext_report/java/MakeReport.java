@@ -44,9 +44,9 @@ public class MakeReport
 		this.upasswd = upasswd;
 	}
 
-	public void makeReport(int type, String outputPathName, String fileName){
+	public void makeReport(int type, String outputPathName, String fileName) throws JRException {
   
-	  try{
+		//try{
 		  switch(type){
 		      case 0:
 		          JRDocxExporter docxexporter = new JRDocxExporter();
@@ -156,11 +156,11 @@ public class MakeReport
 		          pdfexporter.exportReport();
 		          break;
 		  }
-	  }
+	  /*}
 	  catch (JRException e)
 	  {
 	    e.printStackTrace();
-	  }
+	  }*/
 	
 	}
 }
