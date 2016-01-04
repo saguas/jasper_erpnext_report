@@ -35,7 +35,7 @@ class JasperLocal(Jb.JasperBase):
 			cresp = self.prepare_report_async(path, doc, data=data, params=params, pformat=pformat, ncopies=ncopies, for_all_sites=for_all_sites)
 			return [cresp]
 		except Exception as e:
-			frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, e)))
+			frappe.throw(_("Error in report %s, error is: %s." % (doc.jasper_report_name, frappe.get_traceback())))
 
 	def _run_report_async(self, path, doc, data=None, params=None, pformat="pdf", ncopies=1, for_all_sites=0):
 

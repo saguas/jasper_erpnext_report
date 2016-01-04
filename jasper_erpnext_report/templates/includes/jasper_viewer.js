@@ -15,17 +15,21 @@ function bind_events() {
 
 };
 
-$("#jasper_viewer").ready(function(){
-	bind_events();
-});
+frappe.ready(function() {
 
-$("#jasper_viewer").css({
-	"padding":"10px",
-	"padding-top":"30px",
-   "background":"#404040",
-   "webkit-border-radius": "7px",
-   "-moz-border-radius": "7px",
-   "border-radius": "7px",
-   "margin":"0 auto",
-   "overflow":"hidden"
+	$("#jasper_viewer").ready(function(){
+		bind_events();
+	});
+
+	$("#jasper_viewer").css({
+		"padding":"10px",
+		"padding-top":"30px",
+	   "background":"#404040",
+	   "webkit-border-radius": "7px",
+	   "-moz-border-radius": "7px",
+	   "border-radius": "7px",
+	   "margin":"0 auto",
+	   "overflow":"hidden"
+	});
+
 });
