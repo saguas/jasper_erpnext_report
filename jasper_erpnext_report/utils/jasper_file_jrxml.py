@@ -96,6 +96,7 @@ class WriteFileJrxml(object):
 		except Exception, e:
 			frappe.delete_doc("File", f.name)
 			print "Remove this doc: doctype {} docname {} error: {}".format(f.doctype, f.name, e)
+			frappe.throw(_("Error in report doctype %s docname %s, error is: %s." % (f.doctype, f.name, e)))
 
 		return f
 

@@ -25,5 +25,4 @@ class FrappeTask(PythonJavaClass):
 			"task_id": self.task_id,
 			"result": self.result
 		})
-		print "before emit task"
 		emit_via_redis("task_status_change", response, "task:" + self.task_id)
