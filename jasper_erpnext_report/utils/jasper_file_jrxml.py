@@ -217,7 +217,7 @@ class WriteFileJrxml(object):
 
 		thumbnail_url = filename + "." + extn
 
-		under = "Home/Attachments"
+		under = "%s/%s" %(_("Home"),_("Attachments"))
 		for file_name in os.path.dirname(thumbnail_url.replace("/files/", "")).split("/"):
 			try:
 				folder = under + "/" + file_name
