@@ -6,7 +6,7 @@ How to for frappe V5:
 4. Select in <<Choose Origin>> -> LocalServer.
 5. Select in <<Report for>> -> General.
 6. Uncheck the <<Use For Custom Fields>> checkbox.
-7. Seve it.
+7. Save it.
 8. Click in Upload button.
 9. Import CustomerReportTable.jrxml.
 10. Save again.
