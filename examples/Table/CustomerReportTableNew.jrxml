@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.0.4.final using JasperReports Library version 6.0.4  -->
+<!-- 2015-04-21T00:19:14 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AircraftReportWithDescription" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="6e9c2fbe-3a97-4795-ac1a-8f459fb655da">
+	<field name="Customer ID" class="java.lang.String">
+		<fieldDescription><![CDATA[Customer ID]]></fieldDescription>
+	</field>
+	<field name="Customer Name" class="java.lang.String">
+		<fieldDescription><![CDATA[Customer Name]]></fieldDescription>
+	</field>
+	<field name="Customer Group" class="java.lang.String">
+		<fieldDescription><![CDATA[Customer Group]]></fieldDescription>
+	</field>
+	<field name="City" class="java.lang.String">
+		<fieldDescription><![CDATA[City]]></fieldDescription>
+	</field>
+	<pageHeader>
+		<band height="30">
+			<staticText>
+				<reportElement x="0" y="0" width="69" height="24" uuid="80a5b8db-e0f0-45dc-8927-56905a1f15dd"/>
+				<textElement verticalAlignment="Bottom"/>
+				<text><![CDATA[
+					Customer Id:
+                ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="0" width="79" height="24" uuid="a5602285-bc23-48d9-b542-de8b526cf355"/>
+				<text><![CDATA[
+					Customer Name:
+                ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="0" width="69" height="24" uuid="7711dcc5-2165-4304-8fad-ddf53528fcf3"/>
+				<text><![CDATA[
+					Customer Group:
+                ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="0" width="69" height="24" uuid="a78f6ccb-2791-4dee-96e3-e39ba71b84d9"/>
+				<text><![CDATA[
+					City:
+                ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="30">
+			<textField>
+				<reportElement x="0" y="0" width="69" height="24" uuid="b443e222-e7ec-44af-a098-90120d0a17c4"/>
+				<textFieldExpression><![CDATA[$F{Customer ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="0" width="69" height="24" uuid="8e871d04-3ed6-428d-a1dc-6859d352df77"/>
+				<textFieldExpression><![CDATA[$F{Customer Name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="69" height="24" uuid="83acc5f5-83b3-4934-b169-6bf4f28cc355"/>
+				<textFieldExpression><![CDATA[$F{Customer Group}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="0" width="69" height="24" uuid="221fee7a-f599-44d4-88c2-01b7073e2c72"/>
+				<textFieldExpression><![CDATA[$F{City}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
