@@ -51,6 +51,9 @@ class JasperLocal(Jb.JasperBase):
 
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
+		from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
+		hashmap.put("REPORT_SCRIPTLET", _JasperCustomScriptlet(None))
+
 		self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 
 		copies = [_("Original"), _("Duplicate"), _("Triplicate")]
@@ -138,10 +141,6 @@ class JasperLocal(Jb.JasperBase):
 		cols = None
 		fds = None
 
-		#if custom:
-		#	jds = jds_method(ids, cur_doctype)
-		#	fds = jr.FDataSource(_JasperCustomDataSource(jds))
-
 		if grid_data and grid_data.get("data", None):
 			data, cols = self._export_query_report(grid_data)
 			if not data or not cols:
@@ -152,6 +151,15 @@ class JasperLocal(Jb.JasperBase):
 		if custom:
 			jds = jds_method(ids, data, cols, cur_doctype)
 			fds = jr.FDataSource(_JasperCustomDataSource(jds))
+
+		#check if there is a scriptlet hook for this report.
+		jscriptlet_method = utils.jasper_run_method_once_with_default("jasper_scriptlet", report_name, None)
+		if jscriptlet_method:
+			from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
+
+			JasperScriptlet = jr.JavaFrappeScriptlet()
+			JasperScriptlet.setFrappeScriptlet(_JasperCustomScriptlet(JasperScriptlet, jscriptlet_method(JasperScriptlet, ids, data, cols, cur_doctype, report_name)))
+			mparams.get("params").put("REPORT_SCRIPTLET", JasperScriptlet)
 
 		frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
