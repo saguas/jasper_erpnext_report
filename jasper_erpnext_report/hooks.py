@@ -51,6 +51,12 @@ on_jasper_params = {
 }
 """
 
+"""
+jasper_scriptlet = {
+	"Table 2 Custom New": "jasper_erpnext_report.utils.utils.testHookScriptlet"
+}
+"""
+
 # Document Events
 # ---------------
 # Hook on document methods and events

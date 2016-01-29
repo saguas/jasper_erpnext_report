@@ -145,6 +145,26 @@ def testHookReport(doc, args1, args2):
 	return a
 """
 
+"""
+This hook (jasper_scriptlet) must return an object that implements all the methods of JRAbstractScriptlet.
+If you do not want to implement all the methods then you should extends JasperCustomScripletDefault of jasper_erpnext_report.jasper_reports.ScriptletDefault module.
+If you extend then you should only implement the methods that you want.
+The methods are: see JasperCustomScripletDefault in jasper_erpnext_report.jasper_reports.ScriptletDefault module.
+It is possible to call any method from jrxml file. The test method bellow is one example.
+"""
+def testHookScriptlet(JasperScriptlet, ids, data, cols, cur_doctype, cur_docname):
+	from jasper_erpnext_report.jasper_reports.ScriptletDefault import JasperCustomScripletDefault
+	class MyJasperCustomScripletDefault(JasperCustomScripletDefault):
+		def __init__(self, JasperScriplet, ids=None, data=None, cols=None, doctype=None):
+			super(MyJasperCustomScripletDefault, self).__init__(JasperScriplet, ids, data, cols, doctype)
+
+		def test(self, args):
+			print "MyJasperCustomScripletDefault method Teste {}".format(args)
+			return 10
+
+	print "testHookScriptlet Curr_doctype {} Curr_docname {}".format(cur_doctype, cur_docname)
+	return MyJasperCustomScripletDefault(JasperScriptlet, ids, data, cols, cur_doctype)
+
 def jasper_run_method(hook_name, *args, **kargs):
 	for method in JasperHooks(hook_name):
 		method(hook_name, *args, **kargs)

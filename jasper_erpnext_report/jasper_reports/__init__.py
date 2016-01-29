@@ -44,6 +44,7 @@ try:
 	ExportReport = getJavaClass('ExportReport')
 	BatchReport = getJavaClass('BatchReport')
 	FDataSource = getJavaClass('FrappeDataSource')
+	JavaFrappeScriptlet = getJavaClass('JavaFrappeScriptlet')
 
 	jr.pyjnius = True
 	print "pyjnius is installed: {}".format(jr.pyjnius)

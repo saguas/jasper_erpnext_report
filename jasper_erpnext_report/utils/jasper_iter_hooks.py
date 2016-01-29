@@ -11,6 +11,7 @@ HOOKS:
 		jasper_after_get_report(file_name, file_output, url, filepath); jasper_before_get_report(data);
 		jasper_after_list_for_doctype(doctype, docnames, report, lista); jasper_before_list_for_doctype(doctype, docnames, report);
 		jasper_after_list_for_all(lista); jasper_before_list_for_all();
+		jasper_scriptlet(JavaScriptlet, ids=None, data=None, cols=None, doctype=None, docname=None);
 """
 
 class JasperHooks:
@@ -36,7 +37,9 @@ class JasperHooks:
 			return self.get_next_jasper_hook_method()
 
 	def get_next_jasper_hook_method(self):
-		curr_method = frappe.get_attr(self.methods[self.current])
-		self.current += 1
-		return curr_method
+		if self.methods_len > 0:
+			curr_method = frappe.get_attr(self.methods[self.current])
+			self.current += 1
+			return curr_method
+		return None
 
