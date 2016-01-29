@@ -30,6 +30,8 @@ How to Install
  3.  Also you will need microsoft TrueType fonts (ttf-mscorefonts-installer) installed. In ubuntu - `sudo apt-get install ubuntu-restricted-extras` or `apt-get install ttf-mscorefonts-installer` - you may need to uncomment multiverse in `/etc/apt/sources.list`.
  4. Install in the framework with `bench install-app jasper_erpnext_report` 
  5. Install pyjnius with `bench update --requirements` 
+ 
+*Note:* If you have nay trouble like pyjnius is not installed check if you have JAVA_HOME exported and added it to PATH. Check also if it is the right path to java folder.
 
 How to use it?
 ==============
