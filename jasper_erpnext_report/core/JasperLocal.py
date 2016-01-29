@@ -138,15 +138,20 @@ class JasperLocal(Jb.JasperBase):
 		cols = None
 		fds = None
 
-		if custom:
-			jds = jds_method(ids, cur_doctype)
-			fds = jr.FDataSource(_JasperCustomDataSource(jds))
+		#if custom:
+		#	jds = jds_method(ids, cur_doctype)
+		#	fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
 		if grid_data and grid_data.get("data", None):
 			data, cols = self._export_query_report(grid_data)
 			if not data or not cols:
 				print "Error in report {}. There is no data.".format(report_name)
+				frappe.throw(_("Error in report {}. There is no data.".format(report_name)))
 				return
+
+		if custom:
+			jds = jds_method(ids, data, cols, cur_doctype)
+			fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
 		frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 
