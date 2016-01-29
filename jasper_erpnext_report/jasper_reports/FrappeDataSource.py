@@ -5,8 +5,10 @@ from jnius import PythonJavaClass, java_method
 
 
 class JasperCustomDataSourceDefault(object):
-	""" Get fields for each id """
-	def __init__(self, ids, doctype=None):
+	""" Get fields for each id default ignore data and cols.
+		params: data an cols have meaning when used with Table DataSource and are here for custom implementation.
+	"""
+	def __init__(self, ids, data=None, cols=None, doctype=None):
 		if isinstance(ids, basestring):
 			ids = [ids]
 
