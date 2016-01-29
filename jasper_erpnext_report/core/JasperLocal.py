@@ -51,9 +51,6 @@ class JasperLocal(Jb.JasperBase):
 
 		pram.extend(self.get_param_hook(doc, data, pram_server))
 
-		from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
-		hashmap.put("REPORT_SCRIPTLET", _JasperCustomScriptlet(None))
-
 		self.populate_hashmap(pram, hashmap, doc.jasper_report_name)
 
 		copies = [_("Original"), _("Duplicate"), _("Triplicate")]
