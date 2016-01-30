@@ -79,7 +79,7 @@ class _JasperCustomDataSource(PythonJavaClass):
 	__javainterfaces__ = ['IFrappeDataSource']
 
 	def __init__(self, jds):
-		super(_JasperCustomDataSource, self).__init__(jds)
+		super(_JasperCustomDataSource, self).__init__()
 		self.jds = jds
 
 	@java_method('()Z')
