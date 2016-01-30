@@ -12,7 +12,6 @@ import jasper_erpnext_report.utils.utils as utils
 import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
-#from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 
 import uuid
 import os, json
@@ -97,6 +96,11 @@ class JasperLocal(Jb.JasperBase):
 		if custom and not frappe.local.fds:
 			default = ['jasper_erpnext_report.jasper_reports.FrappeDataSource.JasperCustomDataSourceDefault']
 			jds_method = utils.jasper_run_method_once_with_default("jasper_custom_data_source", data.get("report_name"), default)
+			if jds_method.__name__ == 'JasperCustomDataSourceDefault':
+				from jasper_erpnext_report.utils.utils import get_hook_module
+				jscriptlet_module = get_hook_module("jasper_custom_data_source", data.get("report_name"))
+				if jscriptlet_module:
+					jds_method =  jscriptlet_module.get_data
 			frappe.local.fds = jds_method
 
 		for m in range(ncopies):
@@ -157,6 +161,24 @@ class JasperLocal(Jb.JasperBase):
 			JasperScriptlet = jr.JavaFrappeScriptlet()
 			JasperScriptlet.setFrappeScriptlet(_JasperCustomScriptlet(JasperScriptlet, jscriptlet_method(JasperScriptlet, ids, data, cols, cur_doctype, report_name)))
 			mparams.get("params").put("REPORT_SCRIPTLET", JasperScriptlet)
+		else:
+			"""
+				check if there is a scriptlet hook for this report in frappe-bench/sites/site_name/jasper_hooks folder.
+				The folder have the following structure where jasper_hooks is the root(package):
+					jasper_hooks/report name/hook name.py
+					Example: jasper_hooks/Table 1 Custom/jasper_scriptlet.py -> where Table 1 Custom is the name of report and jasper_scriptlet.py
+					is the name of the hook.
+				Note: All the folders must have __init__.py to make it a package
+				This strucutre is to help development. There is no need to make a frappe app only to control reports.
+			"""
+			from jasper_erpnext_report.utils.utils import get_hook_module
+			from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
+
+			jscriptlet_module = get_hook_module("jasper_scriptlet", report_name)
+			if jscriptlet_module:
+				JasperScriptlet = jr.JavaFrappeScriptlet()
+				JasperScriptlet.setFrappeScriptlet(_JasperCustomScriptlet(JasperScriptlet, jscriptlet_module.get_data(JasperScriptlet, ids, data, cols, cur_doctype, report_name)))
+				mparams.get("params").put("REPORT_SCRIPTLET", JasperScriptlet)
 
 		frappe.local.batch.batchReport.addToBatch(mparams, data, cols, fds)
 

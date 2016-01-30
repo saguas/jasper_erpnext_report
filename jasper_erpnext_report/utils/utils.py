@@ -165,9 +165,48 @@ def testHookScriptlet(JasperScriptlet, ids, data, cols, cur_doctype, cur_docname
 	print "testHookScriptlet Curr_doctype {} Curr_docname {}".format(cur_doctype, cur_docname)
 	return MyJasperCustomScripletDefault(JasperScriptlet, ids, data, cols, cur_doctype)
 
+def get_make_jasper_hooks_path():
+	jasper_hooks_path = frappe.get_site_path("jasper_hooks")
+	frappe.create_folder(jasper_hooks_path, with_init=True)
+	return jasper_hooks_path
+
+def get_hook_module(hook_name, report_name=None):
+	"""
+		check if there is a scriptlet hook for this report in frappe-bench/sites/site_name/jasper_hooks folder.
+		The folder have the following structure where jasper_hooks is the root(package):
+			jasper_hooks/report name/hook name.py
+			Example: jasper_hooks/Table 1 Custom/jasper_scriptlet.py -> where Table 1 Custom is the name of report and jasper_scriptlet.py
+			is the name of the hook.
+		Note: All the folders must have __init__.py to make it a package
+		This strucutre is to help development. There is no need to make a frappe app only to control reports.
+	"""
+	import os, sys
+
+	try:
+		jasper_hooks_path = get_make_jasper_hooks_path()
+
+		jasper_absolute_path = os.path.realpath(os.path.join(jasper_hooks_path))
+
+		if jasper_absolute_path not in sys.path:
+			sys.path.insert(0, jasper_absolute_path)
+
+		report_name = report_name + "." if report_name else ""
+
+		hook_module = frappe.get_module(report_name + hook_name)
+	except:
+		hook_module = None
+
+	return hook_module
+
 def jasper_run_method(hook_name, *args, **kargs):
-	for method in JasperHooks(hook_name):
-		method(hook_name, *args, **kargs)
+	mlist = JasperHooks(hook_name)
+	if mlist.methods_len > 0:
+		for method in JasperHooks(hook_name):
+			method(hook_name, *args, **kargs)
+	else:
+		hook_module = get_hook_module(hook_name)
+		if hook_module:
+			hook_module.get_data(*args, **kargs)
 
 #call hooks for jasper custom data source
 def jasper_run_method_once_with_default(hook_name, docname, default):

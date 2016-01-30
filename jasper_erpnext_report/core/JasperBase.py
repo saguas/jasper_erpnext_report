@@ -662,3 +662,5 @@ class JasperBase(object):
 				_logger.info(_("Jasper Server, email error: {}").format(e))
 				_logger.error(_("Jasper Server, email error: {}").format(e))
 
+
+
