@@ -69,7 +69,7 @@ class _JasperCustomScriptlet(PythonJavaClass):
 	__javainterfaces__ = ['IFrappeScriptlet']
 
 	def __init__(self, JasperScriplet, scl):
-		super(_JasperCustomScriptlet, self).__init__(JasperScriplet, scl)
+		super(_JasperCustomScriptlet, self).__init__()
 		"""This field is the scriptlet passed in hook jasper_scriptlet """
 		self.Sl = scl
 		"""this field give us access to JavaFrappeScriptlet Object.
