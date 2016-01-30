@@ -4,7 +4,7 @@
         "public/css/iconFont.css"
     ],
 	"js/jasper_erpnext_report.js": [
-				"uuid.js",
+				"public/js/uuid.js",
         "public/js/jstree.min.js",
         "public/js/utils.js",
         "public/js/jasper_ui.js",
