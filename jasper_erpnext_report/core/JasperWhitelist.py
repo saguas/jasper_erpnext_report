@@ -159,13 +159,15 @@ def make_pdf(fileName, content, pformat, report_name, reqId=None, merge_all=True
 
 	return file_name, output
 
-#@frappe.whitelist()
-@frappe.async.handler
+@frappe.whitelist()
+#@frappe.async.handler
 def run_report(data, docdata=None):
 	if not data:
 		frappe.throw("No data for this Report!!!")
 	if isinstance(data, basestring):
 		data = json.loads(data)
+
+	frappe.local.task_id = data.pop("task_id")
 	jsr = jasper_session_obj or Jr.JasperRoot()
 	return jsr.run_report(data, docdata=docdata)
 

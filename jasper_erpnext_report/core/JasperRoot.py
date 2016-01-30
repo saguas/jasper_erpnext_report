@@ -261,7 +261,6 @@ class JasperRoot(Jb.JasperBase):
 				return
 
 			result = self.jps.run_remote_report_async(path, rdoc, data=data, params=params, pformat=pformat, ncopies=ncopies)
-			#result[0]["pformat"] = pformat
 
 		return result
 

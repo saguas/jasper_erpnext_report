@@ -42,13 +42,17 @@ queued_func_callback = function(data){
 
 jasper.run_jasper_report = function(method, data, doc){
     var df = new $.Deferred();
+    var task_id = uuid.v1();
+    data.task_id = task_id;
+
+    queued_func_callback({task_id: task_id});
     $banner = jasper.show_banner(__("Please wait. System is processing your report. It will notify you when ready."));
     timeout = setTimeout(jasper.close_banner, 1000*15, $banner);
     pending_banner.push({banner:$banner, timeout:timeout});
 
     frappe.call({
 	       "method": "jasper_erpnext_report.core.JasperWhitelist." + method,
-	       queued: queued_func_callback,
+	       //queued: queued_func_callback,
 	       args:{
                data: data,
 	           docdata: doc
