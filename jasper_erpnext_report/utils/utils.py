@@ -165,8 +165,8 @@ def testHookScriptlet(JasperScriptlet, ids, data, cols, cur_doctype, cur_docname
 	print "testHookScriptlet Curr_doctype {} Curr_docname {}".format(cur_doctype, cur_docname)
 	return MyJasperCustomScripletDefault(JasperScriptlet, ids, data, cols, cur_doctype)
 
-def get_make_jasper_hooks_path():
-	jasper_hooks_path = frappe.get_site_path("jasper_hooks")
+def make_jasper_hooks_path():
+	jasper_hooks_path = frappe.get_site_path("jasper_hooks_" + frappe.local.site.replace(".", "_"))
 	frappe.create_folder(jasper_hooks_path, with_init=True)
 	return jasper_hooks_path
 
@@ -182,17 +182,18 @@ def get_hook_module(hook_name, report_name=None):
 	"""
 	import os, sys
 
+	make_jasper_hooks_path()
+
+	jasper_absolute_path = os.path.realpath(frappe.local.site_path)
+
+	if jasper_absolute_path not in sys.path:
+		sys.path.insert(0, jasper_absolute_path)
+
+	report_name = report_name + "." if report_name else ""
+
+	module_path = "jasper_hooks_" + frappe.local.site.replace(".", "_") + "." + report_name + hook_name
 	try:
-		jasper_hooks_path = get_make_jasper_hooks_path()
-
-		jasper_absolute_path = os.path.realpath(os.path.join(jasper_hooks_path))
-
-		if jasper_absolute_path not in sys.path:
-			sys.path.insert(0, jasper_absolute_path)
-
-		report_name = report_name + "." if report_name else ""
-
-		hook_module = frappe.get_module(report_name + hook_name)
+		hook_module = frappe.get_module(module_path)
 	except:
 		hook_module = None
 
