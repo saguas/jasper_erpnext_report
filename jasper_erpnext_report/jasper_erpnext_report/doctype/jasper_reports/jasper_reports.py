@@ -60,7 +60,7 @@ class JasperReports(Document):
 			try:
 				self.jasper_param_message = frappe.db.get_values_from_single(["jasper_param_message"], None, "JasperServerConfig")[0][0].format(report=self.jasper_report_name, user=frappe.local.session['user'])
 			except:
-				pass
+				self.jasper_param_message = ""
 
 		#check if Jasper is configurated
 		use_jasper_server = frappe.db.get_values_from_single(["use_jasper_server"], None, "JasperServerConfig")[0][0]
