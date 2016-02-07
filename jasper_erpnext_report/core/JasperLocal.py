@@ -13,8 +13,8 @@ import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
 
-import uuid
-import os, json
+#import uuid
+import os
 
 
 _logger = frappe.get_logger("jasper_erpnext_report")
@@ -69,7 +69,8 @@ class JasperLocal(Jb.JasperBase):
 			batch.outtype = print_format.index(pformat)
 			batch.batchReport.setType(batch.outtype)
 			batch.batchReport.setFileName(batch.reportName)
-			reqId = uuid.uuid4().hex
+			#reqId = uuid.uuid4().hex
+			reqId = frappe.local.task_id
 			batch.outputPath = path_join(batch.compiled_path, reqId)
 			frappe.create_folder(batch.outputPath)
 			batch.batchReport.setOutputPath(batch.outputPath + os.sep + batch.reportName)
