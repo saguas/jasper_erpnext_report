@@ -2,8 +2,8 @@ __author__ = 'luissaguas'
 
 
 #import json
-from jnius import PythonJavaClass
-from jnius.jnius import java_method
+from jnius import PythonJavaClass, java_method
+
 
 class FrappeTask(PythonJavaClass):
 	__javainterfaces__ = ['IFrappeTask']
