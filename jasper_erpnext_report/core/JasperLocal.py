@@ -137,7 +137,6 @@ class JasperLocal(Jb.JasperBase):
 		return resp
 
 	def _export_report(self, mparams, report_name, grid_data, sessionId, cur_doctype, custom, ids, jds_method):
-		from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 
 		data = None
 		cols = None
@@ -151,6 +150,7 @@ class JasperLocal(Jb.JasperBase):
 				return
 
 		if custom:
+			from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 			jds = jds_method(ids, data, cols, cur_doctype)
 			fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
