@@ -13,7 +13,7 @@ import jasper_erpnext_report.jasper_reports as jr
 import JasperBase as Jb
 
 
-import uuid
+#import uuid
 import os, json
 
 
