@@ -14,7 +14,7 @@ import JasperBase as Jb
 
 
 #import uuid
-import os, json
+import os
 
 
 _logger = frappe.get_logger("jasper_erpnext_report")
