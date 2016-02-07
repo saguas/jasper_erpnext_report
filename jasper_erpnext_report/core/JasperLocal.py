@@ -69,7 +69,8 @@ class JasperLocal(Jb.JasperBase):
 			batch.outtype = print_format.index(pformat)
 			batch.batchReport.setType(batch.outtype)
 			batch.batchReport.setFileName(batch.reportName)
-			reqId = uuid.uuid4().hex
+			#reqId = uuid.uuid4().hex
+			reqId = frappe.local.task_id
 			batch.outputPath = path_join(batch.compiled_path, reqId)
 			frappe.create_folder(batch.outputPath)
 			batch.batchReport.setOutputPath(batch.outputPath + os.sep + batch.reportName)
