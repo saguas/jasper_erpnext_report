@@ -27,10 +27,10 @@ async_func_callback = function(data){
 		jasper.jasper_report_ready(poll_data, $banner, timeout);
 		frappe.socket.socket.emit('task_unsubscribe', "Local-" + data.task_id);
 	}else{
+		frappe.socket.socket.emit('task_unsubscribe', "Local-" + data.task_id);
 		if (result.status === "ready"){
            jasper.pending_reports.push(result);
            setTimeout(jasper.jasper_report_ready, 1000*10, result, $banner, timeout);
-           //frappe.socket.socket.emit('task_unsubscribe', "server-" + data.task_id);
         }else{
            jasper.polling_report(result, $banner, timeout);
         }
