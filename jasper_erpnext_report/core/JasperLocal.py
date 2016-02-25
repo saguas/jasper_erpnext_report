@@ -137,7 +137,6 @@ class JasperLocal(Jb.JasperBase):
 		return resp
 
 	def _export_report(self, mparams, report_name, grid_data, sessionId, cur_doctype, custom, ids, jds_method):
-		from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 
 		data = None
 		cols = None
@@ -151,6 +150,7 @@ class JasperLocal(Jb.JasperBase):
 				return
 
 		if custom:
+			from jasper_erpnext_report.jasper_reports.FrappeDataSource import _JasperCustomDataSource
 			jds = jds_method(ids, data, cols, cur_doctype)
 			fds = jr.FDataSource(_JasperCustomDataSource(jds))
 
@@ -158,7 +158,6 @@ class JasperLocal(Jb.JasperBase):
 		jscriptlet_method = utils.jasper_run_method_once_with_default("jasper_scriptlet", report_name, None)
 		if jscriptlet_method:
 			from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
-
 			JasperScriptlet = jr.JavaFrappeScriptlet()
 			JasperScriptlet.setFrappeScriptlet(_JasperCustomScriptlet(JasperScriptlet, jscriptlet_method(JasperScriptlet, ids, data, cols, cur_doctype, report_name)))
 			mparams.get("params").put("REPORT_SCRIPTLET", JasperScriptlet)
@@ -173,10 +172,10 @@ class JasperLocal(Jb.JasperBase):
 				This strucutre is to help development. There is no need to make a frappe app only to control reports.
 			"""
 			from jasper_erpnext_report.utils.utils import get_hook_module
-			from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
 
 			jscriptlet_module = get_hook_module("jasper_scriptlet", report_name)
 			if jscriptlet_module:
+				from jasper_erpnext_report.jasper_reports.ScriptletDefault import _JasperCustomScriptlet
 				JasperScriptlet = jr.JavaFrappeScriptlet()
 				JasperScriptlet.setFrappeScriptlet(_JasperCustomScriptlet(JasperScriptlet, jscriptlet_module.get_data(JasperScriptlet, ids, data, cols, cur_doctype, report_name)))
 				mparams.get("params").put("REPORT_SCRIPTLET", JasperScriptlet)

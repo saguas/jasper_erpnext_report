@@ -1,8 +1,7 @@
 __author__ = 'saguas'
 
 import frappe
-#from jnius import PythonJavaClass#, java_method
-from jnius.jnius import PythonJavaClass, java_method
+from jnius import PythonJavaClass, java_method
 
 class JasperCustomDataSourceDefault(object):
 	""" Get fields for each id default ignore data and cols.
