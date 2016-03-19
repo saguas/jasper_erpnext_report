@@ -19,6 +19,7 @@ class FrappeTask(PythonJavaClass):
 	@java_method('()V')
 	def setReadyTask(self):
 		from frappe.async import emit_via_redis
+		import frappe
 
 		response = {}
 		response.update({
@@ -26,7 +27,7 @@ class FrappeTask(PythonJavaClass):
 			"task_id": self.task_id,
 			"result": self.result
 		})
-		emit_via_redis("task_status_change", response, "task:" + self.task_id)
+		emit_via_redis("task_status_change", response, frappe.local.site + ":task_progress:" + self.task_id)
 
 
 """
