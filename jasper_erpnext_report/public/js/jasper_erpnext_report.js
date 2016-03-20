@@ -40,7 +40,6 @@ async_func_callback = function(data){
 
 queued_func_callback = function(data){
 	frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
-	console.log("subscribe task_id ", "Local-" + data.task_id);
 }
 
 jasper.run_jasper_report = function(method, data, doc){
