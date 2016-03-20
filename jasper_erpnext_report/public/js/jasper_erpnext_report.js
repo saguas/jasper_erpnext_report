@@ -25,9 +25,9 @@ async_func_callback = function(data){
 		jasper.pending_reports.push(result);
 		//setTimeout(jasper.jasper_report_ready, 1000*10, poll_data, $banner, timeout);
 		jasper.jasper_report_ready(poll_data, $banner, timeout);
-		frappe.socket.socket.emit('task_unsubscribe', "Local-" + data.task_id);
+		frappe.socket.socket.emit('task_unsubscribe', data.task_id);
 	}else{
-		frappe.socket.socket.emit('task_unsubscribe', "Local-" + data.task_id);
+		frappe.socket.socket.emit('task_unsubscribe', data.task_id);
 		if (result.status === "ready"){
            jasper.pending_reports.push(result);
            setTimeout(jasper.jasper_report_ready, 1000*10, result, $banner, timeout);
@@ -40,6 +40,7 @@ async_func_callback = function(data){
 
 queued_func_callback = function(data){
 	frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
+	console.log("subscribe task_id ", "Local-" + data.task_id);
 }
 
 jasper.run_jasper_report = function(method, data, doc){
