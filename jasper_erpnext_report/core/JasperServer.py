@@ -30,7 +30,7 @@ import jasper_erpnext_report.utils.utils as utils
 import JasperBase as Jb
 
 
-_logger = frappe.get_logger("jasper_erpnext_report")
+_logger = frappe.logger("jasper_erpnext_report")
 
 
 def _jasperserver(fn):

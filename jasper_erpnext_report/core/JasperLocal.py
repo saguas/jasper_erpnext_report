@@ -17,7 +17,7 @@ import JasperBase as Jb
 import os
 
 
-_logger = frappe.get_logger("jasper_erpnext_report")
+_logger = frappe.logger("jasper_erpnext_report")
 
 
 print_format = ["docx", "ods", "odt", "rtf", "xls", "xlsx", "pptx", "html", "pdf"]

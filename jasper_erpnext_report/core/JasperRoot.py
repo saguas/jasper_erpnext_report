@@ -17,7 +17,7 @@ from PyPDF2 import PdfFileMerger
 import cStringIO
 import zipfile, hashlib
 
-_logger = frappe.get_logger("jasper_erpnext_report")
+_logger = frappe.logger("jasper_erpnext_report")
 
 class JasperRoot(Jb.JasperBase):
 	def __init__(self, doc=None):

@@ -8,7 +8,7 @@ pyjnius = False
 jasperserverlib = False
 
 
-frappe.get_logger("jasper_erpnext_report").addHandler(logging.NullHandler())
+frappe.logger("jasper_erpnext_report").addHandler(logging.NullHandler())
 
 fds = frappe.local("fds")
 batch = frappe.local("batch")
