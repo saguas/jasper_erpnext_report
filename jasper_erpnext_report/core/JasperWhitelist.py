@@ -21,7 +21,7 @@ from jasper_erpnext_report.utils.file import get_file, get_html_reports_path, wr
 from jasper_erpnext_report.utils.cache import redis_transation
 
 
-_logger = frappe.get_logger("jasper_erpnext_report")
+_logger = frappe.logger("jasper_erpnext_report")
 
 
 def boot_session(bootinfo):

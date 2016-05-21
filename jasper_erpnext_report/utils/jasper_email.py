@@ -12,8 +12,9 @@ from jasper_erpnext_report.utils.file import get_jasper_path, write_file, get_ht
 def set_portal_link(sent_via, comm, endurl):
 	"""set portal link in footer"""
 	footer = ""
+	from frappe.website.utils import is_signup_enabled
 
-	if frappe.website.utils.is_signup_enabled():
+	if is_signup_enabled():
 		is_valid_recipient = frappe.utils.cstr(sent_via.get("email") or sent_via.get("email_id") or
 			sent_via.get("contact_email")) in comm.recipients
 		if is_valid_recipient:
