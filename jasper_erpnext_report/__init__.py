@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import frappe
-import logging, os, sys
+#import logging, os, sys
 
 jasper_session_obj = frappe.local("jasper_session_obj")
 jasper_session = frappe.local("jasper_session")
@@ -8,7 +8,7 @@ pyjnius = False
 jasperserverlib = False
 
 
-frappe.logger("jasper_erpnext_report").addHandler(logging.NullHandler())
+#frappe.logger("jasper_erpnext_report").addHandler(logging.NullHandler())
 
 fds = frappe.local("fds")
 batch = frappe.local("batch")
