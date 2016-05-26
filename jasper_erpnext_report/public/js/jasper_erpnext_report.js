@@ -39,7 +39,11 @@ async_func_callback = function(data){
 }
 
 queued_func_callback = function(data){
-	frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
+	//frappe.socket.subscribe("Local-" + data.task_id, {callback:async_func_callback});
+	var task_id = "Local-" + data.task_id;
+	var opts = {callback:async_func_callback};
+	frappe.socket.task_subscribe(task_id);
+	frappe.socket.open_tasks[task_id] = opts;
 }
 
 jasper.run_jasper_report = function(method, data, doc){
