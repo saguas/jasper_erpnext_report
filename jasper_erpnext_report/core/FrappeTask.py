@@ -5,6 +5,7 @@ __author__ = 'luissaguas'
 from jnius import PythonJavaClass, java_method
 import frappe, re, os
 
+
 class FrappeTask(PythonJavaClass):
 	__javainterfaces__ = ['IFrappeTask']
 
