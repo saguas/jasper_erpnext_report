@@ -18,7 +18,7 @@ class FrappeTask(PythonJavaClass):
 
 	def conf(self):
 		conf = self.read_config()
-		return frappe._dict(conf)
+		return conf
 
 	def __init__(self, task_id, result):
 		super(FrappeTask, self).__init__()
@@ -32,15 +32,17 @@ class FrappeTask(PythonJavaClass):
 			return url[0:url.index(":")] if (re.search(":", url)) else url
 
 	def get_site_name(self):
-		conf = self.conf()
 		if (frappe.get_request_header('x-frappe-site-name')):
 			return self.get_hostname(frappe.get_request_header('x-frappe-site-name'))
-		elif (frappe.get_request_header('host') in ['localhost', '127.0.0.1'] and conf.default_site):
+
+		conf = self.conf()
+		if (frappe.get_request_header('host') in ['localhost', '127.0.0.1'] and conf.default_site):
 			return conf.default_site
-		elif (frappe.get_request_header('origin')):
+
+		if (frappe.get_request_header('origin')):
 			return self.get_hostname(frappe.get_request_header('origin'))
-		else:
-			return self.get_hostname(frappe.get_request_header('host'))
+
+		return self.get_hostname(frappe.get_request_header('host'))
 
 	def setResult(self, result):
 		self.result = result
