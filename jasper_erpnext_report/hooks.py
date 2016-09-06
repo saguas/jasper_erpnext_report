@@ -19,19 +19,6 @@ boot_session = "jasper_erpnext_report.core.JasperWhitelist.boot_session"
 
 app_include_css = ["/assets/jasper_erpnext_report/css/style.min.css", "/assets/css/jasper_erpnext_report.css"]
 
-<<<<<<< HEAD
-app_include_js = ["/assets/js/jasper_erpnext_report.js"]
-
-#app_include_js = [
-#	"/assets/jasper_erpnext_report/js/uuid.js",
-#	"/assets/jasper_erpnext_report/js/jstree.min.js",
-#	"/assets/jasper_erpnext_report/js/utils.js",
-#	"/assets/jasper_erpnext_report/js/jasper_ui.js",
-#	"/assets/jasper_erpnext_report/js/upload.js",
-#	"/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js",
-#	"/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"
-#]
-=======
 #app_include_js = ["/assets/js/jasper_erpnext_report.js"]
 
 app_include_js = [
@@ -43,7 +30,6 @@ app_include_js = [
 	"/assets/jasper_erpnext_report/js/jasper_erpnext_comm.js",
 	"/assets/jasper_erpnext_report/js/jasper_erpnext_report.js"
 ]
->>>>>>> ab3f23c467d028f5d53fcc0c4b107c3a1daf393e
 
 permission_query_conditions = {
 	"Jasper Reports": "jasper_erpnext_report.jasper_erpnext_report.doctype.jasper_reports.jasper_reports.get_permission_query_conditions",
