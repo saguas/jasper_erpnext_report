@@ -3,15 +3,43 @@ __author__ = 'luissaguas'
 
 #import json
 from jnius import PythonJavaClass, java_method
-
+import frappe, re, os
 
 class FrappeTask(PythonJavaClass):
 	__javainterfaces__ = ['IFrappeTask']
+
+	def read_config(self):
+		config = frappe.get_conf() or {}
+		curr_site = os.path.join("currentsite.txt")
+		config.default_site = frappe.read_file(curr_site) or frappe.local.site
+
+		return config
+
+	def conf(self):
+		conf = self.read_config()
+		return frappe._dict(conf)
 
 	def __init__(self, task_id, result):
 		super(FrappeTask, self).__init__()
 		self.task_id = "Local-" + task_id
 		self.result = result
+
+	def get_hostname(self, url):
+		if (not url): return None;
+		if (url.index("://") > -1):
+			url = url.split('/')[2]
+			return url[0:url.index(":")] if (re.search(":", url)) else url
+
+	def get_site_name(self):
+		conf = self.conf()
+		if (frappe.get_request_header('x-frappe-site-name')):
+			return self.get_hostname(frappe.get_request_header('x-frappe-site-name'))
+		elif (frappe.get_request_header('host') in ['localhost', '127.0.0.1'] and conf.default_site):
+			return conf.default_site
+		elif (frappe.get_request_header('origin')):
+			return self.get_hostname(frappe.get_request_header('origin'))
+		else:
+			return self.get_hostname(frappe.get_request_header('host'))
 
 	def setResult(self, result):
 		self.result = result
@@ -27,7 +55,8 @@ class FrappeTask(PythonJavaClass):
 			"task_id": self.task_id,
 			"result": self.result
 		})
-		emit_via_redis("task_status_change", response, frappe.local.site + ":task_progress:" + self.task_id)
+		sitename = self.get_site_name() or frappe.local.site
+		emit_via_redis("task_status_change", response, sitename + ":task_progress:" + self.task_id)
 
 
 """

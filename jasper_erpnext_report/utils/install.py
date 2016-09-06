@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 __author__ = 'saguas'
 
 import frappe
-from frappe.website import render, statics
+from frappe.website import render
 
 
 def before_install():
@@ -26,7 +26,6 @@ def after_install(rebuild_website=False):
 		return
 	if rebuild_website:
 		render.clear_cache()
-		statics.sync().start()
 
 	init_singles()
 	frappe.db.commit()
