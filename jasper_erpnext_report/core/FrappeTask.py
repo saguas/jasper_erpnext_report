@@ -27,13 +27,11 @@ class FrappeTask(PythonJavaClass):
 
 	def get_hostname(self, url):
 		if (not url): return None;
-		print "url {}".format(url)
 		if (url.find("://") > -1):
 			url = url.split('/')[2]
 		return url[0:url.find(":")] if (re.search(":", url)) else url
 
 	def get_site_name(self):
-		print "frappe.get_request_header('x-frappe-site-name') {}".format(frappe.get_request_header('x-frappe-site-name'))
 		if (frappe.get_request_header('x-frappe-site-name')):
 			return self.get_hostname(frappe.get_request_header('x-frappe-site-name'))
 
