@@ -5,6 +5,13 @@ import frappe
 jasper_session_obj = frappe.local("jasper_session_obj")
 jasper_session = frappe.local("jasper_session")
 pyjnius = False
+
+try:
+	import jnius_config as jc
+	pyjnius = True
+except:
+	pyjnius = False
+
 jasperserverlib = False
 
 
