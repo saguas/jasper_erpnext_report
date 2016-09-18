@@ -45,14 +45,12 @@ class FrappeTask(PythonJavaClass):
 		return self.get_hostname(frappe.get_request_header('host'))
 
 	def setResult(self, result):
-		print "setting result {}".format(result)
 		self.result = result
 
 	def emit_via_redis(self):
 		from frappe.async import emit_via_redis
 		import frappe
 
-		print "emiting setReadyYask taskid {} result {}".format(self.task_id, self.result)
 		response = {}
 		response.update({
 			"status": "Success",
