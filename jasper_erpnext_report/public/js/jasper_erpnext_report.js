@@ -14,8 +14,8 @@ async_func_callback = function(data){
 	var banner_data = pending_banner.pop()
 	var $banner = banner_data.banner;
 	var timeout = banner_data.timeout;
-
 	var result = data.result;
+
 	if (result.origin === "local"){
 		var reqids = [];
 	    for(var i=0; i<result.length; i++){
@@ -385,7 +385,7 @@ setJasperDropDown = function(list, callback){
 			$(".nav.navbar-nav.navbar-right").append(html)
 			$(".nav.navbar-nav.navbar-right .jrreports").on("click", clicked);
 	};
-		
+
 };
 
 jasper.getOrphanReport = function(data, ev){

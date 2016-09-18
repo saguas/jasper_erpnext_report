@@ -183,7 +183,8 @@ def jasper_server_login(doc):
 	checkJasperRestLib()
 	login = jsr.login()
 	#get the list of reports on the server
-	r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+	#r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+	r_filters = {"jasper_doctype": "", "report": ""}
 	data = jsr._get_reports_list(filters_report=r_filters)
 	cached = redis_transation(data, "report_list_all")
 	if cached and data:

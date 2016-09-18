@@ -413,18 +413,8 @@ class JasperBase(object):
 			cresp = self.prepareCollectResponse(resps)
 			cresp["origin"] = "server"
 			cresp["pformat"] = pformat
-			#self.frappe_task.setResult([cresp])
-			#self.frappe_task.setReadyTask()
-			from frappe.async import emit_via_redis
-			task_id = "Local-" + frappe.local.task_id
-			response = {}
-			response.update({
-				"status": "Success",
-				"task_id": task_id,
-				"result": [cresp]
-			})
-			emit_via_redis("task_status_change", response, frappe.local.site + ":task_progress:" + task_id)
-
+			self.frappe_task.setResult([cresp])
+			self.frappe_task.emit_via_redis()
 		return cresp
 
 	#Override by descendents: JasperServer and JasperLocal

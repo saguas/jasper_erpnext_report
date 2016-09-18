@@ -33,7 +33,8 @@ class JasperReports(Document):
 		#if we are importing docs from jasperserver
 		if not frappe.flags.in_import:
 
-			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+			#r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+			r_filters = {"jasper_doctype": "", "report": ""}
 			jr = JasperRoot()
 			data = jr._get_reports_list(filters_report=r_filters)
 			#report_list_dirt_doc is not called from here
