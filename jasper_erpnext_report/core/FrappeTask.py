@@ -45,13 +45,14 @@ class FrappeTask(PythonJavaClass):
 		return self.get_hostname(frappe.get_request_header('host'))
 
 	def setResult(self, result):
+		print "setting result {}".format(result)
 		self.result = result
 
-	@java_method('()V')
-	def setReadyTask(self):
+	def emit_via_redis(self):
 		from frappe.async import emit_via_redis
 		import frappe
 
+		print "emiting setReadyYask taskid {} result {}".format(self.task_id, self.result)
 		response = {}
 		response.update({
 			"status": "Success",
@@ -60,6 +61,10 @@ class FrappeTask(PythonJavaClass):
 		})
 		sitename = self.get_site_name() or frappe.local.site
 		emit_via_redis("task_status_change", response, sitename + ":task_progress:" + self.task_id)
+
+	@java_method('()V')
+	def setReadyTask(self):
+		self.emit_via_redis()
 
 
 """

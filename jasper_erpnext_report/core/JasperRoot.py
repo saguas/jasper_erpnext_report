@@ -109,14 +109,14 @@ class JasperRoot(Jb.JasperBase):
 			return None
 		data = {}
 		dirt = utils.jaspersession_get_value("report_list_dirt_all") or False
-
 		#dirt if redis not cache
 		if not dirt:
 			data = utils.get_jasper_session_data_from_cache("report_list_all")
 
 		#if for some reason there is no cache get it from db
 		if not data:
-			r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+			#r_filters=["`tabJasper Reports`.jasper_doctype is NULL", "`tabJasper Reports`.report is NULL"]
+			r_filters={"jasper_doctype": "", "report": ""}
 			ldata = self._get_reports_list(filters_report=r_filters)
 			cached = redis_transation(ldata, "report_list_all")
 			if ldata:
